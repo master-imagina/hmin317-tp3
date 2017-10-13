@@ -8,12 +8,14 @@ SOURCES += main.cpp
 SOURCES += \
     mainwidget.cpp \
     geometryengine.cpp \
-    syncronizer.cpp
+    syncronizer.cpp \
+    particles.cpp
 
 HEADERS += \
     mainwidget.h \
     geometryengine.h \
-    syncronizer.h
+    syncronizer.h \
+    particles.h
 
 RESOURCES += \
     shaders.qrc \

@@ -51,7 +51,8 @@ OBJECTS_DIR   = ./
 SOURCES       = main.cpp \
 		mainwidget.cpp \
 		geometryengine.cpp \
-		syncronizer.cpp qrc_shaders.cpp \
+		syncronizer.cpp \
+		particles.cpp qrc_shaders.cpp \
 		qrc_textures.cpp \
 		moc_mainwidget.cpp \
 		moc_syncronizer.cpp
@@ -59,6 +60,7 @@ OBJECTS       = main.o \
 		mainwidget.o \
 		geometryengine.o \
 		syncronizer.o \
+		particles.o \
 		qrc_shaders.o \
 		qrc_textures.o \
 		moc_mainwidget.o \
@@ -121,10 +123,12 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		tp3.pro mainwidget.h \
 		geometryengine.h \
-		syncronizer.h main.cpp \
+		syncronizer.h \
+		particles.h main.cpp \
 		mainwidget.cpp \
 		geometryengine.cpp \
-		syncronizer.cpp
+		syncronizer.cpp \
+		particles.cpp
 QMAKE_TARGET  = tp3
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = tp3
@@ -295,8 +299,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents shaders.qrc textures.qrc $(DISTDIR)/
-	$(COPY_FILE) --parents mainwidget.h geometryengine.h syncronizer.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwidget.cpp geometryengine.cpp syncronizer.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mainwidget.h geometryengine.h syncronizer.h particles.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwidget.cpp geometryengine.cpp syncronizer.cpp particles.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -354,7 +358,8 @@ compiler_clean: compiler_rcc_clean compiler_moc_header_clean
 ####### Compile
 
 main.o: main.cpp mainwidget.h \
-		geometryengine.h
+		geometryengine.h \
+		syncronizer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 mainwidget.o: mainwidget.cpp mainwidget.h \
@@ -366,6 +371,9 @@ geometryengine.o: geometryengine.cpp geometryengine.h
 
 syncronizer.o: syncronizer.cpp syncronizer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o syncronizer.o syncronizer.cpp
+
+particles.o: particles.cpp particles.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o particles.o particles.cpp
 
 qrc_shaders.o: qrc_shaders.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_shaders.o qrc_shaders.cpp

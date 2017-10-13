@@ -19,10 +19,10 @@ void Syncronizer::update() {
     if ((float)timer.elapsed() / 1000 > delay) {
         std::cout << "--- UPDATE ---" << std::endl;
         value = (value + 1) % 4;
-        firstChanged(value % 4);
-        secondChanged((value + 1) % 4);
-        thirdChanged((value + 2) % 4);
-        fourthChanged((value + 3) % 4);
+        emit firstChanged(value % 4);
+        emit secondChanged((value + 1) % 4);
+        emit thirdChanged((value + 2) % 4);
+        emit fourthChanged((value + 3) % 4);
         timer.restart();
     }
 }

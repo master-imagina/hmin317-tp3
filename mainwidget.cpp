@@ -49,6 +49,7 @@
 ****************************************************************************/
 
 #include "mainwidget.h"
+#include "particles.h"
 
 #include <QMouseEvent>
 
@@ -77,7 +78,11 @@ MainWidget::~MainWidget()
     // Make sure the context is current when deleting the texture
     // and the buffers.
     makeCurrent();
-    delete texture;
+    delete texture[0];
+    delete texture[1];
+    delete texture[2];
+    delete texture[3];
+    delete[] texture;
     delete geometries;
     doneCurrent();
 }
@@ -118,7 +123,7 @@ void MainWidget::timerEvent(QTimerEvent *)
     }
 
     this->elapsedTimer.restart();
-    updateSaison();
+    emit updateSaison();
     update();
 }
 //! [1]
@@ -232,6 +237,10 @@ void MainWidget::paintGL()
     matrix.rotate(rotation);
     //matrix.rotate(rotation);
 
+    // Bind shader pipeline for use
+    if (!program.bind())
+        close();
+
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]
@@ -242,6 +251,8 @@ void MainWidget::paintGL()
     // Draw cube geometry
     //geometries->drawCubeGeometry(&program);
     geometries->drawPlaneGeometry(&program);
+
+    Particles::getInstance().paint();
 }
 
 

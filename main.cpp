@@ -55,6 +55,7 @@
 #ifndef QT_NO_OPENGL
 #include "mainwidget.h"
 #include "syncronizer.h"
+#include "particles.h"
 #endif
 
 int main(int argc, char *argv[])
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
     widget2.show();
     widget3.show();
     widget4.show();
+    Particles particles;
 #else
     QLabel note("OpenGL Support required");
     note.show();
