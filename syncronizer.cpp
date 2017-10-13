@@ -17,6 +17,7 @@ Syncronizer& Syncronizer::getInstance() {
 
 void Syncronizer::update() {
     if ((float)timer.elapsed() / 1000 > delay) {
+        std::cout << "--- UPDATE ---" << std::endl;
         value = (value + 1) % 4;
         firstChanged(value % 4);
         secondChanged((value + 1) % 4);

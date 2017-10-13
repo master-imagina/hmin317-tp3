@@ -171,18 +171,32 @@ void MainWidget::initShaders()
 //! [4]
 void MainWidget::initTextures()
 {
+    texture = new QOpenGLTexture*[4];
+
     // Load cube.png image
-    texture = new QOpenGLTexture(QImage("heightmap-3.png").mirrored());
+    texture[0] = new QOpenGLTexture(QImage("heightmap-3-0.png").mirrored());
+    texture[1] = new QOpenGLTexture(QImage("heightmap-3-1.png").mirrored());
+    texture[2] = new QOpenGLTexture(QImage("heightmap-3-2.png").mirrored());
+    texture[3] = new QOpenGLTexture(QImage("heightmap-3-3.png").mirrored());
 
     // Set nearest filtering mode for texture minification
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture[0]->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture[1]->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture[2]->setMinificationFilter(QOpenGLTexture::Nearest);
+    texture[3]->setMinificationFilter(QOpenGLTexture::Nearest);
 
     // Set bilinear filtering mode for texture magnification
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture[0]->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture[1]->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture[2]->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture[3]->setMagnificationFilter(QOpenGLTexture::Linear);
 
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-    texture->setWrapMode(QOpenGLTexture::Repeat);
+    texture[0]->setWrapMode(QOpenGLTexture::Repeat);
+    texture[1]->setWrapMode(QOpenGLTexture::Repeat);
+    texture[2]->setWrapMode(QOpenGLTexture::Repeat);
+    texture[3]->setWrapMode(QOpenGLTexture::Repeat);
 }
 //! [4]
 
@@ -208,7 +222,7 @@ void MainWidget::paintGL()
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    texture->bind();
+    texture[saison]->bind();
 
 //! [6]
     // Calculate model view transformation
@@ -232,5 +246,6 @@ void MainWidget::paintGL()
 
 
 void MainWidget::changeSaison(int value) {
+    saison = value;
     std::cout << "[" << this << "] Saison " << value << std::endl;
 }
