@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QBoxLayout>
 #include <QColor>
+#include <QDate>
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QLabel>
@@ -22,12 +23,29 @@
 #include "heightmap.h"
 
 
+namespace {
+
+const int FPS = 60;
+
+const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
+    {{9, 22}, Season::Autumn},
+    {{12, 21}, Season::Winter},
+    {{3, 20}, Season::Spring},
+    {{6, 21}, Season::Summer}
+};
+
+} // anon namespace
+
+
+
 MainWindow::MainWindow() :
-    m_gameLoop(new GameLoop(1000, this)),
+    m_gameLoop(new GameLoop(FPS, this)),
     m_terrainGeometry(std::make_unique<Geometry>()),
     m_gameWidgets(),
     m_camera(std::make_unique<Camera>()),
-    m_cameraController(nullptr)
+    m_cameraController(nullptr),
+    m_seasonTimer(new QTimer(this)),
+    m_gameWidgetsDates()
 {
     m_camera->setEyePos({8, 20, 8});
 
@@ -39,41 +57,27 @@ MainWindow::MainWindow() :
 
     for (int i = 0; i < 4; i++) {
         auto gameWidget = new GameWidget(this);
-        const int fps = std::pow(10, i);
-
-        if (i < 3) {
-            auto renderTimer = new QTimer(gameWidget);
-            renderTimer->setInterval(1000 / fps);
-
-            connect(renderTimer, &QTimer::timeout,
-                    gameWidget, [gameWidget] {
-                gameWidget->update();
-
-                //FIXME Avoid file dialogs freezing. Implement threaded rendering instead
-                qApp->processEvents();
-            });
-
-            renderTimer->start();
-        }
 
         gameWidget->setObjectName("GameWidget" + QString::number(i));
         gameWidget->setGeometry(m_terrainGeometry.get());
         gameWidget->setCamera(m_camera.get());
 
-        m_gameWidgets.push_back(gameWidget);
+        m_gameWidgets[i] = gameWidget;
 
         centralLayout->addWidget(gameWidget, i / 2, i % 2);
 
-        auto fpsLabel = new QLabel(QString::number(fps) + " fps", gameWidget);
+        auto fpsLabel = new QLabel(QString::number(FPS) + " fps", gameWidget);
         fpsLabel->setStyleSheet("QLabel { background-color : red }");
         fpsLabel->move(20, 20);
     }
+
+    initSeasons();
 
     setCentralWidget(centralWidget);
 
     createActions();
 
-    m_gameLoop->setCallback([this] { iterateGameLoop(); });
+    m_gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
     m_gameLoop->run();
 
     centralWidget->setFocus();
@@ -126,13 +130,14 @@ void MainWindow::pointCameraToTerrainCenter()
     m_camera->setTargetPos(flatCenter);
 }
 
-void MainWindow::iterateGameLoop()
+void MainWindow::iterateGameLoop(float dt)
 {
     // Update scene
-    m_cameraController->updateCamera(m_camera.get(), m_gameLoop->fps());
+    m_cameraController->updateCamera(m_camera.get(), dt);
 
-    // Render
-    m_gameWidgets[3]->update();
+    for (GameWidget *gameWidget : m_gameWidgets) {
+        gameWidget->startNewFrame(dt);
+    }
 
     //FIXME Avoid file dialogs freezing. Implement threaded rendering instead
     qApp->processEvents();
@@ -160,4 +165,39 @@ void MainWindow::createActions()
     menuBar->addMenu(cameraMenu);
 
     setMenuBar(menuBar);
+}
+
+void MainWindow::initSeasons()
+{
+    // Init season for each game widget
+    for (auto it = DATE_TO_SEASON.begin(); it != DATE_TO_SEASON.end(); it++) {
+        const int i = DATE_TO_SEASON.size() - std::distance(it, DATE_TO_SEASON.end());
+
+        m_gameWidgetsDates[i] = QDate(2017, it->first.first, it->first.second-1);
+        m_gameWidgets[i]->setSeason(it->second);
+    }
+
+    // Init and start timer
+    m_seasonTimer->setInterval(125);
+
+    connect(m_seasonTimer, &QTimer::timeout, [this] {
+        for (int i = 0; i < m_gameWidgetsDates.size(); i++) {
+            QDate &date = m_gameWidgetsDates[i];
+            date = date.addDays(1);
+
+            GameWidget *gameWidget = m_gameWidgets[i];
+
+            const std::pair<int, int> dayAndMonth {date.month(), date.day()};
+
+            auto seasonChangedIt = DATE_TO_SEASON.find(dayAndMonth);
+
+            if (seasonChangedIt != DATE_TO_SEASON.end()) {
+                const Season newSeason = seasonChangedIt->second;
+
+                gameWidget->setSeason(newSeason);
+            }
+        }
+    });
+
+    m_seasonTimer->start();
 }

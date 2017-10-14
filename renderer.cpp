@@ -3,7 +3,6 @@
 #include <QOpenGLShaderProgram>
 
 #include "geometry.h"
-#include "geometry.h"
 
 
 Renderer::Renderer() :
@@ -21,6 +20,14 @@ Renderer::~Renderer()
     cleanupResources();
 }
 
+void Renderer::initialize()
+{
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+}
+
 void Renderer::updateBuffers(Geometry *geom)
 {
     // Update VBOs
@@ -32,6 +39,11 @@ void Renderer::updateBuffers(Geometry *geom)
 
     m_indexVbo.bind();
     m_indexVbo.allocate(indices.data(), indices.size() * sizeof(unsigned int));
+}
+
+void Renderer::clearForNewFrame()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::draw(Geometry *geom, QOpenGLShaderProgram *program)

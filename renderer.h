@@ -15,7 +15,11 @@ public:
     Renderer();
     ~Renderer();
 
+    void initialize();
+
     void updateBuffers(Geometry *geom);
+
+    void clearForNewFrame();
 
     void draw(Geometry *geom, QOpenGLShaderProgram *program);
 

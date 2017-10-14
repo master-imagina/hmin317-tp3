@@ -68,14 +68,14 @@ QVector3D CameraController::computeDirectionFromKeys(Camera *camera) const
     return ret;
 }
 
-void CameraController::updateCamera(Camera *camera, unsigned int fps)
+void CameraController::updateCamera(Camera *camera, float dt)
 {
     const QVector3D oldEye = camera->eyePos();
     const QVector3D oldTarget = camera->targetPos();
 
     const float speed = (m_turboKeyPressed) ? m_turboSpeed : m_moveSpeed;
-    const float factor = (fps / 1000.0f);
-    const float moveAmount = factor * speed;
+    const float dtFactor = (dt / 1000.0f);
+    const float moveAmount = dtFactor * speed;
 
     const QVector3D moveDirection = computeDirectionFromKeys(camera);
 
@@ -86,7 +86,7 @@ void CameraController::updateCamera(Camera *camera, unsigned int fps)
     camera->setTargetPos(newTarget);
 
     if (m_isRotateAroundTargetPressed) {
-        const float angle = 2.f * factor * m_rotateSpeed;
+        const float angle = 2.f * dtFactor * m_rotateSpeed;
 
         rotateCameraAroundTarget(camera, angle);
     }

@@ -15,12 +15,13 @@ GameWidget::GameWidget(QWidget *parent) :
     m_geometry(nullptr),
     m_terrainAABB(),
     m_renderer(nullptr),
-    m_camera(nullptr)
+    m_camera(nullptr),
+    m_currentSeason(Season::None)
 {}
 
 GameWidget::~GameWidget()
 {
-    // Make sure the context is current when freeing allocated resources
+    // Make sure the context is current before freeing allocated resources
     makeCurrent();
 
     m_renderer->cleanupResources();
@@ -54,18 +55,31 @@ void GameWidget::setCamera(Camera *camera)
     }
 }
 
+Season GameWidget::season() const
+{
+    return m_currentSeason;
+}
+
+void GameWidget::startNewFrame(float dt)
+{
+    m_deltaTime = dt;
+
+    update();
+}
+
+void GameWidget::setSeason(Season season)
+{
+    if (m_currentSeason != season) {
+        m_currentSeason = season;
+    }
+}
+
 void GameWidget::initializeGL()
 {
-    initializeOpenGLFunctions();
-
     m_renderer = std::make_unique<Renderer>();
-
-    glClearColor(0.f, 0.f, 0.f, 1.f);
+    m_renderer->initialize();
 
     initShaders();
-
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
 }
 
 void GameWidget::initShaders()
@@ -96,8 +110,6 @@ void GameWidget::resizeGL(int w, int h)
 
 void GameWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     // Send uniforms to shaders
     const QMatrix4x4 viewMatrix = m_camera->viewMatrix();
     const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
@@ -110,5 +122,6 @@ void GameWidget::paintGL()
     m_shaderProgram.setUniformValue("maxHeight", yBounds.second);
 
     // Draw geometry
+    m_renderer->clearForNewFrame();
     m_renderer->draw(m_geometry, &m_shaderProgram);
 }

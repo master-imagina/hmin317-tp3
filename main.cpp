@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    app.setApplicationName("Game Engines - PW2");
+    app.setApplicationName("Game Engines - PW3");
 
     QSurfaceFormat format;
     format.setDepthBufferSize(24);

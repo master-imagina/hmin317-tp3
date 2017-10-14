@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWidget>
 #include <QQuaternion>
@@ -17,7 +16,17 @@ class Geometry;
 class Renderer;
 
 
-class GameWidget : public QOpenGLWidget, protected QOpenGLFunctions
+enum class Season
+{
+    None,
+    Autumn,
+    Winter,
+    Spring,
+    Summer
+};
+
+
+class GameWidget : public QOpenGLWidget
 {
     Q_OBJECT
 
@@ -30,6 +39,13 @@ public:
 
     Camera *camera() const;
     void setCamera(Camera *camera);
+
+    Season season() const;
+
+    void startNewFrame(float dt);
+
+public Q_SLOTS:
+    void setSeason(Season season);
 
 protected:
     void initializeGL() override;
@@ -47,6 +63,9 @@ private:
     std::unique_ptr<Renderer> m_renderer;
 
     Camera *m_camera;
+
+    float m_deltaTime;
+    Season m_currentSeason;
 };
 
 #endif // GAMEWIDGET_H

@@ -5,6 +5,7 @@
 
 #include <QBasicTimer>
 #include <QObject>
+#include <QTime>
 
 
 class GameLoop : public QObject
@@ -14,7 +15,7 @@ public:
 
     unsigned int fps() const;
 
-    void setCallback(const std::function<void ()> &callback);
+    void setCallback(const std::function<void (float)> &callback);
 
     void run();
 
@@ -24,8 +25,9 @@ protected:
 private:
     unsigned int m_fps;
     QBasicTimer m_timer;
+    QTime m_deltaTime;
 
-    std::function<void ()> m_callback;
+    std::function<void (float)> m_callback;
 };
 
 #endif // GAMELOOP_H
