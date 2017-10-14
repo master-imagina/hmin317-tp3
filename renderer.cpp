@@ -53,13 +53,13 @@ void Renderer::draw(Geometry *geom, QOpenGLShaderProgram *program)
 
     quintptr offset = 0;
 
-    const int vertexLocation = program->attributeLocation("a_position");
+    const int vertexLocation = 0;
     program->enableAttributeArray(vertexLocation);
     program->setAttributeBuffer(vertexLocation, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     offset += sizeof(QVector3D);
 
-    const int texcoordLocation = program->attributeLocation("a_texcoord");
+    const int texcoordLocation = 1;
     program->enableAttributeArray(texcoordLocation);
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 

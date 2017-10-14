@@ -94,6 +94,9 @@ void GameWidget::initShaders()
         close();
     }
 
+    m_shaderProgram.bindAttributeLocation("a_position", 0);
+    m_shaderProgram.bindAttributeLocation("a_texcoord", 1);
+
     if (!m_shaderProgram.link()) {
         close();
     }

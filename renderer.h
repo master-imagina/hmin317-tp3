@@ -1,8 +1,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
+#include <QOpenGLFunctions>
 
 class QOpenGLShaderProgram;
 
