@@ -1,13 +1,12 @@
-#ifdef GL_ES
-// Set default precision to medium
-precision mediump int;
-precision mediump float;
-#endif
+#version 330
 
 uniform float minHeight;            // Terrain minimum height
 uniform float maxHeight;            // Terrain maximum height
 
-varying float vertexHeight;
+in float vertexHeight;
+
+out vec4 fragColor;
+
 
 void main()
 {
@@ -16,5 +15,5 @@ void main()
 
     float grayscaleValue = floor(a * vertexHeight + b) / 255.;
 
-    gl_FragColor = vec4(grayscaleValue, grayscaleValue, grayscaleValue, 1.0);
+    fragColor = vec4(grayscaleValue, grayscaleValue, grayscaleValue, 1.0);
 }

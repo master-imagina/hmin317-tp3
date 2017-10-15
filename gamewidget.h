@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include <QOpenGLShaderProgram>
 #include <QOpenGLWidget>
 #include <QQuaternion>
 #include <QVector2D>
@@ -53,11 +52,6 @@ protected:
     void paintGL() override;
 
 private:
-    void initShaders();
-
-private:
-    QOpenGLShaderProgram m_shaderProgram;
-
     Geometry *m_geometry;
     AABoundingBox m_terrainAABB;
     std::unique_ptr<Renderer> m_renderer;
