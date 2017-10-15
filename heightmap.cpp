@@ -58,7 +58,6 @@ Geometry heightmapToGeometry(const QImage &heightmap)
 
             VertexData &vertex = ret.vertices.at(vertexIndex);
             vertex.position = {xCoord, vertexHeight, zCoord};
-            vertex.texCoord = {xCoord / 3.f, zCoord / 2.f};
 
             // ... and indices
             if (x == maxXZCoord || z == maxXZCoord) {
