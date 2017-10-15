@@ -36,6 +36,9 @@ set(SOURCES
 set(QT_RESOURCES
     shaders.qrc)
 
+# Copy <source>/res/images to <build>/
+file(INSTALL res/images DESTINATION ${CMAKE_BINARY_DIR})
+
 # Packages
 #  Qt5
 find_package(Qt5 COMPONENTS Widgets REQUIRED)

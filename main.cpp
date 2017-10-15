@@ -17,5 +17,7 @@ int main(int argc, char *argv[])
     mw.setMinimumSize(640, 400);
     mw.show();
 
+    mw.loadHeightMap("images/heightmap-1.png");
+
     return app.exec();
 }
