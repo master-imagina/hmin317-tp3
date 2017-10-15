@@ -55,7 +55,7 @@ MainWindow::MainWindow() :
 
     auto centralLayout = new QGridLayout(centralWidget);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < m_gameWidgets.size(); i++) {
         auto gameWidget = new GameWidget(this);
 
         gameWidget->setObjectName("GameWidget" + QString::number(i));
@@ -113,6 +113,8 @@ void MainWindow::loadHeightMap(const QString &filePath)
     for (GameWidget *gameWidget : m_gameWidgets) {
         gameWidget->setRendererDirty();
     }
+
+    pointCameraToTerrainCenter();
 }
 
 void MainWindow::pointCameraToTerrainCenter()

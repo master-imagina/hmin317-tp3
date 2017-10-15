@@ -24,9 +24,11 @@ public:
     MainWindow();
     ~MainWindow();
 
+public Q_SLOTS:
+    void loadHeightMap(const QString &filePath);
+
 private Q_SLOTS:
     void openLoadHeightMapDialog();
-    void loadHeightMap(const QString &filePath);
     void pointCameraToTerrainCenter();
 
 private:
@@ -37,15 +39,17 @@ private:
     void initSeasons();
 
 private:
+    static constexpr int viewportCount = 4;
+
     GameLoop *m_gameLoop;
     std::unique_ptr<Geometry> m_terrainGeometry;
-    std::array<GameWidget *, 4> m_gameWidgets;
+    std::array<GameWidget *, viewportCount> m_gameWidgets;
     std::unique_ptr<Camera> m_camera;
 
     CameraController *m_cameraController;
 
     QTimer *m_seasonTimer;
-    std::array<QDate, 4> m_gameWidgetsDates;
+    std::array<QDate, viewportCount> m_gameWidgetsDates;
 };
 
 #endif // MAINWINDOW_H
