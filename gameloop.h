@@ -14,6 +14,7 @@ public:
     explicit GameLoop(unsigned int fps, QObject *parent = nullptr);
 
     unsigned int fps() const;
+    void setFps(unsigned int fps);
 
     void setCallback(const std::function<void (float)> &callback);
 
