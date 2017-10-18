@@ -16,6 +16,10 @@ public:
 
     void initialize();
 
+    bool isDirty() const;
+    void setDirty();
+    void unsetDirty();
+
     void updateBuffers(Geometry *geom);
     void updateUniforms(const QVariantMap &uniforms);
 
@@ -36,6 +40,8 @@ private:
 
     GLuint m_vertexVbo;
     GLuint m_indexVbo;
+
+    bool m_isDirty;
 };
 
 #endif // RENDERER_H

@@ -13,7 +13,7 @@ GameWidget::GameWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     m_geometry(nullptr),
     m_terrainAABB(),
-    m_renderer(nullptr),
+    m_renderer(std::make_unique<Renderer>()),
     m_camera(nullptr),
     m_currentSeason(Season::None)
 {}
@@ -37,7 +37,7 @@ void GameWidget::setGeometry(Geometry *geom)
 
 void GameWidget::setRendererDirty()
 {
-    m_renderer->updateBuffers(m_geometry);
+    m_renderer->setDirty();
 
     m_terrainAABB.processVertices(m_geometry->vertices);
 }
@@ -70,12 +70,16 @@ void GameWidget::startNewFrame(float dt)
 {
     m_deltaTime = dt;
 
+    if (m_renderer->isDirty()) {
+        m_renderer->updateBuffers(m_geometry);
+        m_renderer->unsetDirty();
+    }
+
     update();
 }
 
 void GameWidget::initializeGL()
 {
-    m_renderer = std::make_unique<Renderer>();
     m_renderer->initialize();
 }
 

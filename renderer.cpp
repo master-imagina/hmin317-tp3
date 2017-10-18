@@ -52,6 +52,21 @@ void Renderer::initialize()
     cglPrintAnyError();
 }
 
+bool Renderer::isDirty() const
+{
+    return m_isDirty;
+}
+
+void Renderer::setDirty()
+{
+    m_isDirty = true;
+}
+
+void Renderer::unsetDirty()
+{
+    m_isDirty = false;
+}
+
 void Renderer::updateBuffers(Geometry *geom)
 {
     const std::vector<VertexData> &vertices = geom->vertices;
