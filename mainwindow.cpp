@@ -11,6 +11,7 @@
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
+#include <QSlider>
 #include <QtMath>
 #include <QTimer>
 
@@ -25,8 +26,6 @@
 
 namespace {
 
-const int FPS = 60;
-
 const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
     {{9, 22}, Season::Autumn},
     {{12, 21}, Season::Winter},
@@ -38,10 +37,10 @@ const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
 
 
 
-MainWindow::MainWindow() :
-    m_gameLoop(new GameLoop(FPS, this)),
+MainWindow::MainWindow(GameLoop *gameLoop) :
     m_terrainGeometry(std::make_unique<Geometry>()),
     m_gameWidgets(),
+    m_fpsLabels(),
     m_camera(std::make_unique<Camera>()),
     m_cameraController(nullptr),
     m_seasonTimer(new QTimer(this)),
@@ -50,37 +49,71 @@ MainWindow::MainWindow() :
     m_camera->setEyePos({8, 20, 8});
 
     auto centralWidget = new QWidget(this);
+    centralWidget->setFocusPolicy(Qt::StrongFocus);
+
     m_cameraController = new CameraController(centralWidget);
     centralWidget->installEventFilter(m_cameraController);
 
-    auto centralLayout = new QGridLayout(centralWidget);
+    auto centralLayout = new QVBoxLayout(centralWidget);
+
+    // FPS controls
+    auto fpsIndicator = new QLabel(centralWidget);
+
+    auto fpsSlider = new QSlider(centralWidget);
+    fpsSlider->setOrientation(Qt::Horizontal);
+    fpsSlider->setMaximum(GameLoop::MAX_FPS);
+
+    auto fpsControlsLayout = new QHBoxLayout;
+    fpsControlsLayout->addWidget(fpsIndicator);
+    fpsControlsLayout->addWidget(fpsSlider);
+
+    // Viewports
+    auto viewportsLayout = new QGridLayout;
 
     for (int i = 0; i < m_gameWidgets.size(); i++) {
-        auto gameWidget = new GameWidget(this);
+        auto gameWidget = new GameWidget(centralWidget);
 
-        gameWidget->setObjectName("GameWidget" + QString::number(i));
         gameWidget->setGeometry(m_terrainGeometry.get());
         gameWidget->setCamera(m_camera.get());
 
         m_gameWidgets[i] = gameWidget;
 
-        centralLayout->addWidget(gameWidget, i / 2, i % 2);
+        viewportsLayout->addWidget(gameWidget, i / 2, i % 2);
 
-        auto fpsLabel = new QLabel(QString::number(FPS) + " fps", gameWidget);
+        auto fpsLabel = new QLabel(gameWidget);
         fpsLabel->setStyleSheet("QLabel { background-color : red }");
         fpsLabel->move(20, 20);
+
+        m_fpsLabels[i] = fpsLabel;
     }
 
+    connect(fpsSlider, &QSlider::valueChanged,
+            [this, gameLoop, fpsIndicator] (int fps) {
+        gameLoop->setFps(fps);
+
+        const QString fpsText = QString::number(fps);
+
+        for (QLabel *fpsLabel : m_fpsLabels) {
+            fpsLabel->setText(fpsText + " fps");
+        }
+
+        fpsIndicator->setText("fps :" + fpsText);
+    });
+
+    fpsSlider->setValue(gameLoop->fps());
+
     initSeasons();
+
+    centralLayout->addLayout(fpsControlsLayout);
+    centralLayout->addLayout(viewportsLayout);
 
     setCentralWidget(centralWidget);
 
     createActions();
 
-    m_gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
-    m_gameLoop->run();
-
     centralWidget->setFocus();
+
+    gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
 }
 
 MainWindow::~MainWindow()
@@ -175,7 +208,7 @@ void MainWindow::initSeasons()
     for (auto it = DATE_TO_SEASON.begin(); it != DATE_TO_SEASON.end(); it++) {
         const int i = DATE_TO_SEASON.size() - std::distance(it, DATE_TO_SEASON.end());
 
-        m_gameWidgetsDates[i] = QDate(2017, it->first.first, it->first.second-1);
+        m_gameWidgetsDates[i] = QDate(2017, it->first.first, it->first.second - 1);
         m_gameWidgets[i]->setSeason(it->second);
     }
 

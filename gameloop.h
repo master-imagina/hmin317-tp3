@@ -20,6 +20,9 @@ public:
 
     void run();
 
+public:
+    static const unsigned int MAX_FPS = 60;
+
 protected:
     void timerEvent(QTimerEvent *) override;
 

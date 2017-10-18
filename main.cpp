@@ -1,8 +1,8 @@
 #include <QApplication>
 #include <QSurfaceFormat>
 
+#include "gameloop.h"
 #include "mainwindow.h"
-
 
 int main(int argc, char *argv[])
 {
@@ -16,11 +16,15 @@ int main(int argc, char *argv[])
 
     QSurfaceFormat::setDefaultFormat(format);
 
-    MainWindow mw;
+    GameLoop gameLoop(60);
+
+    MainWindow mw(&gameLoop);
     mw.setMinimumSize(640, 400);
     mw.show();
 
     mw.loadHeightMap("images/heightmap-1.png");
+
+    gameLoop.run();
 
     return app.exec();
 }

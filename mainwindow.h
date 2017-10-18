@@ -13,6 +13,7 @@ class GameLoop;
 class GameWidget;
 class Geometry;
 
+class QLabel;
 class QTimer;
 
 
@@ -21,7 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow();
+    MainWindow(GameLoop *gameLoop);
     ~MainWindow();
 
 public Q_SLOTS:
@@ -41,9 +42,9 @@ private:
 private:
     static constexpr int viewportCount = 4;
 
-    GameLoop *m_gameLoop;
     std::unique_ptr<Geometry> m_terrainGeometry;
     std::array<GameWidget *, viewportCount> m_gameWidgets;
+    std::array<QLabel *, viewportCount> m_fpsLabels;
     std::unique_ptr<Camera> m_camera;
 
     CameraController *m_cameraController;
