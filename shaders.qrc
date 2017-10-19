@@ -2,5 +2,8 @@
     <qresource prefix="/">
         <file>res/shaders/geom_textured.vert</file>
         <file>res/shaders/terrain_heightmap.frag</file>
+        <file>res/shaders/particle.frag</file>
+        <file>res/shaders/particle.geom</file>
+        <file>res/shaders/particle.vert</file>
     </qresource>
 </RCC>

@@ -17,6 +17,7 @@ set(HEADERS
     cameracontroller.h
     gameloop.h
     mainwindow.h
+    particleeffect.h
     )
 
 set(SOURCES
@@ -30,6 +31,7 @@ set(SOURCES
     cameracontroller.cpp
     mainwindow.cpp
     gameloop.cpp
+    particleeffect.cpp
     main.cpp
     )
 
