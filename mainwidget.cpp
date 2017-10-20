@@ -73,8 +73,7 @@ MainWidget::MainWidget(QWidget *parent, int fps) :
     rotationAxis(0.0,0.0,0.1),
     fps(fps)
 {
-        tex = ":/printemps.jpg";
-
+    color= new QVector4D(0.1, 0.9, 0.4, 1.0);
 }
 MainWidget::~MainWidget()
 {
@@ -162,6 +161,18 @@ void MainWidget::initializeGL()
     initializeOpenGLFunctions();
 
     glClearColor(0, 0, 0, 1);
+    // static GLfloat ambient[] = { 0.1, 0.1, 0.1, 1.0 };
+    // static GLfloat diffuse[] = { 0.8, 0.4, 0.4, 1.0 };
+    // static GLfloat specular[] = { 0.8, 0.8, 0.8, 1.0 };
+    // static GLfloat shininess = 50.;
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+    // glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+    // glEnable(GL_LIGHTING); 
+
+
+    // glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
     initShaders();
     initTextures();
@@ -204,22 +215,25 @@ void MainWidget::newSeason(){
     QString tex2= ":/hiver.jpg";
     QString tex3= ":/printemps.jpg";
     season = (season+1)%4;
-    if(season==0){
-        texture->destroy();
-        texture = new QOpenGLTexture(QImage(tex));
+    switch (season) {
+        case 0 :
+            printf("printemps\n");
+            color= new QVector4D(0, 1, 0.5, 1.0);
+            break;
+        case 1 :
+            printf("ete\n");
+            color= new QVector4D(0.9, 0.9, 0.1, 1.0);
+            break;
+        case 2:
+            printf("automne\n");        
+            color= new QVector4D(0.9, 0.4, 0, 1.0);
+            break;
+        case 3:
+            printf("hiver\n");
+            color= new QVector4D(0.7, 0.9, 0.9, 1.0);
+            break;
     }
-    if(season==1){
-        texture->destroy();
-        texture = new QOpenGLTexture(QImage(tex1));
-    }
-    if(season==2){
-        texture->destroy();
-        texture = new QOpenGLTexture(QImage(tex2));
-    }
-    if(season==3){
-        texture->destroy();
-        texture = new QOpenGLTexture(QImage(tex3));
-    }
+
     emit signalSeason();
 
 }
@@ -249,8 +263,10 @@ void MainWidget::initShaders()
 //! [4]
 void MainWidget::initTextures()
 {
+    QString tex= ":/heightmap-1.png";
     // Load cube.png image
     texture = new QOpenGLTexture(QImage(tex));
+
 
     // Set nearest filtering mode for texture minification
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -288,7 +304,7 @@ void MainWidget::paintGL()
 
     texture->bind();
 
-//! [6]
+    //! [6]
     // Calculate model view transformation
     QMatrix4x4 matrix;
 
@@ -305,7 +321,7 @@ void MainWidget::paintGL()
     // matrix.lookAt(eye,center,up);
 
     matrix.rotate(rotation);
-
+    program.setUniformValue("ambiant_color", *color);
 
 
     // Set modelview-projection matrix

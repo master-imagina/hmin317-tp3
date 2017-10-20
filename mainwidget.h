@@ -104,7 +104,7 @@ private:
     GeometryEngine *geometries;
 
     QOpenGLTexture *texture;
-    QString tex;
+    QVector4D* color;
     QMatrix4x4 projection;
 
     QVector2D mousePressPosition;
