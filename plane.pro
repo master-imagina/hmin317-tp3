@@ -28,3 +28,5 @@ CONFIG += c++11
 # install
 target.path = .
 INSTALLS += target
+
+DISTFILES +=

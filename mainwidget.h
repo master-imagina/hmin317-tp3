@@ -54,6 +54,7 @@
 #include "geometryengine.h"
 #include "camera.h"
 #include "seasonmanager.h"
+#include "particles.h"
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_4_2_Core>
@@ -89,13 +90,13 @@ protected:
     void resizeGL(int w, int h) override;
     void paintGL() override;
 
-    void initShaders();
+    void initShaders(int shaderType);
     void initTextures();
 
 private:
     QBasicTimer timer;
     QTimer *seasonTimer;
-    QOpenGLShaderProgram program;
+    QOpenGLShaderProgram program, particlesProgram;
     GeometryEngine *geometries;
 
     QOpenGLTexture *height;
@@ -111,6 +112,7 @@ private:
     QQuaternion rotation;
     int fov, fps;
     SeasonManager *seasonM;
+    Particles *particlesEngine;
 };
 
 #endif // MAINWIDGET_H

@@ -51,8 +51,8 @@
 #include "mainwidget.h"
 
 #include <QMouseEvent>
-
 #include <math.h>
+#include <iostream>
 
 MainWidget::MainWidget(int fps, Seasons s, QWidget *parent) :
     QOpenGLWidget(parent),
@@ -63,7 +63,8 @@ MainWidget::MainWidget(int fps, Seasons s, QWidget *parent) :
     angularSpeed(0),
     camera(),
     orbit(false),
-    fps(fps)
+    fps(fps),
+    particlesEngine(0)
 {
     setMouseTracking(true);
     seasonTimer = new QTimer();
@@ -83,6 +84,7 @@ MainWidget::~MainWidget()
     delete snow_rock;
     delete snow_sand;
     delete geometries;
+    delete particlesEngine;
     doneCurrent();
 }
 
@@ -176,8 +178,8 @@ void MainWidget::initializeGL()
 
     glClearColor(0, 0, 0, 1);
 
-    initShaders();
     initTextures();
+    initShaders(0);
 
 //! [2]
     // Enable depth buffer
@@ -187,29 +189,38 @@ void MainWidget::initializeGL()
     //glEnable(GL_CULL_FACE);
 //! [2]
     geometries = new GeometryEngine;
+    particlesEngine = new Particles;
 
     // Use QBasicTimer because its faster than QTimer
     timer.start(1000/fps, this);
 }
 
 //! [3]
-void MainWidget::initShaders()
+void MainWidget::initShaders(int shaderType)
 {
-    // Compile vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
-        close();
+        // Compile vertex shader
+        if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
+            close();
 
-    // Compile fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
-        close();
+        // Compile fragment shader
+        if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+            close();
 
-    // Link shader pipeline
-    if (!program.link())
-        close();
+        // Link shader pipeline
+        if (!program.link())
+            close();
 
-    // Bind shader pipeline for use
-    if (!program.bind())
-        close();
+        // Compile vertex shader
+        if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/pvshader.glsl"))
+            close();
+
+        // Compile fragment shader
+        if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/pfshader.glsl"))
+            close();
+
+        // Link shader pipeline
+        if (!particlesProgram.link())
+            close();
 }
 //! [3]
 
@@ -266,9 +277,9 @@ void MainWidget::resizeGL(int w, int h)
 
 void MainWidget::paintGL()
 {
+    program.bind();
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     height->bind(0);
     sand->bind(1);
     rock->bind(2);
@@ -307,4 +318,15 @@ void MainWidget::paintGL()
     // Draw cube geometry
     //geometries->drawCubeGeometry(&program);
     geometries->drawPlaneGeometry(&program);
+    // draw particles
+    particlesProgram.bind();
+    program.setUniformValue("mvp_matrix", projection * matrix);
+    program.setUniformValue("camera_up", camera.getWorldUp());
+    program.setUniformValue("camera_right", camera.getRight());
+    if(seasonM->getSeason() == Seasons::Winter) {
+        particlesEngine->generateParticles();
+        particlesEngine->simulateParticles();
+        particlesEngine->drawParticles(&particlesProgram);
+    }
+
 }
