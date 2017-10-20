@@ -4,7 +4,8 @@ TARGET = plane
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    camera.cpp
+    camera.cpp \
+    particulesengine.cpp
 
 SOURCES += \
     mainwidget.cpp \
@@ -13,7 +14,8 @@ SOURCES += \
 HEADERS += \
     mainwidget.h \
     geometryengine.h \
-    camera.h
+    camera.h \
+    particulesengine.h
 
 RESOURCES += \
     shaders.qrc \
@@ -24,3 +26,5 @@ CONFIG += c++11
 # install
 target.path = .
 INSTALLS += target
+
+DISTFILES +=

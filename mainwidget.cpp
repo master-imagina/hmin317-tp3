@@ -196,6 +196,14 @@ void MainWidget::initShaders()
     if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
         close();
 
+    // Compile particule vertex shader
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/pariclevshader.glsl"))
+        close();
+
+    // Compile particule fragment shader
+    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/particlefshader.glsl"))
+        close();
+
     // Link shader pipeline
     if (!program.link())
         close();
