@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
     widget1.show();
     /*widget2.show();
     widget3.show();
-    widget4.show();*/
-    /*QObject::connect(&widget1,SIGNAL(changedCalendar(int)),&widget2,SLOT(updateCalendar(int)));
+    widget4.show();
+    QObject::connect(&widget1,SIGNAL(changedCalendar(int)),&widget2,SLOT(updateCalendar(int)));
     QObject::connect(&widget1,SIGNAL(changedCalendar(int)),&widget3,SLOT(updateCalendar(int)));
     QObject::connect(&widget1,SIGNAL(changedCalendar(int)),&widget4,SLOT(updateCalendar(int)));*/
 

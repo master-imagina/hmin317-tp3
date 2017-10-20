@@ -7,7 +7,7 @@ in VS_OUT{
     vec3 normal;
     vec3 lightDir;
     float height;
-
+    vec3 toCameraVector;
     vec3 eye_coord;
     vec3 world_coord;
     float snow;
@@ -19,7 +19,7 @@ out TCS_OUT
     vec3 normal;
     vec3 lightDir;
     float height;
-
+    vec3 toCameraVector;
     vec3 eye_coord;
     vec3 world_coord;
     float snow;
@@ -84,4 +84,5 @@ void main(void){
         tcs_out[gl_InvocationID].eye_coord = tcs_in[gl_InvocationID].eye_coord;
         tcs_out[gl_InvocationID].world_coord = tcs_in[gl_InvocationID].world_coord;
         tcs_out[gl_InvocationID].snow = tcs_in[gl_InvocationID].snow;
+        tcs_out[gl_InvocationID].toCameraVector = tcs_in[gl_InvocationID].toCameraVector;
 }

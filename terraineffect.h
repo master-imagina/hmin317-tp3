@@ -7,7 +7,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLFramebufferObjectFormat>
-#include <QOpenGLExtraFunctions>
+
 
 class TerrainEffect: protected QOpenGLFunctions
 {

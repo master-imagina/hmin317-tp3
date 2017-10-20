@@ -7,7 +7,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLFramebufferObjectFormat>
-#include <QOpenGLExtraFunctions>
+//#include <QOpenGLExtraFunctions>
 
 #include "particulessystem.h"
 

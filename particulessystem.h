@@ -7,7 +7,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLFramebufferObjectFormat>
-#include <QOpenGLExtraFunctions>
+//#include <QOpenGLExtraFunctions>
 
 #define PARTICLE_MAX 256
 
@@ -19,9 +19,9 @@ public:
     void initParticuleSystem();
     void cleanUp();
 
-    void proccessTextureParticles(QOpenGLTexture *heightMap, float snowFactor);
+    void proccessTextureParticles(QOpenGLTexture *heightMap, float snowFactor, int calendar);
     void generateQuad();
-    void renderQuad(QOpenGLTexture *heightMap,float snowFactor);
+    void renderQuad(QOpenGLTexture *heightMap, float snowFactor, int calendar);
 
     QOpenGLTexture* getParticlesTexture();
     QOpenGLTexture* getExtraDataTexture();

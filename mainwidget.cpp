@@ -576,7 +576,7 @@ void MainWidget::paintGL()
 
     QMatrix4x4 mvp = camera.getProjectionMatrix()*camera.getViewMatrix();
     if(calendar<170 || calendar>280){
-        particulesSystem.proccessTextureParticles(texture,snowFactor);
+        particulesSystem.proccessTextureParticles(texture,snowFactor,calendar);
     }
     terrainEffect.proccessTerrainEffect(particulesSystem.getParticlesTexture(),texture,calendar);
 
@@ -592,7 +592,7 @@ void MainWidget::paintGL()
 
     /*Incremente saison*/
     if(calendarOffset==0){
-        calendar = (elapse->elapsed()*30/10000)%360;
+        calendar = (elapse->elapsed()*30/1000)%360;
         emit changedCalendar(calendar);
     }
 
@@ -652,6 +652,7 @@ void MainWidget::paintGL()
     program.setUniformValue("cliffDisp",12);
     program.setUniformValue("snowMap",13);
     program.setUniformValue("particlesMap",14);
+    program.setUniformValue("cameraPos",QVector3D(camera.getPosition().x,camera.getPosition().y,camera.getPosition().z));
 
     program.setUniformValue("ambientColor",colorSky);
     program.setUniformValue("calendar",calendar);

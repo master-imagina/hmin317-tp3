@@ -80,7 +80,7 @@ void TerrainEffect::proccessTerrainEffect(QOpenGLTexture* particlesTexture,QOpen
     if(snowMap!=NULL)
         delete snowMap;
 
-    snowMap = new QOpenGLTexture(captureFBO->toImage(false,0));
+    snowMap = new QOpenGLTexture(captureFBO->toImage(false));
 
 
     // Set nearest filtering mode for texture minification

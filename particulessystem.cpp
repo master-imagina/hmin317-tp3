@@ -24,9 +24,9 @@ void ParticulesSystem::initParticuleSystem()
 
 
     format.setSamples(2);
-    format.setInternalTextureFormat(GL_RGB);
+    format.setInternalTextureFormat(GL_RGBA);
     captureFBO = new QOpenGLFramebufferObject (PARTICLE_MAX, PARTICLE_MAX,format);
-    captureFBO->addColorAttachment(PARTICLE_MAX, PARTICLE_MAX);
+    //captureFBO->addColorAttachment(PARTICLE_MAX, PARTICLE_MAX);
 
     particuleTexture = NULL;
     extraDataTexture = NULL;
@@ -59,7 +59,7 @@ void ParticulesSystem::cleanUp()
 }
 
 
-void ParticulesSystem::proccessTextureParticles(QOpenGLTexture* heightMap,float snowFactor)
+void ParticulesSystem::proccessTextureParticles(QOpenGLTexture* heightMap,float snowFactor,int calendar)
 {
 
 
@@ -74,16 +74,16 @@ void ParticulesSystem::proccessTextureParticles(QOpenGLTexture* heightMap,float 
     glViewport(0, 0, PARTICLE_MAX, PARTICLE_MAX);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    QOpenGLExtraFunctions *f = QOpenGLContext::currentContext()->extraFunctions();
+    /*QOpenGLExtraFunctions *f = QOpenGLContext::currentContext()->extraFunctions();
     GLenum bufs[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    f->glDrawBuffers(2, bufs);
-    renderQuad(heightMap,snowFactor);
+    f->glDrawBuffers(2, bufs);*/
+    renderQuad(heightMap,snowFactor,calendar);
     captureFBO->release();
 
     if(particuleTexture!=NULL)
         delete particuleTexture;
 
-    particuleTexture = new QOpenGLTexture(captureFBO->toImage(false,0));
+    particuleTexture = new QOpenGLTexture(captureFBO->toImage(false));
 
 
     // Set nearest filtering mode for texture minification
@@ -92,7 +92,7 @@ void ParticulesSystem::proccessTextureParticles(QOpenGLTexture* heightMap,float 
     // Set bilinear filtering mode for texture magnification
     particuleTexture->setMagnificationFilter(QOpenGLTexture::Nearest);
 
-    if(extraDataTexture!=NULL)
+    /*if(extraDataTexture!=NULL)
         delete extraDataTexture;
     extraDataTexture = new QOpenGLTexture(captureFBO->toImage(false,1));
 
@@ -100,7 +100,7 @@ void ParticulesSystem::proccessTextureParticles(QOpenGLTexture* heightMap,float 
     extraDataTexture->setMinificationFilter(QOpenGLTexture::Linear);
 
     // Set bilinear filtering mode for texture magnification
-    extraDataTexture->setMagnificationFilter(QOpenGLTexture::Linear);
+    extraDataTexture->setMagnificationFilter(QOpenGLTexture::Linear);*/
 
 }
 
@@ -157,7 +157,7 @@ void ParticulesSystem::generateQuad()
 
 }
 
-void ParticulesSystem::renderQuad(QOpenGLTexture *heightMap,float snowFactor)
+void ParticulesSystem::renderQuad(QOpenGLTexture *heightMap,float snowFactor,int calendar)
 {
 
     srand (time(NULL));
@@ -194,6 +194,7 @@ void ParticulesSystem::renderQuad(QOpenGLTexture *heightMap,float snowFactor)
     particleProgram->setUniformValue("particlesFactor",snowFactor);
     particleProgram->setUniformValue("randomParameter", (float)(rand() % 100)/100.0f);
     particleProgram->setUniformValue("particlesCount", (float)PARTICLE_MAX);
+    particleProgram->setUniformValue("calendar", calendar);
     glDrawElements(GL_TRIANGLES, m_nomberIndices, GL_UNSIGNED_SHORT, 0);
 
 

@@ -17,6 +17,7 @@ uniform sampler2D sandDisp;
 uniform sampler2D grassDisp;
 uniform sampler2D rockDisp;
 uniform sampler2D cliffDisp;
+uniform int calendar;
 
 
 uniform mat4 mvp_matrix;
@@ -27,7 +28,7 @@ in TCS_OUT
     vec3 normal;
     vec3 lightDir;
     float height;
-
+    vec3 toCameraVector;
     vec3 eye_coord;
     vec3 world_coord;
     float snow;
@@ -39,7 +40,7 @@ out TES_OUT
     vec3 normal;
     vec3 lightDir;
     float height;
-
+    vec3 toCameraVector;
     vec3 eye_coord;
     vec3 world_coord;
     float snow;
@@ -110,8 +111,14 @@ void main(void){
         {
            h = texture2D(cliffDisp,tess_out.v_texcoord*40.0).r*0.8;
         }
+
         tess_out.snow = interpolate(tes_in[0].snow, tes_in[1].snow, tes_in[2].snow);
-        h += tess_out.snow;
+        if(calendar<270){
+            h += tess_out.snow;
+        }
+        else{
+            h += tess_out.snow*0.5;
+        }
 
         vec3 p = interpolate(tes_in[0].world_coord, tes_in[1].world_coord, tes_in[2].world_coord);
         p += h * tess_out.normal;
@@ -120,4 +127,5 @@ void main(void){
         gl_Position = mvp_matrix * vec4(p,1.0);
 
         tess_out.lightDir = interpolate(tes_in[0].lightDir, tes_in[1].lightDir, tes_in[2].lightDir);
+        tess_out.toCameraVector = interpolate(tes_in[0].toCameraVector, tes_in[1].toCameraVector, tes_in[2].toCameraVector);
 }

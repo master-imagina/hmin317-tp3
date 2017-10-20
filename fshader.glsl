@@ -21,6 +21,7 @@ in TES_OUT{
     vec3 normal;
     vec3 lightDir;
     float height;
+    vec3 toCameraVector;
     vec3 eye_coord;
     vec3 world_coord;
     float snow;
@@ -43,7 +44,7 @@ vec4 fog(vec4 c)
     float extinction   = clamp(exp(-z * de),0,1);
     float inscattering = clamp(exp(-z * di),0,1);
 
-    return c * extinction + fog_color * (1.0 - inscattering);
+    return c * extinction + vec4(ambientColor,1.0) * (1.0 - inscattering);
 }
 
 // ----------------------------------------------------------------------------
@@ -120,14 +121,21 @@ void main()
     snowFactor *= orientation;
     snowFactor = fs_in.snow;
     if( snowFactor>0.0 ){
-        albedo = mix(albedo,vec4(1.,1.,1.,1.0),snowFactor*2.0);
+        albedo = mix(albedo,(calendar>270)?vec4(89/255.0, 152/255.0, 255/255.0,1):vec4(1.,1.,1.,1.0),smoothstep(0.0,1.0,snowFactor*2.0));
 
         normalColor = mix(normalColor,vec3(0,-1,0),min(snowFactor*2.0,1.0));
     }
     float diffnormalMap = max(abs(dot(normalColor, fs_in.lightDir)), 0.0);
 
+    vec3 lightDirection = -fs_in.lightDir;
+    vec3 reflectedLightDirection = reflect(lightDirection,fs_in.normal);
+    float specularFactor = max(dot(reflectedLightDirection, normalize(fs_in.toCameraVector)),0.0);
+    float dampedFactor = pow(specularFactor,10) * snowFactor;
+
+
+
     float gamma = 1.2;
-    vec3 color = albedo.rgb * diff * diffnormalMap + ambientColor/6.0;
+    vec3 color = albedo.rgb * diff * diffnormalMap + dampedFactor + ambientColor/6.0;
 
     color = pow(color, vec3(1.0/gamma));
 
