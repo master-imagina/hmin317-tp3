@@ -65,18 +65,19 @@ MainWidget::MainWidget(QWidget *parent) :
     texture(0)
 {
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(stayUpdated()));
     timer->start();
 }
 
-MainWidget::MainWidget(int fps, QWidget *parent) :
+MainWidget::MainWidget(int saison, QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
-    texture(0)
+    texture(0),
+    saison(saison)
 {
     timer = new QTimer(parent);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer->start(fps);
+    timer->start();
 }
 
 MainWidget::~MainWidget()
@@ -201,7 +202,7 @@ void MainWidget::initShaders()
 void MainWidget::initTextures()
 {
     // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/labyrinthe.png"));
+    texture = new QOpenGLTexture(QImage(":/Antartique.jpg"));
 
     // Set nearest filtering mode for texture minification
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -264,16 +265,74 @@ void MainWidget::paintGL()
 
     matrix.rotate(rotation);
 
-
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 
     // Use texture unit 0 which contains cube.png
     program.setUniformValue("texture", 0);
 
+    switch (saison) {
+    case 1: //printemps
+        program.setUniformValue("v_color", QVector3D(119, 249, 152));
+        break;
+    case 2: //ete
+        program.setUniformValue("v_color", QVector3D(242, 167, 46));
+        break;
+    case 3: //Automne
+        program.setUniformValue("v_color", QVector3D(175, 85, 15));
+        break;
+    case 4: //hiver
+        program.setUniformValue("v_color", QVector3D(255, 255, 255));
+        break;
+    default:
+        break;
+    }
+
     // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
 
     rotate();
 
+}
+
+void MainWidget::changeSaison() {
+    saison++;
+    if(saison == 5) saison = 1;
+
+    switch (saison) {
+    case 1: //printemps
+        program.setUniformValue("v_color", QVector3D(119, 249, 152));
+        break;
+    case 2: //ete
+        program.setUniformValue("v_color", QVector3D(242, 167, 46));
+        break;
+    case 3: //Automne
+        program.setUniformValue("v_color", QVector3D(175, 85, 15));
+        break;
+    case 4: //hiver
+        program.setUniformValue("v_color", QVector3D(255, 255, 255));
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWidget::afficheSaison() {
+    switch (saison) {
+    case 1:
+        cout << "Nous sommes en printemps." << endl;
+        break;
+    case 2:
+        cout << "Nous sommes en ete." << endl;
+        break;
+    case 3:
+        cout << "Nous sommes en automne." << endl;
+        break;
+    case 4:
+        cout << "Nous sommes en hiver." << endl;
+        break;
+    default:
+        cerr << "ERREUR DANS LE CHANGEMENT DE SAISON." << endl;
+        break;
+    }
 }

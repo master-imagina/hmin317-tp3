@@ -63,6 +63,7 @@
 #include <QOpenGLTexture>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QPainter>
 
 class GeometryEngine;
 
@@ -72,8 +73,11 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 
 public:
     explicit MainWidget(QWidget *parent = 0);
-    explicit MainWidget(int fps, QWidget *parent = 0);
+    explicit MainWidget(int saison, QWidget *parent = 0);
     ~MainWidget();
+
+    void afficheSaison();
+
 protected:
     //void mousePressEvent(QMouseEvent *e) override;
     //void mouseReleaseEvent(QMouseEvent *e) override;
@@ -105,9 +109,12 @@ private:
     QElapsedTimer elapsedTime;
 
     static float rotationSpeed;
+    void rotate();
+
+    int saison;
 
 private slots:
-    void rotate();
+    void changeSaison();
 };
 
 #endif // MAINWIDGET_H

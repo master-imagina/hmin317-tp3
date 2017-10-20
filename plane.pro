@@ -4,7 +4,8 @@ TARGET = plane
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    speed.cpp
+    speed.cpp \
+    calendrier.cpp
 
 SOURCES += \
     mainwidget.cpp \
@@ -13,7 +14,8 @@ SOURCES += \
 HEADERS += \
     mainwidget.h \
     geometryengine.h \
-    speed.h
+    speed.h \
+    calendrier.h
 
 RESOURCES += \
     shaders.qrc \

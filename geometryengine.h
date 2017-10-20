@@ -55,6 +55,14 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
+struct VertexData
+{
+    QVector3D position;
+    QVector2D texCoord;
+    QVector3D color;
+};
+
+
 class GeometryEngine : protected QOpenGLFunctions
 {
 public:
@@ -69,6 +77,9 @@ private:
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
+
+    VertexData *vertices;
+
 };
 
 #endif // GEOMETRYENGINE_H

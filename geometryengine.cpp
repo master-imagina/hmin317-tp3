@@ -52,16 +52,11 @@
 
 #include <QVector2D>
 #include <QVector3D>
+#include <time.h>
 
 #include <QLabel>
 
 #include <iostream>
-
-struct VertexData
-{
-    QVector3D position;
-    QVector2D texCoord;
-};
 
 //! [0]
 GeometryEngine::GeometryEngine()
@@ -86,28 +81,32 @@ GeometryEngine::~GeometryEngine()
 
 void GeometryEngine::initPlaneGeometry()
 {
-    float taille_max = 2.5;
+    const float taille_max = 2.5;
     QImage img;
 
-    if(!img.load(":/labyrinthe.png")) {
+    if(!img.load(":/Antartique.jpg")) {
         std::cerr << "ERREUR CHARGEMENT FICHIER HEIGHTMAP." << std::endl;
         return;
     }
 
-    int size = 256;
+    const int size = 256;
 
-    int height = img.height(), width = img.width();
-    int i_m = height / size, j_m = width / size;
+    const int height = img.height(), width = img.width();
+    const int i_m = height / size, j_m = width / size;
 
-    //std::cout << i_m << "," << j_m << std::endl;
+    std::cout << i_m << "," << j_m << std::endl;
 
     // Create array of 16 x 16 vertices facing the camera  (z=cte)
-    VertexData vertices[size*size];
+    vertices = new VertexData[size * size];
 
+    srand(time(NULL));
+
+    //int R = 0, G = 125, B = 0;
     for (int i=0;i<size;i++) {
         for (int j=0;j<size;j++) {
             vertices[size*i+j] = { QVector3D(0.1*(i-(size / 2.0)),0.1*(j-(size / 2.0)), (float) qGray(img.pixel(i_m * i, j_m * j)) / 255.0 * taille_max + 1.5),
-                                   QVector2D((float)i/size,(float)j/size)};
+                                   QVector2D((float)i/size,(float)j/size),
+                                   QVector3D(rand() % 255,rand() % 255,rand() % 255)};
         }
     }
 
@@ -164,6 +163,11 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
     int texcoordLocation = program->attributeLocation("a_texcoord");
     program->enableAttributeArray(texcoordLocation);
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
+
+    offset += sizeof(QVector2D);
+    int color = program->attributeLocation("a_color");
+    program->enableAttributeArray(color);
+    program->setAttributeBuffer(color, GL_FLOAT, offset, 3, sizeof(VertexData));
 
     // Draw plane geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLE_STRIP, taille_vertices, GL_UNSIGNED_SHORT, 0);

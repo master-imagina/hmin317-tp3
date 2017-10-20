@@ -51,6 +51,9 @@
 #include <QApplication>
 #include <QLabel>
 #include <QSurfaceFormat>
+#include <QTime>
+#include "calendrier.h"
+#include <unistd.h>
 
 #ifndef QT_NO_OPENGL
 #include "mainwidget.h"
@@ -64,32 +67,27 @@ int main(int argc, char *argv[])
     format.setDepthBufferSize(24);
     QSurfaceFormat::setDefaultFormat(format);
 
-    app.setApplicationName("plane");
+    app.setApplicationName("Calendrier");
     app.setApplicationVersion("0.1");
 #ifndef QT_NO_OPENGL
-    //MainWidget widget;
-    //widget.show();
 
-    // 1 FPS
-    MainWidget widget2(1000);
-    app.setApplicationName("1 FPS");
+    Calendrier calendrier;
+
+    MainWidget widget1(1);
+    widget1.show();
+    MainWidget widget2(2);
     widget2.show();
-
-    // 10 FPS
-
-    MainWidget widget3(100);
-    app.setApplicationName("10 FPS");
+    MainWidget widget3(3);
     widget3.show();
-
-    //100 FPS
-    MainWidget widget4(10);
-    app.setApplicationName("100 FPS");
+    MainWidget widget4(4);
     widget4.show();
 
-    //1000 FPS
-    MainWidget widget5(1);
-    app.setApplicationName("1000 FPS");
-    widget5.show();
+    QObject::connect(&calendrier, SIGNAL(signalSaison()), &widget1, SLOT(changeSaison()));
+    QObject::connect(&calendrier, SIGNAL(signalSaison()), &widget2, SLOT(changeSaison()));
+    QObject::connect(&calendrier, SIGNAL(signalSaison()), &widget3, SLOT(changeSaison()));
+    QObject::connect(&calendrier, SIGNAL(signalSaison()), &widget4, SLOT(changeSaison()));
+
+    calendrier.timer();
 
 #else
     QLabel note("OpenGL Support required");
@@ -97,3 +95,4 @@ int main(int argc, char *argv[])
 #endif
     return app.exec();
 }
+
