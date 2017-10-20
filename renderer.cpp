@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+#include <QColor>
+
 #include "geometry.h"
 
 
@@ -142,6 +144,9 @@ void Renderer::sendVariantUniform(QOpenGLShaderProgram &program,
         break;
     case QMetaType::QVector4D:
         program.setUniformValue(rawName, value.value<QVector4D>());
+        break;
+    case QMetaType::QColor:
+        program.setUniformValue(rawName, value.value<QColor>());
         break;
     case QMetaType::QMatrix4x4:
         program.setUniformValue(rawName, value.value<QMatrix4x4>());

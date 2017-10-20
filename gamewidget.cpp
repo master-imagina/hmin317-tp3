@@ -99,7 +99,8 @@ void GameWidget::paintGL()
     QVariantMap uniforms {
         {"worldMatrix", worldMatrix},
         {"minHeight", yBounds.first},
-        {"maxHeight", yBounds.second}
+        {"maxHeight", yBounds.second},
+        {"terrainColor", QColor(255, 255, 255)}
     };
 
     m_renderer->updateUniforms(uniforms);
