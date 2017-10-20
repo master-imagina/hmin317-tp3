@@ -3,13 +3,18 @@
 #include <QColor>
 
 #include "geometry.h"
+#include "particleeffect.h"
 
 
 Renderer::Renderer() :
-    m_vao(nullptr),
-    m_shaderProgram(nullptr),
+    gl(nullptr),
+    m_vaos(),
+    m_terrainShaderProgram(nullptr),
+    m_particlesShaderProgram(nullptr),
+    m_particlesVbo(0),
     m_vertexVbo(0),
-    m_indexVbo(0)
+    m_indexVbo(0),
+    m_shaderPrograms()
 {}
 
 Renderer::~Renderer()
@@ -19,39 +24,75 @@ Renderer::~Renderer()
 
 void Renderer::initialize()
 {
-    Q_ASSERT_X (initializeOpenGLFunctions(),
+    gl = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
+    const bool initialized = gl->initializeOpenGLFunctions();
+    Q_ASSERT_X (initialized,
                 "Renderer::initialize()", "OpenGL 3.3 failed to initialize");
 
-    glClearColor(0.f, 0.f, 0.f, 1.f);
+    gl->glClearColor(0.f, 0.f, 0.f, 1.f);
 
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    gl->glEnable(GL_DEPTH_TEST);
+    gl->glDepthFunc(GL_LESS);
+
+//    gl->glEnable(GL_BLEND);
+//    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // VBO
-    glGenBuffers(1, &m_vertexVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
-    glGenBuffers(1, &m_indexVbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+    gl->glGenBuffers(1, &m_vertexVbo);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
+    gl->glGenBuffers(1, &m_indexVbo);
+    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+
+    gl->glGenBuffers(1, &m_particlesVbo);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
 
     // Shader and vao
-    m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                            "://res/shaders/geom_textured.vert");
+    m_terrainShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
+                                                   "://res/shaders/geom_textured.vert");
 
-    m_shaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                            ":/res/shaders/terrain_heightmap.frag");
+    m_terrainShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
+                                                   "://res/shaders/terrain_heightmap.frag");
 
-    m_vao.create();
-    m_vao.bind();
+    m_particlesShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
+                                                     "://res/shaders/particle.vert");
+    m_particlesShaderProgram.addShaderFromSourceFile(QOpenGLShader::Geometry,
+                                                     "://res/shaders/particle.geom");
+    m_particlesShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
+                                                     "://res/shaders/particle.frag");
 
-    m_shaderProgram.enableAttributeArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
-    m_shaderProgram.setAttributeBuffer(0, GL_FLOAT, 0, 3);
+    m_shaderPrograms.push_back(&m_terrainShaderProgram);
+    m_shaderPrograms.push_back(&m_particlesShaderProgram);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+    m_terrainShaderProgram.link();
+    m_particlesShaderProgram.link();
 
-    m_shaderProgram.link();
+    gl->glGenVertexArrays(2, m_vaos.data());
+
+    // Terrain shader
+    m_terrainShaderProgram.bind();
+    gl->glBindVertexArray(m_vaos[0]);
+
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
+    int location = m_terrainShaderProgram.attributeLocation("vertexPos");
+    gl->glEnableVertexAttribArray(location);
+    gl->glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+
+    // Particles shader
+    m_particlesShaderProgram.bind();
+    gl->glBindVertexArray(m_vaos[1]);
+
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
+    location = m_particlesShaderProgram.attributeLocation("particleWorldPos");
+    gl->glEnableVertexAttribArray(location);
+    gl->glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     cglPrintAnyError();
+
+    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    gl->glBindVertexArray(0);
 }
 
 bool Renderer::isDirty() const
@@ -69,58 +110,85 @@ void Renderer::unsetDirty()
     m_isDirty = false;
 }
 
-void Renderer::updateBuffers(Geometry *geom)
+void Renderer::updateBuffers(Geometry *geom, ParticleEffect *particleEffect)
 {
-    const std::vector<VertexData> &vertices = geom->vertices;
+    // Update geometry buffers
+    const std::vector<QVector3D> &vertices = geom->vertices;
     const std::vector<unsigned int> &indices = geom->indices;
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexData), vertices.data(), GL_STATIC_DRAW);
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
+    gl->glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(QVector3D), vertices.data(), GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+    // Update particles buffers
+    const std::vector<QVector3D> &particles = particleEffect->worldPositions();
+
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
+    gl->glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(QVector3D), particles.data(), GL_STREAM_DRAW);
+
+    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     cglPrintAnyError();
 }
 
 void Renderer::updateUniforms(const QVariantMap &uniforms)
 {
-    m_shaderProgram.bind();
+    for (QOpenGLShaderProgram *shaderProgram : m_shaderPrograms) {
+        shaderProgram->bind();
 
-    for (auto it = uniforms.begin(); it != uniforms.end(); it++) {
-        const QString uniformName = it.key();
-        const QVariant uniformValue = it.value();
+        for (auto it = uniforms.begin(); it != uniforms.end(); it++) {
+            const QString uniformName = it.key();
+            const QVariant uniformValue = it.value();
 
-        sendVariantUniform(m_shaderProgram, uniformName, uniformValue);
+            sendVariantUniform(*shaderProgram, uniformName, uniformValue);
+        }
+
+        shaderProgram->release();
     }
-
-    m_shaderProgram.release();
 }
 
 void Renderer::render()
 {
     cglPrintAnyError();
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_shaderProgram.bind();
-    m_vao.bind();
+    m_terrainShaderProgram.bind();
+    gl->glBindVertexArray(m_vaos[0]);
 
+    // Draw terrain
     int sizeVertexVbo = 0;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
-    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &sizeVertexVbo);
+    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+    gl->glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &sizeVertexVbo);
 
-    glDrawElements(GL_TRIANGLES, sizeVertexVbo / 4, GL_UNSIGNED_INT, 0);
+    gl->glDrawElements(GL_TRIANGLES, sizeVertexVbo / 4, GL_UNSIGNED_INT, 0);
+
+    // Draw particles
+    //TODO get rid of glGetBufferParameter
+    m_particlesShaderProgram.bind();
+    gl->glBindVertexArray(m_vaos[1]);
+
+    int sizeParticlesVbo = 0;
+    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
+    gl->glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &sizeParticlesVbo);
+
+    gl->glDrawArrays(GL_POINTS, 0, sizeParticlesVbo / sizeof(QVector3D));
+
+    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    gl->glBindVertexArray(0);
 }
 
 void Renderer::cleanup()
 {
-    if (m_vao.isCreated()) {
-        m_vao.destroy();
-    }
+    gl->glDeleteVertexArrays(2, m_vaos.data());
 
-    glDeleteBuffers(1, &m_vertexVbo);
-    glDeleteBuffers(1, &m_indexVbo);
+    gl->glDeleteBuffers(1, &m_vertexVbo);
+    gl->glDeleteBuffers(1, &m_indexVbo);
+
+    gl->glDeleteBuffers(1, &m_particlesVbo);
 }
 
 void Renderer::sendVariantUniform(QOpenGLShaderProgram &program,
@@ -160,7 +228,7 @@ void Renderer::sendVariantUniform(QOpenGLShaderProgram &program,
 
 void Renderer::cglPrintAnyError()
 {
-    const GLenum err = glGetError();
+    const GLenum err = gl->glGetError();
 
     if (err != 0) {
         qCritical() << err;

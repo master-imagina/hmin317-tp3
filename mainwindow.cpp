@@ -22,6 +22,7 @@
 #include "gamewidget.h"
 #include "geometry.h"
 #include "heightmap.h"
+#include "particleeffect.h"
 
 
 namespace {
@@ -39,6 +40,7 @@ const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
 
 MainWindow::MainWindow(GameLoop *gameLoop) :
     m_terrainGeometry(std::make_unique<Geometry>()),
+    m_particleEffect(std::make_unique<ParticleEffect>(QVector3D(0, 400, 0), 50, 100)),
     m_gameWidgets(),
     m_fpsLabels(),
     m_camera(std::make_unique<Camera>()),
@@ -47,6 +49,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_gameWidgetsDates()
 {
     m_camera->setEyePos({8, 20, 8});
+    m_particleEffect->setDirection({0, -1, 0});
 
     auto centralWidget = new QWidget(this);
     centralWidget->setFocusPolicy(Qt::StrongFocus);
@@ -74,6 +77,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
         auto gameWidget = new GameWidget(centralWidget);
 
         gameWidget->setGeometry(m_terrainGeometry.get());
+        gameWidget->setParticleEffect(m_particleEffect.get());
         gameWidget->setCamera(m_camera.get());
 
         m_gameWidgets[i] = gameWidget;
@@ -168,9 +172,12 @@ void MainWindow::pointCameraToTerrainCenter()
 void MainWindow::iterateGameLoop(float dt)
 {
     // Update scene
+    m_particleEffect->live(dt);
     m_cameraController->updateCamera(m_camera.get(), dt);
 
     for (GameWidget *gameWidget : m_gameWidgets) {
+        gameWidget->setRendererDirty();
+
         gameWidget->startNewFrame(dt);
     }
 
@@ -213,7 +220,7 @@ void MainWindow::initSeasons()
     }
 
     // Init and start timer
-    m_seasonTimer->setInterval(125);
+    m_seasonTimer->setInterval(75);
 
     connect(m_seasonTimer, &QTimer::timeout, [this] {
         for (int i = 0; i < m_gameWidgetsDates.size(); i++) {

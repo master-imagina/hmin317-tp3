@@ -6,9 +6,10 @@
 #include <QOpenGLVertexArrayObject>
 
 class Geometry;
+class ParticleEffect;
 
 
-class Renderer : protected QOpenGLFunctions_3_3_Core
+class Renderer
 {
 public:
     Renderer();
@@ -20,7 +21,7 @@ public:
     void setDirty();
     void unsetDirty();
 
-    void updateBuffers(Geometry *geom);
+    void updateBuffers(Geometry *geom, ParticleEffect *particleEffect);
     void updateUniforms(const QVariantMap &uniforms);
 
     void render();
@@ -35,13 +36,20 @@ private:
     void cglPrintAnyError();
 
 private:
-    QOpenGLVertexArrayObject m_vao;
-    QOpenGLShaderProgram m_shaderProgram;
+    QOpenGLFunctions_3_3_Core *gl;
+    std::array<GLuint, 2> m_vaos;
+
+    QOpenGLShaderProgram m_terrainShaderProgram;
+
+    QOpenGLShaderProgram m_particlesShaderProgram;
+    GLuint m_particlesVbo;
 
     GLuint m_vertexVbo;
     GLuint m_indexVbo;
 
     bool m_isDirty;
+
+    std::vector<QOpenGLShaderProgram *> m_shaderPrograms;
 };
 
 #endif // RENDERER_H

@@ -12,6 +12,7 @@ class CameraController;
 class GameLoop;
 class GameWidget;
 class Geometry;
+class ParticleEffect;
 
 class QLabel;
 class QTimer;
@@ -43,6 +44,8 @@ private:
     static constexpr int viewportCount = 4;
 
     std::unique_ptr<Geometry> m_terrainGeometry;
+    std::unique_ptr<ParticleEffect> m_particleEffect;
+
     std::array<GameWidget *, viewportCount> m_gameWidgets;
     std::array<QLabel *, viewportCount> m_fpsLabels;
     std::unique_ptr<Camera> m_camera;

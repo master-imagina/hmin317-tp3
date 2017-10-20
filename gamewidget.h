@@ -12,6 +12,7 @@
 class AABoundingBox;
 class Camera;
 class Geometry;
+class ParticleEffect;
 class Renderer;
 
 
@@ -34,6 +35,7 @@ public:
     ~GameWidget();
 
     void setGeometry(Geometry *geom);
+    void setParticleEffect(ParticleEffect *effect);
     void setRendererDirty();
 
     Camera *camera() const;
@@ -53,6 +55,7 @@ protected:
 
 private:
     Geometry *m_geometry;
+    ParticleEffect *m_particleEffect;
     AABoundingBox m_terrainAABB;
     std::unique_ptr<Renderer> m_renderer;
 

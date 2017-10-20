@@ -1,12 +1,41 @@
 #include "gamewidget.h"
 
 #include <QMatrix4x4>
-#include <QPainter>
 #include <QtMath>
 
 #include "camera.h"
-#include "renderer.h"
 #include "geometry.h"
+#include "particleeffect.h"
+#include "renderer.h"
+
+
+namespace {
+
+QColor colorFromSeason(Season season)
+{
+    QColor ret;
+
+    switch (season) {
+    case Season::Autumn:
+        ret = QColor(244, 183, 51);
+        break;
+    case Season::Winter:
+        ret = Qt::white;
+        break;
+    case Season::Spring:
+        ret = Qt::green;
+        break;
+    case Season::Summer:
+        ret = Qt::yellow;
+        break;
+    default:
+        break;
+    }
+
+    return ret;
+}
+
+} // anon namespace
 
 
 GameWidget::GameWidget(QWidget *parent) :
@@ -32,6 +61,13 @@ void GameWidget::setGeometry(Geometry *geom)
 {
     if (m_geometry != geom) {
         m_geometry = geom;
+    }
+}
+
+void GameWidget::setParticleEffect(ParticleEffect *effect)
+{
+    if (m_particleEffect != effect) {
+        m_particleEffect = effect;
     }
 }
 
@@ -69,9 +105,10 @@ void GameWidget::setSeason(Season season)
 void GameWidget::startNewFrame(float dt)
 {
     m_deltaTime = dt;
+    //TODO pass dt to Renderer
 
     if (m_renderer->isDirty()) {
-        m_renderer->updateBuffers(m_geometry);
+        m_renderer->updateBuffers(m_geometry, m_particleEffect);
         m_renderer->unsetDirty();
     }
 
@@ -95,12 +132,18 @@ void GameWidget::paintGL()
     const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
 
     const std::pair<float, float> yBounds = m_terrainAABB.yBounds();
+    const QColor drawColor = colorFromSeason(m_currentSeason);
 
+    //TODO helper classes for uniforms
     QVariantMap uniforms {
+        {"viewMatrix", viewMatrix},
+        {"projectionMatrix", projectionMatrix},
         {"worldMatrix", worldMatrix},
         {"minHeight", yBounds.first},
         {"maxHeight", yBounds.second},
-        {"terrainColor", QColor(255, 255, 255)}
+        {"terrainColor", drawColor},
+        {"particleColor", drawColor},
+        {"particlesSize", m_particleEffect->particlesSize()}
     };
 
     m_renderer->updateUniforms(uniforms);
