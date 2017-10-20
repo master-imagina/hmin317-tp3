@@ -10,7 +10,7 @@ class AABoundingBox
 {
 public:
     AABoundingBox();
-    explicit AABoundingBox(const std::vector<VertexData> &vertices);
+    explicit AABoundingBox(const std::vector<QVector3D> &vertices);
 
     std::pair<float, float> xBounds() const;
     std::pair<float, float> yBounds() const;
@@ -18,7 +18,7 @@ public:
 
     QVector3D center() const;
 
-    void processVertices(const std::vector<VertexData> &vertices);
+    void processVertices(const std::vector<QVector3D> &vertices);
 
 private:
     std::pair<float, float> m_xBounds;

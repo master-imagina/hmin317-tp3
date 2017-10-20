@@ -7,18 +7,13 @@
 #include <QVector3D>
 
 
-struct VertexData
-{
-    QVector3D position;
-};
-
 class Geometry
 {
 public:
     Geometry();
     ~Geometry();
 
-    std::vector<VertexData> vertices;
+    std::vector<QVector3D> vertices;
     std::vector<unsigned int> indices;
 };
 

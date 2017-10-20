@@ -8,7 +8,7 @@ AABoundingBox::AABoundingBox() :
     m_zBounds()
 {}
 
-AABoundingBox::AABoundingBox(const std::vector<VertexData> &vertices) :
+AABoundingBox::AABoundingBox(const std::vector<QVector3D> &vertices) :
     m_center(),
     m_xBounds(),
     m_yBounds(),
@@ -37,7 +37,7 @@ QVector3D AABoundingBox::center() const
     return m_center;
 }
 
-void AABoundingBox::processVertices(const std::vector<VertexData> &vertices)
+void AABoundingBox::processVertices(const std::vector<QVector3D> &vertices)
 {
     if (vertices.empty()) {
         m_center = QVector3D();
@@ -51,32 +51,32 @@ void AABoundingBox::processVertices(const std::vector<VertexData> &vertices)
     // Process width
     const auto minMaxX =
             std::minmax_element(vertices.begin(), vertices.end(),
-                                [] (const VertexData &a, const VertexData &b) {
-        return a.position.x() < b.position.x();
+                                [] (const QVector3D &a, const QVector3D &b) {
+        return a.x() < b.x();
     });
 
-    m_xBounds = std::make_pair(minMaxX.first->position.x(),
-                               minMaxX.second->position.x());
+    m_xBounds = std::make_pair(minMaxX.first->x(),
+                               minMaxX.second->x());
 
     // Process heights
     const auto minMaxY =
             std::minmax_element(vertices.begin(), vertices.end(),
-                                [] (const VertexData &a, const VertexData &b) {
-        return a.position.y() < b.position.y();
+                                [] (const QVector3D &a, const QVector3D &b) {
+        return a.y() < b.y();
     });
 
-    m_yBounds = std::make_pair(minMaxY.first->position.y(),
-                               minMaxY.second->position.y());
+    m_yBounds = std::make_pair(minMaxY.first->y(),
+                               minMaxY.second->y());
 
     // Process depth
     const auto minMaxZ =
             std::minmax_element(vertices.begin(), vertices.end(),
-                                [] (const VertexData &a, const VertexData &b) {
-        return a.position.z() < b.position.z();
+                                [] (const QVector3D &a, const QVector3D &b) {
+        return a.z() < b.z();
     });
 
-    m_zBounds = std::make_pair(minMaxZ.first->position.z(),
-                               minMaxZ.second->position.z());
+    m_zBounds = std::make_pair(minMaxZ.first->z(),
+                               minMaxZ.second->z());
 
     // Compute center
     m_center = QVector3D((m_xBounds.first + m_xBounds.second) * 0.5,
