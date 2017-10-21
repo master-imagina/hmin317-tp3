@@ -22,5 +22,5 @@ void main()
     vec3 color = vec3(1.0);
     if(calendar>280)
         color = vec3(0.1,0.56,0.67);
-    FragColor =vec4(color,1.0)*min(mustDiscard+0.6,1.0);
+    FragColor =vec4(color,1.0);
 }

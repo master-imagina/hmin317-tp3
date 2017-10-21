@@ -121,6 +121,9 @@ private:
 
     GLuint heightMapID;
     QOpenGLTexture *texture;
+
+    QOpenGLTexture *water;
+    QOpenGLTexture *waterDudv;
     QOpenGLTexture *sand;
     QOpenGLTexture *cliff;
     QOpenGLTexture *grass;
@@ -147,6 +150,8 @@ private:
     ParticulesSystem particulesSystem;
     ParticlesRenderer particlesRenderer;
     TerrainEffect terrainEffect;
+
+    float timeWater;
 
     float dx,dy,wheelDelta;
     int keyZPressed,keySPressed,keyQPressed,keyDPressed,keySpacePressed,keyMajPressed;

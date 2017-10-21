@@ -63,6 +63,8 @@ MainWidget::MainWidget(int msFramerate,int calendarOffset, QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
+    water(0),
+    waterDudv(0),
     sand(0),
     cliff(0),
     grass(0),
@@ -92,6 +94,7 @@ MainWidget::MainWidget(int msFramerate,int calendarOffset, QWidget *parent) :
     this->calendarOffset = calendarOffset;
     calendar = 0;
     GLHaveBeenInitialized = false;
+    timeWater = 0;
 }
 
 MainWidget::~MainWidget()
@@ -101,6 +104,8 @@ MainWidget::~MainWidget()
     makeCurrent();
 
     delete texture;
+    delete water;
+    delete waterDudv;
     delete sand;
     delete cliff;
     delete grass;
@@ -341,9 +346,29 @@ void MainWidget::initShaders()
 void MainWidget::initTextures()
 {
 
+    water = new QOpenGLTexture(QImage(":/water.png").mirrored());
 
+    // Set nearest filtering mode for texture minification
+    water->setMinificationFilter(QOpenGLTexture::Linear);
 
+    // Set bilinear filtering mode for texture magnification
+    water->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
 
+    // Wrap texture coordinates by repeating
+    // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
+    water->setWrapMode(QOpenGLTexture::Repeat);
+
+    waterDudv = new QOpenGLTexture(QImage(":/waterDUDV.png").mirrored());
+
+    // Set nearest filtering mode for texture minification
+    waterDudv->setMinificationFilter(QOpenGLTexture::Linear);
+
+    // Set bilinear filtering mode for texture magnification
+    waterDudv->setMagnificationFilter(QOpenGLTexture::LinearMipMapLinear);
+
+    // Wrap texture coordinates by repeating
+    // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
+    waterDudv->setWrapMode(QOpenGLTexture::Repeat);
 
     sand = new QOpenGLTexture(QImage(":/sand.png").mirrored());
 
@@ -564,15 +589,17 @@ void MainWidget::paintGL()
 {
 
     this->makeCurrent();
-
+    timeWater += 0.003 * elapsedTime.elapsed()/1000.0f;
     float snowFactor=0;
     if(calendar < 40){
         snowFactor = calendar/40.0;
     }else if (calendar <80){
         snowFactor =(80.0-calendar)/40.0;
     }
-    if(calendar>280)
-        snowFactor = 1.0;
+    if(calendar>260)
+        snowFactor = (calendar - 260)/100.0;
+    if(calendar>350)
+        snowFactor = 0.0;
 
     QMatrix4x4 mvp = camera.getProjectionMatrix()*camera.getViewMatrix();
     if(calendar<170 || calendar>280){
@@ -592,7 +619,7 @@ void MainWidget::paintGL()
 
     /*Incremente saison*/
     if(calendarOffset==0){
-        calendar = (elapse->elapsed()*30/1000)%360;
+        calendar = (elapse->elapsed()*30/10000)%360;
         emit changedCalendar(calendar);
     }
 
@@ -624,8 +651,8 @@ void MainWidget::paintGL()
     cliffDisp->bind(12);
     if(terrainEffect.getSnowMap())
         terrainEffect.getSnowMap()->bind(13);
-    if(particulesSystem.getParticlesTexture())
-        particulesSystem.getParticlesTexture()->bind(14);
+    water->bind(14);
+    waterDudv->bind(15);
 
 //! [6]
     // Calculate model view transformation
@@ -651,7 +678,9 @@ void MainWidget::paintGL()
     program.setUniformValue("rockDisp",11);
     program.setUniformValue("cliffDisp",12);
     program.setUniformValue("snowMap",13);
-    program.setUniformValue("particlesMap",14);
+    program.setUniformValue("water",14);
+    program.setUniformValue("waterDudv",15);
+    program.setUniformValue("timeWater",timeWater);
     program.setUniformValue("cameraPos",QVector3D(camera.getPosition().x,camera.getPosition().y,camera.getPosition().z));
 
     program.setUniformValue("ambientColor",colorSky);

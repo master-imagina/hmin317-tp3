@@ -16,30 +16,75 @@ void main(){
 
     vec2 uv = gl_FragCoord.xy/resolution.xy;
 
-
     vec3 particule = texture2D(particlesTex,textureCoord).rgb;
     float height = texture2D(heightMap,vec2(particule.x,particule.z)).r;
     float snow =  texture2D(snowMap,uv).r;
 
-    float left = texture2D(heightMap,vec2(particule.x,particule.z) - vec2(1.0/256.0,0)).r;
-    float right = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(1.0/256.0,0)).r;
-    float up = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(0,1.0/256.0)).r;
-    float down = texture2D(heightMap,vec2(particule.x,particule.z) - vec2(0,1.0/256.0)).r;
+    float left,right,up,down,upperLeft,upperRight,downLeft,downRight,leftWater,rightWater,upWater,downWater,upperLeftWater,upperRightWater,downLeftWater,downRightWater;
 
-    float upperLeft = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(-1.0/256.0,1.0/256.0)).r;
-    float upperRight = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(1.0/256,1.0/256)).r;
-    float downLeft = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(-1.0/256,-1.0/256.0)).r;
-    float downRight = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(1.0/256,-1.0/256.0)).r;
+    if((vec2(particule.x,particule.z) - vec2(1.0/256.0,0)).x>= 0){
+        left = texture2D(heightMap,vec2(particule.x,particule.z) - vec2(1.0/256.0,0)).r;
+        leftWater = texture2D(snowMap,uv - vec2(1.0/256.0,0)).r;
+    }else{
+        left = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        leftWater = texture2D(snowMap,uv).r;
+    }
 
-    float leftWater = texture2D(snowMap,uv - vec2(1.0/256.0,0)).r;
-    float rightWater = texture2D(snowMap,uv + vec2(1.0/256.0,0)).r;
-    float upWater = texture2D(snowMap,uv + vec2(0,1.0/256.0)).r;
-    float downWater = texture2D(snowMap,uv - vec2(0,1.0/256.0)).r;
+    if((vec2(particule.x,particule.z) + vec2(1.0/256.0,0)).x < 1.0){
+        right = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(1.0/256.0,0)).r;
+        rightWater = texture2D(snowMap,uv + vec2(1.0/256.0,0)).r;
+    }else{
+        right = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        rightWater = texture2D(snowMap,uv).r;
+    }
 
-    float upperLeftWater = texture2D(snowMap,uv + vec2(-1.0/256.0,1.0/256.0)).r;
-    float upperRightWater = texture2D(snowMap,uv + vec2(1.0/256,1.0/256)).r;
-    float downLeftWater = texture2D(snowMap,uv + vec2(-1.0/256,-1.0/256.0)).r;
-    float downRightWater = texture2D(snowMap,uv + vec2(1.0/256,-1.0/256.0)).r;
+    if((vec2(particule.x,particule.z) + vec2(0,1.0/256.0)).y < 1.0){
+        up = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(0,1.0/256.0)).r;
+        upWater = texture2D(snowMap,uv + vec2(0,1.0/256.0)).r;
+    }else{
+        up = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        upWater = texture2D(snowMap,uv).r;
+    }
+
+    if((vec2(particule.x,particule.z) - vec2(0,1.0/256.0)).y >= 0.0){
+        down = texture2D(heightMap,vec2(particule.x,particule.z) - vec2(0,1.0/256.0)).r;
+        downWater = texture2D(snowMap,uv - vec2(0,1.0/256.0)).r;
+    }else{
+        down = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        downWater = texture2D(snowMap,uv).r;
+    }
+
+    if((vec2(particule.x,particule.z) + vec2(-1.0/256.0,1.0/256.0)).x >= 0.0 && (vec2(particule.x,particule.z) + vec2(-1.0/256.0,1.0/256.0)).y < 1.0){
+        upperLeft = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(-1.0/256.0,1.0/256.0)).r;
+        upperLeftWater = texture2D(snowMap,uv + vec2(-1.0/256.0,1.0/256.0)).r;
+    }else{
+        upperLeft = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        upperLeftWater = texture2D(snowMap,uv).r;
+    }
+
+    if((vec2(particule.x,particule.z) + vec2(1.0/256,1.0/256)).x < 1.0 && (vec2(particule.x,particule.z) + vec2(1.0/256,1.0/256)).y < 1.0){
+        upperRight = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(1.0/256,1.0/256)).r;
+        upperRightWater = texture2D(snowMap,uv + vec2(1.0/256,1.0/256)).r;
+    }else{
+        upperRight = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        upperRightWater = texture2D(snowMap,uv).r;
+    }
+
+    if((vec2(particule.x,particule.z) + vec2(-1.0/256,-1.0/256.0)).x >= 0.0 && (vec2(particule.x,particule.z) + vec2(-1.0/256,-1.0/256.0)).y >= 0.0){
+        downLeft = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(-1.0/256,-1.0/256.0)).r;
+        downLeftWater = texture2D(snowMap,uv + vec2(-1.0/256,-1.0/256.0)).r;
+    }else{
+        downLeft = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        downLeftWater = texture2D(snowMap,uv).r;
+    }
+
+    if((vec2(particule.x,particule.z) + vec2(1.0/256,-1.0/256.0)).x < 1.0 && (vec2(particule.x,particule.z) + vec2(1.0/256,-1.0/256.0)).y >= 0.0){
+        downRight = texture2D(heightMap,vec2(particule.x,particule.z) + vec2(1.0/256,-1.0/256.0)).r;
+        downRightWater = texture2D(snowMap,uv + vec2(1.0/256,-1.0/256.0)).r;
+    }else{
+        downRight = texture2D(heightMap,vec2(particule.x,particule.z)).r;
+        downRightWater = texture2D(snowMap,uv).r;
+    }
 
     if(particule.x+0.005 >= uv.x && particule.x-0.005 <= uv.x && particule.z+0.005 >= uv.y && particule.z-0.005 <= uv.y && particule.y <= height+(0.1/4.0) ){
         if(calendar<170)
@@ -51,14 +96,14 @@ void main(){
 
     }
     else{
-         snow -= 0.02;
+         snow -= 0.002;
     }
     if(calendar>270){
-                float base_keep = 0.80;
+                float base_keep = 1.0;
                 float neigh =0.0;
                 float keep=base_keep;
                 float neigh_test =8.0;
-                float snowheight = 80.0;
+                float snowheight = 250.0;
                 if(left+leftWater/snowheight<height){
                     keep -= base_keep/neigh_test;
                     neigh++;
@@ -75,11 +120,11 @@ void main(){
                     keep -= base_keep/neigh_test;
                     neigh++;
                 }
-                if(upperRight+upperRightWater/snowheight <height){
+                if(upperRight+upperRightWater/snowheight<height){
                     keep -= base_keep/neigh_test;
                     neigh++;
                 }
-                if(upperLeft+upperLeftWater/snowheight <height){
+                if(upperLeft+upperLeftWater/snowheight<height){
                     keep -= base_keep/neigh_test;
                     neigh++;
                 }
@@ -87,7 +132,7 @@ void main(){
                     keep -= base_keep/neigh_test;
                     neigh++;
                 }
-                if((downRight+downRightWater/snowheight)<height){
+                if(downRight+downRightWater/snowheight<height){
                     keep -= base_keep/neigh_test;
                     neigh++;
                 }
@@ -96,28 +141,28 @@ void main(){
                 keep += 0.05;
 
                 if(left+leftWater/snowheight>=height){
-                    snow += leftWater * (base_keep-keep*neigh);
+                    snow += leftWater * (base_keep-keep*neigh*0.5);
                 }
                 if(right+rightWater/snowheight>=height){
-                    snow += rightWater * (base_keep-keep*neigh);;
+                    snow += rightWater * (base_keep-keep*neigh*0.5);
                 }
                 if(up+upWater/snowheight>=height){
-                    snow += upWater * (base_keep-keep*neigh);
+                    snow += upWater * (base_keep-keep*neigh*0.5);
                 }
                 if(down+downWater/snowheight>=height){
-                    snow += downWater * (base_keep-keep*neigh);
+                    snow += downWater * (base_keep-keep*neigh*0.5);
                 }
                 if(upperRight+upperRightWater/snowheight>=height){
-                    snow += upperRightWater * (base_keep-keep*neigh);
+                    snow += upperRightWater * (base_keep-keep*neigh*0.5);
                 }
                 if(upperLeft+upperLeftWater/snowheight>=height){
-                    snow += upperLeftWater * (base_keep-keep*neigh);;
+                    snow += upperLeftWater * (base_keep-keep*neigh*0.5);
                 }
                 if(downRight+downRightWater/snowheight>=height){
-                    snow += downRightWater * (base_keep-keep*neigh);
+                    snow += downRightWater * (base_keep-keep*neigh*0.5);
                 }
                 if(downLeft+downLeftWater/snowheight>=height){
-                    snow += downLeftWater * (base_keep-keep*neigh);
+                    snow += downLeftWater * (base_keep-keep*neigh*0.5);
                 }
                 //snow = neigh/8.0;
             }

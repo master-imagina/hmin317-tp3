@@ -11,10 +11,12 @@ uniform sampler2D sandNormal;
 uniform sampler2D grassNormal;
 uniform sampler2D rockNormal;
 uniform sampler2D snowMap;
-uniform sampler2D particlesMap;
+uniform sampler2D water;
+uniform sampler2D waterDudv;
 
 uniform vec3 ambientColor;
 uniform int calendar;
+uniform float timeWater;
 
 in TES_OUT{
     vec2 v_texcoord;
@@ -122,15 +124,25 @@ void main()
     snowFactor = fs_in.snow;
     if( snowFactor>0.0 ){
         albedo = mix(albedo,(calendar>270)?vec4(89/255.0, 152/255.0, 255/255.0,1):vec4(1.,1.,1.,1.0),smoothstep(0.0,1.0,snowFactor*2.0));
+        if(calendar>270){
+            vec2 modifyTexCoords = fs_in.v_texcoord + texture2D(waterDudv,vec2(fs_in.v_texcoord.x+timeWater,fs_in.v_texcoord.y+timeWater)*20).rg;
+            modifyTexCoords +=  texture2D(waterDudv,vec2(fs_in.v_texcoord.x,fs_in.v_texcoord.y-timeWater)*20).rg;
+            vec3 waterNormal = texture2D(water,modifyTexCoords).rgb * 2.0 - 1.0;
 
-        normalColor = mix(normalColor,vec3(0,-1,0),min(snowFactor*2.0,1.0));
+            waterNormal = normalize(waterNormal);
+            normalColor = mix(normalColor,waterNormal,snowFactor);
+            }
+        else
+            normalColor = mix(normalColor,vec3(0,-1,0),min(snowFactor*2.0,1.0));
     }
     float diffnormalMap = max(abs(dot(normalColor, fs_in.lightDir)), 0.0);
+    if(calendar>270)
+        diffnormalMap = mix(diffnormalMap,1.0,snowFactor);
 
     vec3 lightDirection = -fs_in.lightDir;
-    vec3 reflectedLightDirection = reflect(lightDirection,fs_in.normal);
+    vec3 reflectedLightDirection = reflect(lightDirection,normalColor);
     float specularFactor = max(dot(reflectedLightDirection, normalize(fs_in.toCameraVector)),0.0);
-    float dampedFactor = pow(specularFactor,10) * snowFactor;
+    float dampedFactor = pow(specularFactor,10) * snowFactor * ((calendar>270)?1.0:0.0);
 
 
 

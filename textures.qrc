@@ -14,5 +14,7 @@
         <file>rockDisp.png</file>
         <file>snowFlake.png</file>
         <file>rain.png</file>
+        <file>water.png</file>
+        <file>waterDUDV.png</file>
     </qresource>
 </RCC>

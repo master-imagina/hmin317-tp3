@@ -8,7 +8,6 @@ uniform sampler2D texture;
 uniform float quantityVertices;
 uniform float timer;
 uniform sampler2D snowMap;
-uniform sampler2D particlesMap;
 uniform vec3 cameraPos;
 
 in vec4 a_position;

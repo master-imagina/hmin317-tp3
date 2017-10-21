@@ -39,7 +39,7 @@ void main(){
     if(particule.g <= height+(0.1/4.0) || outParticule.a==1.0){
         //random position
         outParticule = vec4( uv.x + uv.x/particlesCount - randomValue/particlesCount,1.0, uv.y + uv.y/particlesCount - randomValue/particlesCount,1.0);
-        outParticule.a = (max(random(uv/0.9),0.0)+(1-particlesFactor+0.4)>0.5)?1.0:0.0;
+        outParticule.a = (max(random(uv/0.9),0.0)+(1-particlesFactor)>0.5)?1.0:0.0;
     }else{
         //outParticule.rgb = particule.rgb ;// * speed + windVector;
         outParticule.r +=  max(sin(outParticule.g*40)/(400.0)-random(uv),0.0);
