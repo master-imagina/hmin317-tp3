@@ -39,11 +39,13 @@ const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
 
 
 MainWindow::MainWindow(GameLoop *gameLoop) :
+    m_theGameLoop(gameLoop),
     m_terrainGeometry(std::make_unique<Geometry>()),
     m_particleEffect(std::make_unique<ParticleEffect>(QVector3D(0, 400, 0), 50, 100)),
     m_gameWidgets(),
     m_fpsLabels(),
     m_camera(std::make_unique<Camera>()),
+    m_computeFpsTimer(new QTimer(this)),
     m_cameraController(nullptr),
     m_seasonTimer(new QTimer(this)),
     m_gameWidgetsDates()
@@ -73,6 +75,8 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     // Viewports
     auto viewportsLayout = new QGridLayout;
 
+    m_computeFpsTimer->setInterval(1000);
+
     for (int i = 0; i < m_gameWidgets.size(); i++) {
         auto gameWidget = new GameWidget(centralWidget);
 
@@ -88,12 +92,18 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
         fpsLabel->setStyleSheet("QLabel { background-color : red }");
         fpsLabel->move(20, 20);
 
+        connect(m_computeFpsTimer, &QTimer::timeout,
+                [this, fpsLabel] {
+            const unsigned int fps = m_theGameLoop->effectiveFramerate();
+            fpsLabel->setText(QString::number(fps) + " fps");
+        });
+
         m_fpsLabels[i] = fpsLabel;
     }
 
     connect(fpsSlider, &QSlider::valueChanged,
             [this, gameLoop, fpsIndicator] (int fps) {
-        gameLoop->setFps(fps);
+        gameLoop->setFramerate(fps);
 
         const QString fpsText = QString::number(fps);
 
@@ -104,7 +114,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
         fpsIndicator->setText("fps :" + fpsText);
     });
 
-    fpsSlider->setValue(gameLoop->fps());
+    fpsSlider->setValue(gameLoop->framerate());
 
     initSeasons();
 
@@ -118,6 +128,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     centralWidget->setFocus();
 
     gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
+    m_computeFpsTimer->start();
 }
 
 MainWindow::~MainWindow()

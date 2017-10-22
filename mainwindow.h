@@ -43,12 +43,16 @@ private:
 private:
     static constexpr int viewportCount = 4;
 
+    GameLoop *m_theGameLoop;
+
     std::unique_ptr<Geometry> m_terrainGeometry;
     std::unique_ptr<ParticleEffect> m_particleEffect;
 
     std::array<GameWidget *, viewportCount> m_gameWidgets;
     std::array<QLabel *, viewportCount> m_fpsLabels;
     std::unique_ptr<Camera> m_camera;
+
+    QTimer *m_computeFpsTimer;
 
     CameraController *m_cameraController;
 
