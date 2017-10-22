@@ -18,6 +18,7 @@ set(HEADERS
     gameloop.h
     mainwindow.h
     particleeffect.h
+    renderer/openglversion.h
     renderer/buffer.h
     renderer/vertexattrib.h
     renderer/geometrydesc.h
