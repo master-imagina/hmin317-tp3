@@ -41,6 +41,7 @@ QColor colorFromSeason(Season season)
 GameWidget::GameWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     m_geometry(nullptr),
+    m_particleEffect(nullptr),
     m_terrainAABB(),
     m_renderer(std::make_unique<Renderer>()),
     m_camera(nullptr),
