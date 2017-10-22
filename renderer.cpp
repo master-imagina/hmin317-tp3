@@ -189,8 +189,10 @@ void Renderer::updateUniforms(const QVariantMap &uniforms)
     }
 }
 
-void Renderer::render()
+void Renderer::render(float dt)
 {
+    Q_UNUSED (dt);
+
     cglPrintAnyError();
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

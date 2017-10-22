@@ -106,7 +106,6 @@ void GameWidget::setSeason(Season season)
 void GameWidget::startNewFrame(float dt)
 {
     m_deltaTime = dt;
-    //TODO pass dt to Renderer
 
     if (m_renderer->isDirty()) {
         m_renderer->updateBuffers(m_geometry, m_particleEffect);
@@ -148,5 +147,5 @@ void GameWidget::paintGL()
     };
 
     m_renderer->updateUniforms(uniforms);
-    m_renderer->render();
+    m_renderer->render(m_deltaTime);
 }

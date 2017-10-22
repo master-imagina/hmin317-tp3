@@ -27,7 +27,7 @@ public:
     void updateBuffers(Geometry *geom, ParticleEffect *particleEffect);
     void updateUniforms(const QVariantMap &uniforms);
 
-    void render();
+    void render(float dt);
 
     void cleanup();
 
