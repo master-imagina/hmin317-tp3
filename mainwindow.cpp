@@ -168,12 +168,14 @@ void MainWindow::loadHeightMap(const QString &filePath)
 void MainWindow::pointCameraToTerrainCenter()
 {
     AABoundingBox terrainAABB(m_terrainGeometry->vertices);
+    const QVector3D terrainAABBCenter = terrainAABB.center();
+    const QVector3D terrainAABBRadius = terrainAABB.radius();
 
     const QVector3D terrainCenter = terrainAABB.center();
     const QVector3D flatCenter(terrainCenter.x(), 0.f, terrainCenter.z());
 
     const QVector3D newEye(flatCenter.x() + 50,
-                           terrainAABB.yBounds().second + 50,
+                           terrainAABBCenter.y() + terrainAABBRadius.y() + 50,
                            flatCenter.z() + 50);
 
     m_camera->setEyePos(newEye);

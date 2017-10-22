@@ -3,33 +3,14 @@
 
 AABoundingBox::AABoundingBox() :
     m_center(),
-    m_xBounds(),
-    m_yBounds(),
-    m_zBounds()
+    m_radius()
 {}
 
-AABoundingBox::AABoundingBox(const std::vector<QVector3D> &vertices) :
+AABoundingBox::AABoundingBox(const std::vector<QVector3D> vertices) :
     m_center(),
-    m_xBounds(),
-    m_yBounds(),
-    m_zBounds()
+    m_radius()
 {
     processVertices(vertices);
-}
-
-std::pair<float, float> AABoundingBox::xBounds() const
-{
-    return m_xBounds;
-}
-
-std::pair<float, float> AABoundingBox::yBounds() const
-{
-    return m_yBounds;
-}
-
-std::pair<float, float> AABoundingBox::zBounds() const
-{
-    return m_zBounds;
 }
 
 QVector3D AABoundingBox::center() const
@@ -37,49 +18,80 @@ QVector3D AABoundingBox::center() const
     return m_center;
 }
 
-void AABoundingBox::processVertices(const std::vector<QVector3D> &vertices)
+QVector3D AABoundingBox::radius() const
+{
+    return m_radius;
+}
+
+std::array<QVector3D, 8> AABoundingBox::getCorners()
+{
+    std::array<QVector3D, 8> ret;
+
+    const float cx = m_center.x();
+    const float cy = m_center.y();
+    const float cz = m_center.z();
+
+    const float rx = m_radius.x();
+    const float ry = m_radius.y();
+    const float rz = m_radius.z();
+
+    ret.at(0) = {cx - rx, cy - ry, cz + rz};
+    ret.at(1) = {cx + rx, cy - ry, cz + rz};
+    ret.at(2) = {cx + rx, cy + ry, cz + rz};
+    ret.at(3) = {cx - rx, cy + ry, cz + rz};
+
+    ret.at(4) = {cx - rx, cy - ry, cz - rz};
+    ret.at(5) = {cx + rx, cy - ry, cz - rz};
+    ret.at(6) = {cx + rx, cy + ry, cz - rz};
+    ret.at(7) = {cx - rx, cy + ry, cz - rz};
+
+    return ret;
+}
+
+void AABoundingBox::processVertices(const std::vector<QVector3D> vertices)
 {
     if (vertices.empty()) {
         m_center = QVector3D();
-        m_xBounds = std::make_pair(0.f, 0.f);
-        m_yBounds = std::make_pair(0.f, 0.f);
-        m_zBounds = std::make_pair(0.f, 0.f);
+        m_radius = QVector3D();
 
         return;
     }
 
-    // Process width
-    const auto minMaxX =
-            std::minmax_element(vertices.begin(), vertices.end(),
-                                [] (const QVector3D &a, const QVector3D &b) {
-        return a.x() < b.x();
-    });
+    QVector3D min = vertices[0];
+    QVector3D max = vertices[0];
 
-    m_xBounds = std::make_pair(minMaxX.first->x(),
-                               minMaxX.second->x());
+    for (int i = 1; i < vertices.size(); ++i) {
+        const QVector3D &p = vertices[i];
 
-    // Process heights
-    const auto minMaxY =
-            std::minmax_element(vertices.begin(), vertices.end(),
-                                [] (const QVector3D &a, const QVector3D &b) {
-        return a.y() < b.y();
-    });
+        const float px = p.x();
+        const float py = p.y();
+        const float pz = p.z();
 
-    m_yBounds = std::make_pair(minMaxY.first->y(),
-                               minMaxY.second->y());
+        if (px < min.x()) {
+            min.setX(px);
+        }
 
-    // Process depth
-    const auto minMaxZ =
-            std::minmax_element(vertices.begin(), vertices.end(),
-                                [] (const QVector3D &a, const QVector3D &b) {
-        return a.z() < b.z();
-    });
+        if (py < min.y()) {
+            min.setY(py);
+        }
 
-    m_zBounds = std::make_pair(minMaxZ.first->z(),
-                               minMaxZ.second->z());
+        if (pz < min.z()) {
+            min.setZ(pz);
+        }
 
-    // Compute center
-    m_center = QVector3D((m_xBounds.first + m_xBounds.second) * 0.5,
-                         (m_yBounds.first + m_yBounds.second) * 0.5,
-                         (m_zBounds.first + m_zBounds.second) * 0.5);
+        if (px > max.x()) {
+            max.setX(px);
+        }
+
+        if (py > max.y()) {
+            max.setY(py);
+        }
+
+        if (pz > max.z()) {
+            max.setZ(pz);
+        }
+    }
+
+    m_center = 0.5 * (min + max);
+    m_radius = 0.5 * (max - min);
 }

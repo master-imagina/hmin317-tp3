@@ -131,16 +131,21 @@ void GameWidget::paintGL()
     const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
     const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
 
-    const std::pair<float, float> yBounds = m_terrainAABB.yBounds();
+    const QVector3D terrainAABBCenter = m_terrainAABB.center();
+    const QVector3D terrainAABBRadius = m_terrainAABB.radius();
+
+    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
+    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
+
     const QColor drawColor = colorFromSeason(m_currentSeason);
 
-    //TODO helper classes for uniforms
+    //TODO helper classes for uniforms ; don't send uniforms every frame
     QVariantMap uniforms {
         {"viewMatrix", viewMatrix},
         {"projectionMatrix", projectionMatrix},
         {"worldMatrix", worldMatrix},
-        {"minHeight", yBounds.first},
-        {"maxHeight", yBounds.second},
+        {"minHeight", minHeight},
+        {"maxHeight", maxHeight},
         {"terrainColor", drawColor},
         {"particleColor", drawColor},
         {"particlesSize", m_particleEffect->particlesSize()}

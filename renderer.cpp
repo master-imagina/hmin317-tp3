@@ -145,6 +145,7 @@ void Renderer::unsetDirty()
 
 void Renderer::updateBuffers(Geometry *geom, ParticleEffect *particleEffect)
 {
+    //TODO allow the dev to set only one geometry dirty
     // Update geometry buffers
     const std::vector<QVector3D> &vertices = geom->vertices;
     const std::vector<unsigned int> &indices = geom->indices;
@@ -265,6 +266,6 @@ void Renderer::cglPrintAnyError()
     const GLenum err = gl->glGetError();
 
     if (err != 0) {
-        qCritical() << err;
+        qCritical() << "OpenGL error:" << err;
     }
 }

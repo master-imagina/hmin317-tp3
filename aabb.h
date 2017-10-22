@@ -3,29 +3,25 @@
 
 #include <vector>
 
-#include "geometry.h"
+#include <QVector3D>
 
 
 class AABoundingBox
 {
 public:
     AABoundingBox();
-    explicit AABoundingBox(const std::vector<QVector3D> &vertices);
-
-    std::pair<float, float> xBounds() const;
-    std::pair<float, float> yBounds() const;
-    std::pair<float, float> zBounds() const;
+    explicit AABoundingBox(const std::vector<QVector3D> vertices);
 
     QVector3D center() const;
+    QVector3D radius() const;
 
-    void processVertices(const std::vector<QVector3D> &vertices);
+    std::array<QVector3D, 8> getCorners();
+
+    void processVertices(const std::vector<QVector3D> vertices);
 
 private:
-    std::pair<float, float> m_xBounds;
-    std::pair<float, float> m_yBounds;
-    std::pair<float, float> m_zBounds;
-
     QVector3D m_center;
+    QVector3D m_radius;
 };
 
 #endif // AABB_H
