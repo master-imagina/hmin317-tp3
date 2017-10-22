@@ -1,11 +1,14 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 
+#include "renderer/buffer.h"
+#include "renderer/openglversion.h"
+
 class Geometry;
+class GeometryDesc;
 class ParticleEffect;
 
 
@@ -35,17 +38,23 @@ private:
 private:
     void cglPrintAnyError();
 
+    void setupVaoForBufferAndShader(GLuint vao,
+                                    const GeometryDesc &geometryDesc,
+                                    Buffer &vertexBuffer,
+                                    const QOpenGLShaderProgram &program,
+                                    Buffer *indexBuffer = nullptr);
+
 private:
-    QOpenGLFunctions_3_3_Core *gl;
+    OpenGLFuncs *gl;
     std::array<GLuint, 2> m_vaos;
 
     QOpenGLShaderProgram m_terrainShaderProgram;
-
     QOpenGLShaderProgram m_particlesShaderProgram;
-    GLuint m_particlesVbo;
 
-    GLuint m_vertexVbo;
-    GLuint m_indexVbo;
+    Buffer m_terrainArrayVbo;
+    Buffer m_terrainIndexVbo;
+
+    Buffer m_particlesVbo;
 
     bool m_isDirty;
 

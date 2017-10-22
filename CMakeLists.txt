@@ -18,6 +18,9 @@ set(HEADERS
     gameloop.h
     mainwindow.h
     particleeffect.h
+    renderer/buffer.h
+    renderer/vertexattrib.h
+    renderer/geometrydesc.h
     )
 
 set(SOURCES
@@ -33,6 +36,9 @@ set(SOURCES
     gameloop.cpp
     particleeffect.cpp
     main.cpp
+    renderer/buffer.cpp
+    renderer/vertexattrib.cpp
+    renderer/geometrydesc.cpp
     )
 
 set(QT_RESOURCES

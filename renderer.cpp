@@ -5,15 +5,19 @@
 #include "geometry.h"
 #include "particleeffect.h"
 
+#include "renderer/geometrydesc.h"
+#include "renderer/vertexattrib.h"
+
 
 Renderer::Renderer() :
     gl(nullptr),
     m_vaos(),
     m_terrainShaderProgram(nullptr),
     m_particlesShaderProgram(nullptr),
-    m_particlesVbo(0),
-    m_vertexVbo(0),
-    m_indexVbo(0),
+    m_terrainArrayVbo(Buffer::Type::ArrayBuffer),
+    m_terrainIndexVbo(Buffer::Type::IndexBuffer),
+    m_particlesVbo(Buffer::Type::ArrayBuffer),
+    m_isDirty(false),
     m_shaderPrograms()
 {}
 
@@ -22,9 +26,47 @@ Renderer::~Renderer()
     cleanup();
 }
 
+void Renderer::setupVaoForBufferAndShader(GLuint vao,
+                                          const GeometryDesc &geometryDesc,
+                                          Buffer &arrayBuffer,
+                                          const QOpenGLShaderProgram &program,
+                                          Buffer *indexBuffer)
+{
+    gl->glUseProgram(program.programId());
+    gl->glBindVertexArray(vao);
+
+    arrayBuffer.bind();
+
+    const std::vector<VertexAttrib> &attributes = geometryDesc.attributes();
+
+    for (const VertexAttrib &attrib : attributes) {
+        const int location = program.attributeLocation(attrib.name);
+
+        gl->glEnableVertexAttribArray(location);
+        gl->glVertexAttribPointer(location,
+                                  attrib.size,
+                                  static_cast<unsigned int>(attrib.type),
+                                  attrib.normalized, attrib.stride,
+                                  nullptr);
+    }
+
+    if (indexBuffer) {
+        indexBuffer->bind();
+    }
+
+    arrayBuffer.release();
+
+    gl->glBindVertexArray(0);
+    gl->glUseProgram(0);
+
+    if (indexBuffer) {
+        indexBuffer->release();
+    }
+}
+
 void Renderer::initialize()
 {
-    gl = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
+    gl = QOpenGLContext::currentContext()->versionFunctions<OpenGLFuncs>();
     const bool initialized = gl->initializeOpenGLFunctions();
     Q_ASSERT_X (initialized,
                 "Renderer::initialize()", "OpenGL 3.3 failed to initialize");
@@ -34,19 +76,16 @@ void Renderer::initialize()
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
 
-//    gl->glEnable(GL_BLEND);
-//    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //    gl->glEnable(GL_BLEND);
+    //    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // VBO
-    gl->glGenBuffers(1, &m_vertexVbo);
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
-    gl->glGenBuffers(1, &m_indexVbo);
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+    // Create VBOs
+    m_terrainArrayVbo.create();
+    m_terrainIndexVbo.create();
 
-    gl->glGenBuffers(1, &m_particlesVbo);
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
+    m_particlesVbo.create();
 
-    // Shader and vao
+    // Create shaders and vaos
     m_terrainShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
                                                    "://res/shaders/geom_textured.vert");
 
@@ -68,31 +107,25 @@ void Renderer::initialize()
 
     gl->glGenVertexArrays(2, m_vaos.data());
 
-    // Terrain shader
-    m_terrainShaderProgram.bind();
-    gl->glBindVertexArray(m_vaos[0]);
+    // Setup terrain geometry
+    GeometryDesc terrainGeomDesc;
+    VertexAttrib terrainGeomVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
+    terrainGeomDesc.addAttribute(terrainGeomVertexAttrib);
 
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
-    int location = m_terrainShaderProgram.attributeLocation("vertexPos");
-    gl->glEnableVertexAttribArray(location);
-    gl->glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    setupVaoForBufferAndShader(m_vaos[0], terrainGeomDesc,
+                               m_terrainArrayVbo, m_terrainShaderProgram,
+                               &m_terrainIndexVbo);
 
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
+    // Setup particles geometry
+    GeometryDesc particlesGeomDesc;
+    VertexAttrib particlesGeomVertexAttrib {"particleWorldPos", 3, VertexAttrib::Type::Float, false, 0};
+    particlesGeomDesc.addAttribute(particlesGeomVertexAttrib);
 
-    // Particles shader
-    m_particlesShaderProgram.bind();
-    gl->glBindVertexArray(m_vaos[1]);
+    setupVaoForBufferAndShader(m_vaos[1], particlesGeomDesc,
+                               m_particlesVbo, m_particlesShaderProgram);
 
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
-    location = m_particlesShaderProgram.attributeLocation("particleWorldPos");
-    gl->glEnableVertexAttribArray(location);
-    gl->glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     cglPrintAnyError();
-
-    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    gl->glBindVertexArray(0);
 }
 
 bool Renderer::isDirty() const
@@ -116,19 +149,26 @@ void Renderer::updateBuffers(Geometry *geom, ParticleEffect *particleEffect)
     const std::vector<QVector3D> &vertices = geom->vertices;
     const std::vector<unsigned int> &indices = geom->indices;
 
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
-    gl->glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(QVector3D), vertices.data(), GL_STATIC_DRAW);
+    m_terrainArrayVbo.bind();
+    m_terrainArrayVbo.allocate(vertices.size() * sizeof(QVector3D),
+                                vertices.data(),
+                                Buffer::Usage::StaticDraw);
 
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
-    gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    m_terrainIndexVbo.bind();
+    m_terrainIndexVbo.allocate(indices.size() * sizeof(unsigned int),
+                               indices.data(),
+                               Buffer::Usage::StaticDraw);
+    m_terrainIndexVbo.release();
 
     // Update particles buffers
     const std::vector<QVector3D> &particles = particleEffect->worldPositions();
 
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
-    gl->glBufferData(GL_ARRAY_BUFFER, particles.size() * sizeof(QVector3D), particles.data(), GL_STREAM_DRAW);
+    m_particlesVbo.bind();
+    m_particlesVbo.allocate(particles.size() * sizeof(QVector3D),
+                            particles.data(),
+                            Buffer::Usage::StreamDraw);
 
-    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
+    m_particlesVbo.release();
 
     cglPrintAnyError();
 }
@@ -155,28 +195,18 @@ void Renderer::render()
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Draw terrain
     m_terrainShaderProgram.bind();
     gl->glBindVertexArray(m_vaos[0]);
 
-    // Draw terrain
-    int sizeVertexVbo = 0;
-    gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_indexVbo);
-    gl->glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &sizeVertexVbo);
-
-    gl->glDrawElements(GL_TRIANGLES, sizeVertexVbo / 4, GL_UNSIGNED_INT, 0);
+    gl->glDrawElements(GL_TRIANGLES, m_terrainIndexVbo.size() / 4, GL_UNSIGNED_INT, 0);
 
     // Draw particles
-    //TODO get rid of glGetBufferParameter
     m_particlesShaderProgram.bind();
     gl->glBindVertexArray(m_vaos[1]);
 
-    int sizeParticlesVbo = 0;
-    gl->glBindBuffer(GL_ARRAY_BUFFER, m_particlesVbo);
-    gl->glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &sizeParticlesVbo);
+    gl->glDrawArrays(GL_POINTS, 0, m_particlesVbo.size() / sizeof(QVector3D));
 
-    gl->glDrawArrays(GL_POINTS, 0, sizeParticlesVbo / sizeof(QVector3D));
-
-    gl->glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     gl->glBindVertexArray(0);
 }
@@ -185,10 +215,12 @@ void Renderer::cleanup()
 {
     gl->glDeleteVertexArrays(2, m_vaos.data());
 
-    gl->glDeleteBuffers(1, &m_vertexVbo);
-    gl->glDeleteBuffers(1, &m_indexVbo);
+    m_terrainArrayVbo.destroy();
+    m_terrainIndexVbo.destroy();
 
-    gl->glDeleteBuffers(1, &m_particlesVbo);
+    m_particlesVbo.destroy();
+
+    cglPrintAnyError();
 }
 
 void Renderer::sendVariantUniform(QOpenGLShaderProgram &program,
