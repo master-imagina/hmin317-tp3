@@ -54,10 +54,10 @@
 #include "geometryengine.h"
 #include "camera.h"
 #include "seasonmanager.h"
-#include "particles.h"
+#include "particleengine.h"
 
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions_4_2_Core>
+#include <QOpenGLFunctions>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
@@ -70,7 +70,7 @@
 
 class GeometryEngine;
 
-class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions_4_2_Core
+class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
@@ -90,7 +90,7 @@ protected:
     void resizeGL(int w, int h) override;
     void paintGL() override;
 
-    void initShaders(int shaderType);
+    void initShaders();
     void initTextures();
 
 private:
@@ -112,7 +112,7 @@ private:
     QQuaternion rotation;
     int fov, fps;
     SeasonManager *seasonM;
-    Particles *particlesEngine;
+    ParticleEngine *particleEngine;
 };
 
 #endif // MAINWIDGET_H

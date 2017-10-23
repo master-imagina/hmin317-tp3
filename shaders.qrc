@@ -2,7 +2,7 @@
     <qresource prefix="/">
         <file>vshader.glsl</file>
         <file>fshader.glsl</file>
-        <file>pvshader.glsl</file>
-        <file>pfshader.glsl</file>
+        <file>prfshader.glsl</file>
+        <file>prvshader.glsl</file>
     </qresource>
 </RCC>

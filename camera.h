@@ -17,7 +17,7 @@ typedef enum Camera_Movement {
 class Camera
 {
 public:
-    Camera(QVector3D position = QVector3D(-1.0f, 5.0f, 0.0f), QVector3D up = QVector3D(0.0f, 1.0f, 0.0f), float yaw = -90.0f, float pitch = -45.0f)
+    Camera(QVector3D position = QVector3D(5.0f, 5.0f, 0.0f), QVector3D up = QVector3D(0.0f, 1.0f, 0.0f), float yaw = 0.0f, float pitch = -45.0f)
         : cameraFront(0.0f, 0.0f, -1.0f)
     {
         cameraPos = position;

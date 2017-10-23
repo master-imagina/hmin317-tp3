@@ -64,7 +64,7 @@ MainWidget::MainWidget(int fps, Seasons s, QWidget *parent) :
     camera(),
     orbit(false),
     fps(fps),
-    particlesEngine(0)
+    particleEngine(0)
 {
     setMouseTracking(true);
     seasonTimer = new QTimer();
@@ -84,7 +84,7 @@ MainWidget::~MainWidget()
     delete snow_rock;
     delete snow_sand;
     delete geometries;
-    delete particlesEngine;
+    delete particleEngine;
     doneCurrent();
 }
 
@@ -179,24 +179,24 @@ void MainWidget::initializeGL()
     glClearColor(0, 0, 0, 1);
 
     initTextures();
-    initShaders(0);
+    initShaders();
 
 //! [2]
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     // Enable back face culling
     //glEnable(GL_CULL_FACE);
 //! [2]
     geometries = new GeometryEngine;
-    particlesEngine = new Particles;
+    particleEngine = new ParticleEngine;
 
     // Use QBasicTimer because its faster than QTimer
     timer.start(1000/fps, this);
 }
 
 //! [3]
-void MainWidget::initShaders(int shaderType)
+void MainWidget::initShaders()
 {
         // Compile vertex shader
         if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
@@ -211,11 +211,11 @@ void MainWidget::initShaders(int shaderType)
             close();
 
         // Compile vertex shader
-        if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/pvshader.glsl"))
+        if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/prvshader.glsl"))
             close();
 
         // Compile fragment shader
-        if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/pfshader.glsl"))
+        if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/prfshader.glsl"))
             close();
 
         // Link shader pipeline
@@ -316,17 +316,12 @@ void MainWidget::paintGL()
     }
 
     // Draw cube geometry
-    //geometries->drawCubeGeometry(&program);
     geometries->drawPlaneGeometry(&program);
     // draw particles
     particlesProgram.bind();
-    program.setUniformValue("mvp_matrix", projection * matrix);
-    program.setUniformValue("camera_up", camera.getWorldUp());
-    program.setUniformValue("camera_right", camera.getRight());
+    particlesProgram.setUniformValue("mvp_matrix", projection * matrix);
     if(seasonM->getSeason() == Seasons::Winter) {
-        particlesEngine->generateParticles();
-        particlesEngine->simulateParticles();
-        particlesEngine->drawParticles(&particlesProgram);
+        particleEngine->drawParticles(&particlesProgram);
     }
 
 }

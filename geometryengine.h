@@ -51,11 +51,11 @@
 #ifndef GEOMETRYENGINE_H
 #define GEOMETRYENGINE_H
 
-#include <QOpenGLFunctions_4_2_Core>
+#include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
-class GeometryEngine : protected QOpenGLFunctions_4_2_Core
+class GeometryEngine : protected QOpenGLFunctions
 {
 public:
     GeometryEngine();

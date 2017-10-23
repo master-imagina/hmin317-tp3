@@ -6,7 +6,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     camera.cpp \
     seasonmanager.cpp \
-    particles.cpp
+    particle.cpp \
+    particleengine.cpp
 
 SOURCES += \
     mainwidget.cpp \
@@ -17,7 +18,8 @@ HEADERS += \
     geometryengine.h \
     camera.h \
     seasonmanager.h \
-    particles.h
+    particle.h \
+    particleengine.h
 
 RESOURCES += \
     shaders.qrc \
