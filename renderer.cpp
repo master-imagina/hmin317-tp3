@@ -87,7 +87,7 @@ void Renderer::initialize()
 
     // Create shaders and vaos
     m_terrainShaderProgram.addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                                   "://res/shaders/geom_textured.vert");
+                                                   "://res/shaders/terrain_heightmap.vert");
 
     m_terrainShaderProgram.addShaderFromSourceFile(QOpenGLShader::Fragment,
                                                    "://res/shaders/terrain_heightmap.frag");
