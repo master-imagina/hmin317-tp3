@@ -16,13 +16,12 @@ public:
     ~ParticleEngine();
 
     void drawParticles(QOpenGLShaderProgram *program);
+    void updateParticles();
 
 private:
     Particle particleContainer[MAX_PARTICULES];
     QOpenGLBuffer arrayBuffer;
-    //QVector3D *particlePosData;
     std::vector<QVector3D> particlePosData;
-    int countParticules;
 
     void initParticles();
 

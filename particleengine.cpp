@@ -2,11 +2,9 @@
 #include <iostream>
 
 ParticleEngine::ParticleEngine()
-    : countParticules(0)
-    , particlePosData()
+    : particlePosData()
 {
     initializeOpenGLFunctions();
-    //particlePosData = new QVector3D[MAX_PARTICULES];
     arrayBuffer.create();
 
     initParticles();
@@ -15,7 +13,6 @@ ParticleEngine::ParticleEngine()
 ParticleEngine::~ParticleEngine()
 {
     arrayBuffer.destroy();
-   // delete particlePosData;
 }
 
 void ParticleEngine::initParticles() {
@@ -23,26 +20,34 @@ void ParticleEngine::initParticles() {
                                     , QVector3D(1.0f, 1.0f, 1.0f)
                                     , 0.0f
                                     , 180.0f
-                                    , 1.0f);
-    particleContainer[1] = Particle(QVector3D(0.0f, 8.0f, 0.0f)
+                                    , 0.7f);
+    particleContainer[1] = Particle(QVector3D(0.0f, 5.0f, 0.0f)
                                     , QVector3D(1.0f, 1.0f, 1.0f)
                                     , 0.0f
-                                    , 180.0f
-                                    , 1.0f);
-    /*particlePosData[0] = particleContainer[0].getPosition();
-    particlePosData[1] = particleContainer[1].getPosition();*/
+                                    , 165.0f
+                                    , 0.7f);
     particlePosData.push_back(particleContainer[0].getPosition());
     particlePosData.push_back(particleContainer[1].getPosition());
     arrayBuffer.bind();
     arrayBuffer.allocate(particlePosData.data(), particlePosData.size() * sizeof(QVector3D));
-    countParticules = 2;
+}
+
+void ParticleEngine::updateParticles() {
+    particlePosData.clear();
+    for(Particle &p : particleContainer) {
+        p.update();
+        particlePosData.push_back(p.getPosition());
+    }
+
+    arrayBuffer.bind();
+    arrayBuffer.allocate(particlePosData.data(), particlePosData.size() * sizeof(QVector3D));
 }
 
 void ParticleEngine::drawParticles(QOpenGLShaderProgram *program) {
     arrayBuffer.bind();
     int vertexLocation = program->attributeLocation("a_position");
     program->enableAttributeArray(vertexLocation);
-    program->setAttributeArray(vertexLocation, particlePosData.data(), 0);
+    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 3, 0);
     glDrawArrays(GL_POINTS, 0, particlePosData.size());
 }
 

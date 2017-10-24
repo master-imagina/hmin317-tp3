@@ -9,7 +9,7 @@ class Particle
 {
 public:
     Particle();
-    Particle(QVector3D pos, QVector3D color, float theta, float phi, float speed, int life = 3000.0f);
+    Particle(QVector3D pos, QVector3D color, float theta, float phi, float speed, int life = 5000);
     void update();
     QVector3D getPosition();
 private:

@@ -321,6 +321,7 @@ void MainWidget::paintGL()
     particlesProgram.bind();
     particlesProgram.setUniformValue("mvp_matrix", projection * matrix);
     if(seasonM->getSeason() == Seasons::Winter) {
+        particleEngine->updateParticles();
         particleEngine->drawParticles(&particlesProgram);
     }
 

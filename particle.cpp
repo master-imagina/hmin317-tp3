@@ -1,4 +1,5 @@
 #include "particle.h"
+#include <iostream>
 
 Particle::Particle()
     : _position(QVector3D(0.0f, 0.0f, 0.0f))
@@ -19,8 +20,8 @@ Particle::Particle(QVector3D pos, QVector3D color, float theta, float phi, float
     float thetaR = qDegreesToRadians(theta);
     float phiR = qDegreesToRadians(phi);
     float x = speed * sin(phiR) * cos(thetaR);
-    float y = speed * sin(phiR) * sin(thetaR);
-    float z = speed * cos(phiR);
+    float z = speed * sin(phiR) * sin(thetaR);
+    float y = speed * cos(phiR);
     _velocity = QVector3D(x, y, z);
 }
 
@@ -30,6 +31,7 @@ void Particle::update() {
         lastTime = QTime::currentTime().msecsSinceStartOfDay();
     } else {
         delta = QTime::currentTime().msecsSinceStartOfDay() - lastTime ;
+        lastTime = QTime::currentTime().msecsSinceStartOfDay();
     }
     _life -= delta;
     if(_life > 0) {

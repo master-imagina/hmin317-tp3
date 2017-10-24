@@ -16,6 +16,6 @@ void main()
     // Calculate vertex position in screen space
     gl_Position = mvp_matrix * vec4(a_position.xyz, 1.0f);
     h = a_position.y;
-    gl_PointSize = 10.0f;
+    gl_PointSize = 5.0f;
 }
 //! [0]
