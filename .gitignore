@@ -70,3 +70,4 @@ target_wrapper.*
 
 # QtCtreator CMake
 CMakeLists.txt.user*
+Supprimerait .idea/
