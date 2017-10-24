@@ -4,15 +4,18 @@ precision mediump int;
 precision mediump float;
 #endif
 
+uniform mat4 mvp_matrix;
+
 attribute vec4 a_position;
 attribute vec2 a_texcoord;
 
 varying vec2 v_texcoord;
 
-const mat4 mvp_matrix = {1.0, 0.0, 0.0, 1.0,
+/*const mat4 mvp_matrix = {1.0, 0.0, 0.0, 1.0,
                          0.0, 1.0, 0.0, 1.0,
                          0.0, 0.0, 1.0, 1.0,
-                         1.0, 1.0, 1.0, 1.0};
+                         1.0, 1.0, 1.0, 1.0};*/
+
 void main()
 {
     // Calculate vertex position in screen space

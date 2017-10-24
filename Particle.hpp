@@ -11,7 +11,10 @@ class Particle
 {
 public:
     Particle(const ModelParticle& model, QVector3D position = QVector3D(), QVector3D size = QVector3D(1.f,1.f,0));
+    Particle(const Particle& p);
     ~Particle();
+
+    Particle& operator=(const Particle& p);
 
     bool isAlive() const;
 
@@ -32,7 +35,7 @@ public:
     const ModelParticle &getModel() const;
 
     void update(float delta);
-    void draw(QMatrix4x4 projection, QOpenGLShaderProgram *program);
+    void draw(QOpenGLShaderProgram *program);
 
 private:
     bool m_alive;

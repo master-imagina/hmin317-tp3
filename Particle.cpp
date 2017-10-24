@@ -7,8 +7,23 @@ Particle::Particle(const ModelParticle &model, QVector3D position, QVector3D siz
     m_plan.initPlaneGeometry();
 }
 
+Particle::Particle(const Particle& p): m_alive(p.m_alive), m_actualLife(p.m_actualLife),
+                                       m_pos(p.m_pos), m_size(p.m_size), m_model(p.m_model)
+{
+    m_plan.initPlaneGeometry();
+}
+
 Particle::~Particle()
 {}
+
+Particle &Particle::operator=(const Particle& p)
+{
+    m_alive = p.m_alive;
+    m_actualLife = p.m_actualLife;
+    m_pos = p.m_pos;
+    m_size = p.m_size;
+    m_model = p.m_model;
+}
 
 bool Particle::isAlive() const
 {
@@ -18,6 +33,7 @@ bool Particle::isAlive() const
 void Particle::setActualLife(float actualLife)
 {
     m_actualLife = actualLife;
+    m_alive = m_actualLife > 0;
 }
 
 float Particle::getActualLife() const
@@ -67,24 +83,36 @@ const ModelParticle &Particle::getModel() const
 
 void Particle::update(float delta)
 {
-    m_actualLife = m_actualLife < delta ? 0 : m_actualLife - delta;
-    m_pos.setY(m_pos.y() - (ModelParticle::MASS * m_model.getMass() * delta));
+    if(m_alive)
+    {
+        m_actualLife = m_actualLife < delta ? 0 : m_actualLife - delta;
+
+        if(m_pos.y() > m_model.getGround())
+            m_pos.setY(m_pos.y() - (ModelParticle::MASS * m_model.getMass() * delta));
+        else
+            m_pos.setY(m_model.getGround());
+
+        m_alive = m_actualLife > 0;
+    }
 }
 
-void Particle::draw(QMatrix4x4 projection, QOpenGLShaderProgram *program)
+void Particle::draw(QOpenGLShaderProgram *program)
 {
-    m_model.getTexture()->bind();
+    if(m_alive)
+    {
+        m_model.getTexture()->bind();
 
-    QMatrix4x4 matrix;
-    matrix.translate(m_pos);
-    matrix.scale(m_size);
+        QMatrix4x4 matrix;
+        matrix.translate(m_pos);
+        matrix.scale(m_size);
 
-    // Set modelview-projection matrix
-    //program->setUniformValue("mvp_matrix", projection * matrix);
+        // Set modelview-projection matrix
+        program->setUniformValue("mvp_matrix", matrix);
 
-    // Use texture unit 0 which contains cube.png
-    program->setUniformValue("texture", 0);
+        // Use texture unit 0 which contains cube.png
+        program->setUniformValue("texture", 0);
 
-    // Draw cube geometry
-    m_plan.drawPlaneGeometry(program);
+        // Draw cube geometry
+        m_plan.drawPlaneGeometry(program);
+    }
 }
