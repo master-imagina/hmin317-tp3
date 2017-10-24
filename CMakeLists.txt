@@ -4,9 +4,6 @@ project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 14)
 
-# Sources
-set(SRC_FILES main.cpp mainwidget.cpp mainwidget.h geometryengine.cpp geometryengine.h)
-
 # Add Qt5
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
@@ -22,10 +19,10 @@ set(CMAKE_AUTOMOC true)
 set(CMAKE_AUTORCC true)
 
 set(SOURCE_FILES
-        main.cpp mainwidget.cpp geometryengine.cpp ModelParticle.cpp)
+        main.cpp mainwidget.cpp geometryengine.cpp ModelParticle.cpp Particle.cpp)
 
 set(HEADER_FILES
-        mainwidget.h geometryengine.h ModelParticle.hpp)
+        mainwidget.h geometryengine.h ModelParticle.hpp Particle.hpp)
 
 set(QT_RES
         shaders.qrc textures.qrc)

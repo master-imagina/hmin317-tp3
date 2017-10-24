@@ -3,16 +3,17 @@
 
 #include <QtGui/QImage>
 #include <QtGui/QVector3D>
+#include <QtGui/QOpenGLTexture>
 
 class ModelParticle
 {
 public:
-    explicit ModelParticle(QImage *texture, float life = 1.f, float mass = 1.f, float ground = 0.f,
-                           const QVector3D& zigzag = QVector3D());
+    explicit ModelParticle(QOpenGLTexture *texture, float life = 1.f, float mass = 1.f, float ground = 0.f,
+                           const QVector3D &zigzag = QVector3D());
     virtual ~ModelParticle();
 
-    void setTexture(QImage *texture);
-    QImage *getTexture() const;
+    void setTexture(QOpenGLTexture *texture);
+    QOpenGLTexture* getTexture() const;
 
     void setMass(float mass);
     float getMass() const;
@@ -26,13 +27,12 @@ public:
     void setZigzag(const QVector3D &zigzag);
     const QVector3D &getZigzag() const;
 
+    static const float MASS;
 
 private:
-    QImage *m_texture;
+    QOpenGLTexture *m_texture;
     float m_mass, m_ground, m_life; // Masse en gramme
     QVector3D m_zigzag;
-
-    static const float MASS;
 };
 
 

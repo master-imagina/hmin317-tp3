@@ -2,19 +2,19 @@
 
 const float ModelParticle::MASS = 9.98f;
 
-ModelParticle::ModelParticle(QImage *texture, float life, float mass, float ground, const QVector3D &zigzag):
+ModelParticle::ModelParticle(QOpenGLTexture *texture, float life, float mass, float ground, const QVector3D &zigzag):
     m_texture(texture), m_mass(mass), m_ground(ground), m_life(life), m_zigzag(zigzag)
 {}
 
 ModelParticle::~ModelParticle()
 {}
 
-QImage *ModelParticle::getTexture() const
+QOpenGLTexture * ModelParticle::getTexture() const
 {
     return m_texture;
 }
 
-void ModelParticle::setTexture(QImage *texture)
+void ModelParticle::setTexture(QOpenGLTexture *texture)
 {
     m_texture = texture;
 }

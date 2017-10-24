@@ -62,16 +62,12 @@ public:
     GeometryEngine();
     virtual ~GeometryEngine();
 
+    void initPlaneGeometry();
     void drawPlaneGeometry(QOpenGLShaderProgram *program);
 
 private:
-    void initPlaneGeometry();
-    void initPlaneGeometryHeightmap(QImage *heightmap);
-
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
-
-    QImage *heightmap;
 };
 
 #endif // GEOMETRYENGINE_H
