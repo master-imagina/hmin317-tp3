@@ -22,10 +22,10 @@ set(CMAKE_AUTOMOC true)
 set(CMAKE_AUTORCC true)
 
 set(SOURCE_FILES
-        main.cpp mainwidget.cpp geometryengine.cpp)
+        main.cpp mainwidget.cpp geometryengine.cpp ModelParticle.cpp)
 
 set(HEADER_FILES
-        mainwidget.h geometryengine.h)
+        mainwidget.h geometryengine.h ModelParticle.hpp)
 
 set(QT_RES
         shaders.qrc textures.qrc)
