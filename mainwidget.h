@@ -85,7 +85,7 @@ protected:
 
 private:
     QBasicTimer timer;
-    QOpenGLShaderProgram program;
+    QOpenGLShaderProgram program, particleShader;
     GeometryEngine *geometries;
 
     QOpenGLTexture *texture;

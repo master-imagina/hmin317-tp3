@@ -142,7 +142,7 @@ void MainWidget::initializeGL()
 
 void MainWidget::initShaders()
 {
-    // Compile vertex shader
+    // Compile basic vertex shader
     if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vshader.glsl"))
         close();
 
@@ -156,6 +156,18 @@ void MainWidget::initShaders()
 
     // Bind shader pipeline for use
     if (!program.bind())
+        close();
+
+    // Compile billboard vertex shader
+    if (!particleShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vbillboard.glsl"))
+        close();
+
+    // Compile fragment shader
+    if (!particleShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
+        close();
+
+    // Link shader pipeline
+    if (!particleShader.link())
         close();
 }
 
