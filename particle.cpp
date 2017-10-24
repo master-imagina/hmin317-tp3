@@ -7,15 +7,17 @@ Particle::Particle()
     , _life(3000.0f)
     , _velocity(QVector3D(0.0f, 0.0f, 0.0f))
     , lastTime(0)
+    , _size(5.0f)
 {
 
 }
 
-Particle::Particle(QVector3D pos, QVector3D color, float theta, float phi, float speed, int life)
+Particle::Particle(QVector3D pos, QVector3D color, float theta, float phi, float speed, int life, float size)
     : _position(pos)
     , _color(color)
     , _life(life)
     , lastTime(0)
+    , _size(size)
 {
     float thetaR = qDegreesToRadians(theta);
     float phiR = qDegreesToRadians(phi);
@@ -43,3 +45,6 @@ QVector3D Particle::getPosition() {
     return _position;
 }
 
+QVector4D Particle::getPosSize() {
+    return QVector4D(_position.x(), _position.y(), _position.z(), _size);
+}

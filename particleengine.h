@@ -21,7 +21,7 @@ public:
 private:
     Particle particleContainer[MAX_PARTICULES];
     QOpenGLBuffer arrayBuffer;
-    std::vector<QVector3D> particlePosData;
+    std::vector<QVector4D> particlePosSizeData;
 
     void initParticles();
 

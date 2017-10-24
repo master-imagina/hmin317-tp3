@@ -8,14 +8,11 @@ uniform mat4 mvp_matrix;
 
 attribute vec4 a_position;
 
-varying float h;
-
 //! [0]
 void main()
 {    
     // Calculate vertex position in screen space
     gl_Position = mvp_matrix * vec4(a_position.xyz, 1.0f);
-    h = a_position.y;
-    gl_PointSize = 5.0f;
+    gl_PointSize = a_position.w;
 }
 //! [0]
