@@ -1,14 +1,14 @@
 #include "Particle.hpp"
 
-Particle::Particle(const ModelParticle &model, QVector3D position, QVector3D size):
-    m_alive(true), m_actualLife(0), m_pos(position), m_size(size), m_model(model)
+Particle::Particle(const ModelParticle &model, QVector3D position):
+    m_alive(true), m_actualLife(0), m_pos(position), m_model(model)
 {
     m_actualLife = m_model.getLife();
     m_plan.initPlaneGeometry();
 }
 
 Particle::Particle(const Particle& p): m_alive(p.m_alive), m_actualLife(p.m_actualLife),
-                                       m_pos(p.m_pos), m_size(p.m_size), m_model(p.m_model)
+                                       m_pos(p.m_pos), m_model(p.m_model)
 {
     m_plan.initPlaneGeometry();
 }
@@ -21,7 +21,6 @@ Particle &Particle::operator=(const Particle& p)
     m_alive = p.m_alive;
     m_actualLife = p.m_actualLife;
     m_pos = p.m_pos;
-    m_size = p.m_size;
     m_model = p.m_model;
 }
 
@@ -61,16 +60,6 @@ const QVector3D &Particle::getPosition() const
     return m_pos;
 }
 
-void Particle::setSize(const QVector3D &size)
-{
-    m_size = size;
-}
-
-const QVector3D &Particle::getSize() const
-{
-    return m_size;
-}
-
 void Particle::setModel(const ModelParticle &model)
 {
     m_model = model;
@@ -104,7 +93,7 @@ void Particle::draw(QOpenGLShaderProgram *program)
 
         QMatrix4x4 matrix;
         matrix.translate(m_pos);
-        matrix.scale(m_size);
+        matrix.scale(m_model.getSize());
 
         // Set modelview-projection matrix
         program->setUniformValue("mvp_matrix", matrix);

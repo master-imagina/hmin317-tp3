@@ -10,7 +10,7 @@
 class Particle
 {
 public:
-    Particle(const ModelParticle& model, QVector3D position = QVector3D(), QVector3D size = QVector3D(1.f,1.f,0));
+    Particle(const ModelParticle& model, QVector3D position = QVector3D());
     Particle(const Particle& p);
     ~Particle();
 
@@ -27,10 +27,6 @@ public:
     void setPosition(const QVector3D &pos);
     const QVector3D &getPosition() const;
 
-    const QVector3D &getSize() const;
-
-    void setSize(const QVector3D &size);
-
     void setModel(const ModelParticle &model);
     const ModelParticle &getModel() const;
 
@@ -40,7 +36,7 @@ public:
 private:
     bool m_alive;
     float m_actualLife;
-    QVector3D m_actualZigZag, m_pos, m_size;
+    QVector3D m_actualZigZag, m_pos;
     ModelParticle m_model;
     GeometryEngine m_plan;
 };
