@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-project(tp2)
+set(PROJECT_NAME tp3)
+project(${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -33,5 +34,5 @@ set(SHADER_FILES
         fshader.glsl vshader.glsl)
 
 # Create executable
-add_executable(tp2 ${SOURCE_FILES} ${HEADER_FILES} ${QT_RES} ${SHADER_FILES})
-target_link_libraries(tp2 ${OPENGL_LIBRARIES} Qt5::Widgets ${OpenMP_CXX_FLAGS})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${QT_RES} ${SHADER_FILES})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} Qt5::Widgets ${OpenMP_CXX_FLAGS})

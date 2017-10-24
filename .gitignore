@@ -71,3 +71,5 @@ target_wrapper.*
 # QtCtreator CMake
 CMakeLists.txt.user*
 Supprimerait .idea/
+/todo.txt
+Supprimerait todo.txt

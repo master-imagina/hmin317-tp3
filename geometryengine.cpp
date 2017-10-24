@@ -80,7 +80,6 @@ GeometryEngine::~GeometryEngine()
     arrayBuf.destroy();
     indexBuf.destroy();
 }
-//! [0]
 
 void GeometryEngine::initPlaneGeometry()
 {
@@ -114,7 +113,6 @@ void GeometryEngine::initPlaneGeometry()
             indices[36*i+35] = 16*(i+1) + 15;
     }
 
-//! [1]
     // Transfer vertex data to VBO 0
     arrayBuf.bind();
     arrayBuf.allocate(vertices, 16*16 * sizeof(VertexData));
@@ -122,7 +120,6 @@ void GeometryEngine::initPlaneGeometry()
     // Transfer index data to VBO 1
     indexBuf.bind();
     indexBuf.allocate(indices, 15*36 * sizeof(GLushort));
-//! [1]
 }
 
 void GeometryEngine::initPlaneGeometryHeightmap(QImage *heightmap)
@@ -161,7 +158,6 @@ void GeometryEngine::initPlaneGeometryHeightmap(QImage *heightmap)
         indices[36*i+35] = 16*(i+1) + 15;
     }
 
-//! [1]
     // Transfer vertex data to VBO 0
     arrayBuf.bind();
     arrayBuf.allocate(vertices, 16*16 * sizeof(VertexData));
@@ -169,7 +165,6 @@ void GeometryEngine::initPlaneGeometryHeightmap(QImage *heightmap)
     // Transfer index data to VBO 1
     indexBuf.bind();
     indexBuf.allocate(indices, 15*36 * sizeof(GLushort));
-//! [1]
 }
 
 //void GeometryEngine::initPlaneGeometry()
@@ -243,7 +238,6 @@ void GeometryEngine::initPlaneGeometryHeightmap(QImage *heightmap)
 //}
 
 
-//! [2]
 void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
 {
     // Tell OpenGL which VBOs to use
@@ -269,4 +263,3 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
     // Draw plane geometry using indices from VBO 1
     glDrawElements(GL_TRIANGLE_STRIP, 15*36, GL_UNSIGNED_SHORT, 0);
 }
-//! [2]

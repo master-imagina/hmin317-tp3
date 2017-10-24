@@ -61,6 +61,7 @@
 #include <QBasicTimer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
+#include <QtCore/QElapsedTimer>
 
 class GeometryEngine;
 
@@ -69,8 +70,8 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit MainWidget(QWidget *parent, int fps);
-    ~MainWidget();
+    explicit MainWidget(QWidget *parent, int fps, float worldTime = 1.f);
+    ~MainWidget() override;
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -93,12 +94,13 @@ private:
 
     QMatrix4x4 projection;
 
-    QVector2D mousePressPosition;
     QVector3D rotationAxis;
     qreal angularSpeed;
     QQuaternion rotation;
 
     int m_fps;
+    float m_worldTime;
+    QElapsedTimer m_timer;
 };
 
 #endif // MAINWIDGET_H

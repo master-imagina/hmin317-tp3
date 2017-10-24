@@ -56,11 +56,12 @@
 #include <iostream>
 #include <sstream>
 
-MainWidget::MainWidget(QWidget *parent, int fps) :
+MainWidget::MainWidget(QWidget *parent, int fps, float worldTime):
     QOpenGLWidget(parent),
     texture(0),
     angularSpeed(0.5),
-    m_fps(fps)
+    m_fps(fps),
+    m_worldTime(worldTime)
 {
     rotationAxis.setZ(1.f);
 
@@ -68,9 +69,6 @@ MainWidget::MainWidget(QWidget *parent, int fps) :
     title += QString::number(m_fps);
     title += " fps";
     setWindowTitle(title);
-
-    // Une vitesse de 0.5 pour 60 fps, donc
-    angularSpeed = 0.5 * (60.0 / static_cast<double>(m_fps));
 }
 
 MainWidget::~MainWidget()
@@ -83,7 +81,7 @@ MainWidget::~MainWidget()
     doneCurrent();
 }
 
-//! [0]
+/*
 void MainWidget::mousePressEvent(QMouseEvent *e)
 {
     // Save mouse press position
@@ -93,7 +91,7 @@ void MainWidget::mousePressEvent(QMouseEvent *e)
 void MainWidget::mouseReleaseEvent(QMouseEvent *e)
 {
     // Mouse release position - mouse press position
-    /*QVector2D diff = QVector2D(e->localPos()) - mousePressPosition;
+    QVector2D diff = QVector2D(e->localPos()) - mousePressPosition;
 
     // Rotation axis along the z axis
     //QVector3D n = QVector3D(diff.y(), diff.x(), 0.0).normalized();
@@ -106,20 +104,19 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
     rotationAxis = (rotationAxis * angularSpeed + n * acc).normalized();
 
     // Increase angular speed
-    angularSpeed += acc;*/
+    angularSpeed += acc;
 }
-//! [0]
+*/
 
-//! [1]
 void MainWidget::timerEvent(QTimerEvent *)
 {
     // Update rotation
-    rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
+    double newAngle = angularSpeed * (60.0 / (1000.0 / static_cast<double>(m_timer.restart()) )) * (double)m_worldTime;
+    rotation = QQuaternion::fromAxisAndAngle(rotationAxis, (float)newAngle) * rotation;
 
     // Request an update
     update();
 }
-//! [1]
 
 void MainWidget::initializeGL()
 {
@@ -130,13 +127,11 @@ void MainWidget::initializeGL()
     initShaders();
     initTextures();
 
-//! [2]
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
 
     // Enable back face culling
     glEnable(GL_CULL_FACE);
-//! [2]
 
     geometries = new GeometryEngine;
 
@@ -145,7 +140,6 @@ void MainWidget::initializeGL()
     timer.start(milliSleep, this);
 }
 
-//! [3]
 void MainWidget::initShaders()
 {
     // Compile vertex shader
@@ -164,9 +158,7 @@ void MainWidget::initShaders()
     if (!program.bind())
         close();
 }
-//! [3]
 
-//! [4]
 void MainWidget::initTextures()
 {
     // Load cube.png image
@@ -182,9 +174,7 @@ void MainWidget::initTextures()
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
     texture->setWrapMode(QOpenGLTexture::Repeat);
 }
-//! [4]
 
-//! [5]
 void MainWidget::resizeGL(int w, int h)
 {
     // Calculate aspect ratio
@@ -199,7 +189,6 @@ void MainWidget::resizeGL(int w, int h)
     // Set perspective projection
     projection.perspective(fov, aspect, zNear, zFar);
 }
-//! [5]
 
 void MainWidget::paintGL()
 {
@@ -208,7 +197,6 @@ void MainWidget::paintGL()
 
     texture->bind();
 
-//! [6]
     // Calculate model view transformation
     QMatrix4x4 matrix;
 
@@ -219,10 +207,11 @@ void MainWidget::paintGL()
 
     matrix.translate(0.0, -1.8, 0.0);
 
-    // QVector3D eye = QVector3D(0.0,0.5,-5.0);
-    // QVector3D center = QVector3D(0.0,0.0,2.0);
-    // QVector3D up = QVector3D(-1,0,0);
-    // matrix.lookAt(eye,center,up);
+    /*
+    QVector3D eye = QVector3D(0.0,0.5,-5.0);
+    QVector3D center = QVector3D(0.0,0.0,2.0);
+    QVector3D up = QVector3D(-1,0,0);
+    matrix.lookAt(eye,center,up);*/
 
     matrix.rotate(rotation);
 
