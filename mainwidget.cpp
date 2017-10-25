@@ -310,14 +310,6 @@ void MainWidget::paintGL()
     geometries->drawPlaneGeometry(&program);
 
 
-    glPointSize(15);
-    glBegin(GL_POINTS);
-
-    glVertex3f(0, 50,0);
-
-    glEnd();
-
-
     if(input.getMouseLeftButton()){
         c.setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
         setCursor(c);
