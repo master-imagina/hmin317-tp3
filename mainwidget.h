@@ -52,6 +52,7 @@
 #define MAINWIDGET_H
 
 #include "geometryengine.h"
+#include "ParticleEmitter.hpp"
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -99,6 +100,10 @@ private:
     int m_fps;
     float m_worldTime;
     QElapsedTimer m_timer;
+
+    // _____ PARTICULES _______
+    ModelParticle m_mp;
+    ParticleEmitter *m_ep;
 };
 
 #endif // MAINWIDGET_H

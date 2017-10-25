@@ -1,5 +1,8 @@
 #include <omp.h>
+#include <iostream>
 #include "ParticleEmitter.hpp"
+
+using namespace std;
 
 ParticleEmitter::ParticleEmitter(unsigned int nbParticles, const ModelParticle &model, QVector3D position,
                                  float height, float radius):
@@ -8,8 +11,9 @@ ParticleEmitter::ParticleEmitter(unsigned int nbParticles, const ModelParticle &
     for(unsigned int i=0; i < m_nbParticles; ++i)
     {
         m_particles.emplace_back(m_model);
-        resetParticlePosition(*m_particles.end());
+        resetParticlePosition(m_particles[m_particles.size() - 1]);
     }
+    srand(time(NULL));
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -84,26 +88,26 @@ void ParticleEmitter::update(float delta)
     for(auto& particle: m_particles)
     {
         if(particle.isAlive())
-            particle.update(delta);
+            particle.update(*this, delta);
         else
             resetParticlePosition(particle);
     }
 }
 
-void ParticleEmitter::draw(QOpenGLShaderProgram *program)
+void ParticleEmitter::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
 {
     for(auto& particle: m_particles)
-        particle.draw(program);
+        particle.draw(proj, program);
 }
 
 void ParticleEmitter::resetParticlePosition(Particle &particule)
 {
-    srand(time(NULL));
     float radius = static_cast<float>(rand() % 31415) / 10000.f;
+    float random = static_cast<float>(rand() % 100) / 100.f;
 
-    float posX = cosf(radius) * m_radius;
-    float posZ = sinf(radius) * m_radius;
+    float posX = cosf(radius) * m_radius * random;
+    float posZ = sinf(radius) * m_radius * random;
 
     particule.setPosition(QVector3D(posX + m_postion.x(), m_height + m_postion.y(), posZ + m_postion.z()));
-    particule.setActualLife(m_model.getLife());
+    particule.resetLife();
 }

@@ -8,8 +8,8 @@
 class ModelParticle
 {
 public:
-    explicit ModelParticle(QOpenGLTexture *texture, float life = 10.f, float mass = 0.5f, float ground = -1.f,
-                           QVector3D size = QVector3D(0.3f, 0.3f, 0), const QVector3D &zigzag = QVector3D());
+    explicit ModelParticle(QOpenGLTexture *texture, float life = 10.f, float mass = 0.05f, float ground = -0.f,
+                           QVector3D size = QVector3D(0.5f, 0.5f, 0), const QVector3D &zigzag = QVector3D());
     virtual ~ModelParticle();
 
     void setTexture(QOpenGLTexture *texture);

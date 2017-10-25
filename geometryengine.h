@@ -56,7 +56,7 @@
 #include <QOpenGLBuffer>
 #include <QtGui/QOpenGLTexture>
 
-class GeometryEngine : protected QOpenGLFunctions
+class GeometryEngine
 {
 public:
     GeometryEngine();
@@ -66,6 +66,9 @@ public:
     void drawPlaneGeometry(QOpenGLShaderProgram *program);
 
 private:
+    static QOpenGLFunctions gl;
+    static bool glinit;
+
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
 };

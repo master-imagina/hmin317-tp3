@@ -5,11 +5,13 @@
 #include <vector>
 #include "Particle.hpp"
 
+class Particle;
+
 class ParticleEmitter
 {
 public:
-    ParticleEmitter(unsigned int nbParticles, const ModelParticle &model, QVector3D position,
-                        float height, float radius);
+    ParticleEmitter(unsigned int nbParticles, const ModelParticle &model, QVector3D position = QVector3D(),
+                        float height = 0.f, float radius = 1.f);
     ~ParticleEmitter();
 
     void setNbParticles(unsigned int nbParticles);
@@ -28,7 +30,7 @@ public:
     const QVector3D &getPostion() const;
 
     void update(float delta);
-    void draw(QOpenGLShaderProgram *program);
+    void draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program);
 
 private:
     unsigned int m_nbParticles;

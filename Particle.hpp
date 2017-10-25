@@ -6,6 +6,9 @@
 #include <QtGui/QOpenGLShaderProgram>
 #include "ModelParticle.hpp"
 #include "geometryengine.h"
+#include "ParticleEmitter.hpp"
+
+class ParticleEmitter;
 
 class Particle
 {
@@ -30,8 +33,10 @@ public:
     void setModel(const ModelParticle &model);
     const ModelParticle &getModel() const;
 
-    void update(float delta);
-    void draw(QOpenGLShaderProgram *program);
+    void update(const ParticleEmitter& emit, float delta);
+    void draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program);
+
+    void resetLife();
 
 private:
     bool m_alive;

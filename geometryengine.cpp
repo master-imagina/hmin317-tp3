@@ -54,6 +54,9 @@
 #include <QVector3D>
 #include <QtGui/QColor>
 
+QOpenGLFunctions GeometryEngine::gl;
+bool GeometryEngine::glinit = false;
+
 struct VertexData
 {
     QVector3D position;
@@ -64,7 +67,11 @@ struct VertexData
 GeometryEngine::GeometryEngine()
     : indexBuf(QOpenGLBuffer::IndexBuffer)
 {
-    initializeOpenGLFunctions();
+    if(!glinit)
+    {
+        gl.initializeOpenGLFunctions();
+        glinit = true;
+    }
 
     // Generate 2 VBOs
     arrayBuf.create();
@@ -73,8 +80,11 @@ GeometryEngine::GeometryEngine()
 
 GeometryEngine::~GeometryEngine()
 {
-    arrayBuf.destroy();
-    indexBuf.destroy();
+    if(arrayBuf.isCreated())
+        arrayBuf.destroy();
+
+    if(indexBuf.isCreated())
+        indexBuf.destroy();
 }
 
 void GeometryEngine::initPlaneGeometry()
@@ -123,5 +133,5 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program)
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
     // Draw plane geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_SHORT, 0);
+    gl.glDrawElements(GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_SHORT, 0);
 }

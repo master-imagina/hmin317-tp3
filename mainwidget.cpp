@@ -49,6 +49,7 @@
 ****************************************************************************/
 
 #include "mainwidget.h"
+#include "ModelParticle.hpp"
 
 #include <QMouseEvent>
 
@@ -61,7 +62,9 @@ MainWidget::MainWidget(QWidget *parent, int fps, float worldTime):
     texture(0),
     angularSpeed(0.5),
     m_fps(fps),
-    m_worldTime(worldTime)
+    m_worldTime(worldTime),
+    m_mp(texture),
+    m_ep(nullptr)
 {
     rotationAxis.setZ(1.f);
 
@@ -111,8 +114,12 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
 void MainWidget::timerEvent(QTimerEvent *)
 {
     // Update rotation
-    double newAngle = angularSpeed * (60.0 / (1000.0 / static_cast<double>(m_timer.restart()) )) * (double)m_worldTime;
+    float delta = static_cast<float>(m_timer.restart());
+    double newAngle = angularSpeed * (60.0 / (1000.0 / delta)) * (double)m_worldTime;
     rotation = QQuaternion::fromAxisAndAngle(rotationAxis, (float)newAngle) * rotation;
+
+    // __________ PARTICULES _______
+    m_ep->update(delta);
 
     // Request an update
     update();
@@ -134,6 +141,10 @@ void MainWidget::initializeGL()
     glEnable(GL_CULL_FACE);
 
     geometries = new GeometryEngine;
+    geometries->initPlaneGeometry();
+
+    // ____ PARTICULES ____
+    m_ep = new ParticleEmitter(100, m_mp, QVector3D(), 2.5f);
 
     // Use QBasicTimer because its faster than QTimer
     int milliSleep = 1000 / m_fps;
@@ -158,6 +169,7 @@ void MainWidget::initShaders()
     if (!program.bind())
         close();
 
+    // ____________ PARTICULES ____________
     // Compile billboard vertex shader
     if (!particleShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vbillboard.glsl"))
         close();
@@ -185,6 +197,8 @@ void MainWidget::initTextures()
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
     texture->setWrapMode(QOpenGLTexture::Repeat);
+
+    m_mp.setTexture(texture);
 }
 
 void MainWidget::resizeGL(int w, int h)
@@ -193,7 +207,7 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 1.0, far plane to 10.0, field of view 45 degrees
-    const qreal zNear = 1.0, zFar = 10.0, fov = 45.0;
+    const qreal zNear = 0.5, zFar = 100.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -204,6 +218,7 @@ void MainWidget::resizeGL(int w, int h)
 
 void MainWidget::paintGL()
 {
+    // ________ Dessin du sol __________
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -212,9 +227,10 @@ void MainWidget::paintGL()
     // Calculate model view transformation
     QMatrix4x4 matrix;
 
-    matrix.translate(0.0, 0.0, -5.0);
+    matrix.scale(2.0f);
+    matrix.translate(0.0, 0.0, -4.0);
 
-    QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-45.0);
+    QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-70.0);
     matrix.rotate(framing);
 
     matrix.translate(0.0, -1.8, 0.0);
@@ -225,7 +241,7 @@ void MainWidget::paintGL()
     QVector3D up = QVector3D(-1,0,0);
     matrix.lookAt(eye,center,up);*/
 
-    matrix.rotate(rotation);
+    //matrix.rotate(rotation);
 
 
     // Set modelview-projection matrix
@@ -236,4 +252,8 @@ void MainWidget::paintGL()
 
     // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
+
+    // ________ Dessin des particules __________
+    m_ep->setPostion(QVector3D(0.0, -1.0, -4.0));
+    m_ep->draw(projection, &program);
 }

@@ -1,4 +1,5 @@
 #include "Particle.hpp"
+#include "ParticleEmitter.hpp"
 
 Particle::Particle(const ModelParticle &model, QVector3D position):
     m_alive(true), m_actualLife(0), m_pos(position), m_model(model)
@@ -22,6 +23,7 @@ Particle &Particle::operator=(const Particle& p)
     m_actualLife = p.m_actualLife;
     m_pos = p.m_pos;
     m_model = p.m_model;
+    m_plan.initPlaneGeometry();
 }
 
 bool Particle::isAlive() const
@@ -70,22 +72,23 @@ const ModelParticle &Particle::getModel() const
     return m_model;
 }
 
-void Particle::update(float delta)
+void Particle::update(const ParticleEmitter& emit, float delta)
 {
-    if(m_alive)
+    if(m_alive && delta > 0.f)
     {
+        delta /= 1000.f;
         m_actualLife = m_actualLife < delta ? 0 : m_actualLife - delta;
 
-        if(m_pos.y() > m_model.getGround())
+        if(m_pos.y() > (m_model.getGround() + emit.getPostion().y()))
             m_pos.setY(m_pos.y() - (ModelParticle::MASS * m_model.getMass() * delta));
         else
-            m_pos.setY(m_model.getGround());
+            m_pos.setY(m_model.getGround() + emit.getPostion().y());
 
         m_alive = m_actualLife > 0;
     }
 }
 
-void Particle::draw(QOpenGLShaderProgram *program)
+void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
 {
     if(m_alive)
     {
@@ -94,9 +97,14 @@ void Particle::draw(QOpenGLShaderProgram *program)
         QMatrix4x4 matrix;
         matrix.translate(m_pos);
         matrix.scale(m_model.getSize());
+        QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-70.0);
+        //matrix.rotate(framing);
+       // matrix.translate(0.0, -1.8, 0.0);
+
+
 
         // Set modelview-projection matrix
-        program->setUniformValue("mvp_matrix", matrix);
+        program->setUniformValue("mvp_matrix", proj * matrix);
 
         // Use texture unit 0 which contains cube.png
         program->setUniformValue("texture", 0);
@@ -104,4 +112,10 @@ void Particle::draw(QOpenGLShaderProgram *program)
         // Draw cube geometry
         m_plan.drawPlaneGeometry(program);
     }
+}
+
+void Particle::resetLife()
+{
+    float random = static_cast<float>(rand() % 200) / 100.f;
+    setActualLife(m_model.getLife() * random);
 }
