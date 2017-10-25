@@ -66,12 +66,17 @@
 
 class GeometryEngine;
 
+const int WINTER = 0;
+const int SPRING = 1;
+const int SUMMER = 2;
+const int AUTOMN = 3;
+
 class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
 public:
-    explicit MainWidget(QWidget *parent, int fps, float worldTime = 1.f);
+    explicit MainWidget(QWidget *parent, int fps, int start_saison, float worldTime = 1.f);
     ~MainWidget() override;
 
 protected:
@@ -89,7 +94,7 @@ private:
     QOpenGLShaderProgram program, particleShader;
     GeometryEngine *geometries;
 
-    QOpenGLTexture *texture;
+    QOpenGLTexture *tex_ground, *tex_p_snow, *tex_p_flower, *tex_p_rain, *tex_p_leaf;
 
     QMatrix4x4 projection;
 
@@ -102,8 +107,12 @@ private:
     QElapsedTimer m_timer;
 
     // _____ PARTICULES _______
-    ModelParticle m_mp;
+    ModelParticle m_mpWinter, m_mpSpring, m_mpSummer, m_mpAutomn;
     ParticleEmitter *m_ep;
+    int m_actualSaison;
+
+    void setSaison(int saison);
+    void nextSaison();
 };
 
 #endif // MAINWIDGET_H

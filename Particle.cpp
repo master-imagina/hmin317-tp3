@@ -92,6 +92,16 @@ void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
 {
     if(m_alive)
     {
+        // Enable depth buffer
+        glDisable(GL_DEPTH_TEST);
+
+        // Enable back face culling
+        glDisable(GL_CULL_FACE);
+
+        // Transparency
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         m_model.getTexture()->bind();
 
         QMatrix4x4 matrix;
@@ -111,11 +121,20 @@ void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
 
         // Draw cube geometry
         m_plan.drawPlaneGeometry(program);
+
+        // Enable depth buffer
+        glEnable(GL_DEPTH_TEST);
+
+        // Enable back face culling
+        glEnable(GL_CULL_FACE);
+
+        // Transparency
+        glDisable(GL_BLEND);
     }
 }
 
 void Particle::resetLife()
 {
-    float random = static_cast<float>(rand() % 200) / 100.f;
-    setActualLife(m_model.getLife() * random);
+    float random = static_cast<float>(rand() % 200) / 50.f;
+    setActualLife(m_model.getLife() * (random));
 }

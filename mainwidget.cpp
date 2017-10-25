@@ -57,14 +57,18 @@
 #include <iostream>
 #include <sstream>
 
-MainWidget::MainWidget(QWidget *parent, int fps, float worldTime):
+MainWidget::MainWidget(QWidget *parent, int fps, int start_saison, float worldTime):
     QOpenGLWidget(parent),
-    texture(0),
+    tex_ground(0), tex_p_snow(0), tex_p_flower(0), tex_p_rain(0), tex_p_leaf(0),
     angularSpeed(0.5),
     m_fps(fps),
     m_worldTime(worldTime),
-    m_mp(texture),
-    m_ep(nullptr)
+    m_mpWinter(nullptr, 30.f, 0.05f, 0, QVector3D(0.3f,0.3f,0.0f)),
+    m_mpSpring(nullptr, 30.f, 0.0f),
+    m_mpSummer(nullptr, 2.f, 1.f, -2.0f, QVector3D(1.5f,1.5f,0.0f)),
+    m_mpAutomn(nullptr, 30.f, 0.1f),
+    m_ep(nullptr),
+    m_actualSaison(start_saison)
 {
     rotationAxis.setZ(1.f);
 
@@ -79,7 +83,7 @@ MainWidget::~MainWidget()
     // Make sure the context is current when deleting the texture
     // and the buffers.
     makeCurrent();
-    delete texture;
+    delete tex_ground;
     delete geometries;
     doneCurrent();
 }
@@ -144,7 +148,8 @@ void MainWidget::initializeGL()
     geometries->initPlaneGeometry();
 
     // ____ PARTICULES ____
-    m_ep = new ParticleEmitter(100, m_mp, QVector3D(), 2.5f);
+    m_ep = new ParticleEmitter(1000, m_mpWinter, QVector3D(), 2.5f, 4.f);
+    setSaison(m_actualSaison);
 
     // Use QBasicTimer because its faster than QTimer
     int milliSleep = 1000 / m_fps;
@@ -185,20 +190,39 @@ void MainWidget::initShaders()
 
 void MainWidget::initTextures()
 {
-    // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/cube.png").mirrored());
+    // Load ground.png image
+    tex_ground = new QOpenGLTexture(QImage(":/ground.jpg").mirrored());
 
     // Set nearest filtering mode for texture minification
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    tex_ground->setMinificationFilter(QOpenGLTexture::Nearest);
 
     // Set bilinear filtering mode for texture magnification
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    tex_ground->setMagnificationFilter(QOpenGLTexture::Linear);
 
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-    texture->setWrapMode(QOpenGLTexture::Repeat);
+    tex_ground->setWrapMode(QOpenGLTexture::Repeat);
 
-    m_mp.setTexture(texture);
+    // _______ PARTICLES ______
+    tex_p_snow = new QOpenGLTexture(QImage(":/part_snow.png"));
+    tex_p_snow->setMinificationFilter(QOpenGLTexture::Nearest);
+    tex_p_snow->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_mpWinter.setTexture(tex_p_snow);
+
+    tex_p_flower = new QOpenGLTexture(QImage(":/part_flower.png"));
+    tex_p_flower->setMinificationFilter(QOpenGLTexture::Nearest);
+    tex_p_flower->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_mpSpring.setTexture(tex_p_flower);
+
+    tex_p_rain = new QOpenGLTexture(QImage(":/part_rain.png"));
+    tex_p_rain->setMinificationFilter(QOpenGLTexture::Nearest);
+    tex_p_rain->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_mpSummer.setTexture(tex_p_rain);
+
+    tex_p_leaf = new QOpenGLTexture(QImage(":/part_leaf.png"));
+    tex_p_leaf->setMinificationFilter(QOpenGLTexture::Nearest);
+    tex_p_leaf->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_mpAutomn.setTexture(tex_p_leaf);
 }
 
 void MainWidget::resizeGL(int w, int h)
@@ -222,18 +246,18 @@ void MainWidget::paintGL()
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    texture->bind();
+    tex_ground->bind();
 
     // Calculate model view transformation
     QMatrix4x4 matrix;
 
-    matrix.scale(2.0f);
-    matrix.translate(0.0, 0.0, -4.0);
+    matrix.translate(0.0, -1.1, -3.0);
 
-    QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-70.0);
+    QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-85.0);
     matrix.rotate(framing);
 
-    matrix.translate(0.0, -1.8, 0.0);
+    //matrix.translate(0.0, 0.0, 0.0);
+    matrix.scale(5.0f);
 
     /*
     QVector3D eye = QVector3D(0.0,0.5,-5.0);
@@ -256,4 +280,51 @@ void MainWidget::paintGL()
     // ________ Dessin des particules __________
     m_ep->setPostion(QVector3D(0.0, -1.0, -4.0));
     m_ep->draw(projection, &program);
+}
+
+void MainWidget::setSaison(int saison)
+{
+    // ParticleEmitter(1000, m_mpWinter, QVector3D(), 2.5f, 4.f);
+    switch(saison)
+    {
+        case WINTER:
+            m_ep->setNbParticles(1000);
+            m_ep->setModel(m_mpWinter);
+            m_ep->setHeight(2.5f);
+            m_ep->setRadius(4.f);
+            setWindowTitle("Hiver");
+            break;
+
+        case SPRING:
+            m_ep->setNbParticles(200);
+            m_ep->setModel(m_mpSpring);
+            m_ep->setHeight(0);
+            m_ep->setRadius(4.f);
+            setWindowTitle("Printemps");
+            break;
+
+        case SUMMER:
+            m_ep->setNbParticles(1000);
+            m_ep->setModel(m_mpSummer);
+            m_ep->setHeight(2.5f);
+            m_ep->setRadius(3.f);
+            setWindowTitle("Ete (en bretagne)");
+            break;
+
+        case AUTOMN:
+            m_ep->setNbParticles(50);
+            m_ep->setModel(m_mpAutomn);
+            m_ep->setHeight(2.5f);
+            m_ep->setRadius(3.f);
+            setWindowTitle("Automne");
+            break;
+    }
+}
+
+void MainWidget::nextSaison()
+{
+    m_actualSaison++;
+    m_actualSaison %= 4;
+
+    setSaison(m_actualSaison);
 }

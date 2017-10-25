@@ -65,6 +65,8 @@ float ParticleEmitter::getRadius() const
 void ParticleEmitter::setModel(const ModelParticle &model)
 {
     m_model = model;
+    for(auto& particule: m_particles)
+        particule.setModel(model);
 }
 
 const ModelParticle &ParticleEmitter::getModel() const
