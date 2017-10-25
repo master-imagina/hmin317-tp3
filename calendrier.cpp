@@ -8,6 +8,7 @@ Calendrier::Calendrier(QObject *parent) : QObject(parent)
 }
 
 void Calendrier::calendrierChangeSaison() {
+    std::cout << "Changement de saison" << std::endl;
     emit signalSaison();
 }
 

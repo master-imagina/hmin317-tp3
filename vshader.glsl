@@ -11,7 +11,7 @@ attribute vec2 a_texcoord;
 attribute vec3 a_color;
 
 varying vec2 v_texcoord;
-varying vec3 v_color;
+//varying vec3 v_color;
 
 //! [0]
 void main()
@@ -23,6 +23,6 @@ void main()
     // Value will be automatically interpolated to fragments inside polygon faces
     v_texcoord = a_texcoord;
 
-    v_color = a_color;
+    //v_color = a_color;
 }
 //! [0]
