@@ -64,18 +64,18 @@ int main(int argc, char *argv[])
     format.setDepthBufferSize(24);
     QSurfaceFormat::setDefaultFormat(format);
 
-    app.setApplicationName("TP 2 - Moteurs");
-    app.setApplicationVersion("0.2");
+    app.setApplicationName("TP 3 - Moteurs");
+    app.setApplicationVersion("0.3");
 #ifndef QT_NO_OPENGL
-    MainWidget widget1(nullptr, 1);
-    MainWidget widget10(nullptr, 10);
-    MainWidget widget100(nullptr, 100);
-    MainWidget widget1000(nullptr, 1000);
+    MainWidget widgetP(nullptr, 60, Saison::PRINTEMPS);
+    MainWidget widgetE(nullptr, 60, Saison::ETE);
+    MainWidget widgetA(nullptr, 60, Saison::AUTOMNE);
+    MainWidget widgetH(nullptr, 60, Saison::HIVER);
 
-    widget1.show();
-    widget10.show();
-    widget100.show();
-    widget1000.show();
+    widgetP.show();
+    widgetE.show();
+    widgetA.show();
+    widgetH.show();
 #else
     QLabel note("OpenGL Support required");
     note.show();

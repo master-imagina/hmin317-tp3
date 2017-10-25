@@ -54,11 +54,11 @@
 
 #include <math.h>
 
-MainWidget::MainWidget(QWidget *parent, int _fps) :
+MainWidget::MainWidget(QWidget *parent, int _fps, Saison _saison) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
-    angularSpeed(1), fps(_fps)
+    angularSpeed(1), fps(_fps), saison(_saison)
 {
 }
 
@@ -128,7 +128,7 @@ void MainWidget::timerEvent(QTimerEvent *)
         angularSpeed = 0.0;
     } else {*/
         // Update rotation
-        rotation = QQuaternion::fromAxisAndAngle(QVector3D(0.0,0.0,1.0), vitesse) * rotation;
+        //rotation = QQuaternion::fromAxisAndAngle(QVector3D(0.0,0.0,1.0), vitesse) * rotation;
 
         // Request an update
         update();
