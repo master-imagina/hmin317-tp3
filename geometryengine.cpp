@@ -89,7 +89,7 @@ void GeometryEngine::initPlaneGeometry()
 
     // Draw 15 bands each with 32 vertices, with repeated vertices at the end of each band
     GLushort indices[6] = { 0, 1, 2,
-                            2, 1, 3 };
+                            2, 3, 1 };
 
     // Transfer vertex data to VBO 0
     arrayBuf.bind();
