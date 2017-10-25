@@ -173,19 +173,6 @@ void MainWidget::initShaders()
     // Bind shader pipeline for use
     if (!program.bind())
         close();
-
-    // ____________ PARTICULES ____________
-    // Compile billboard vertex shader
-    if (!particleShader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vbillboard.glsl"))
-        close();
-
-    // Compile fragment shader
-    if (!particleShader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
-        close();
-
-    // Link shader pipeline
-    if (!particleShader.link())
-        close();
 }
 
 void MainWidget::initTextures()
