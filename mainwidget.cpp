@@ -153,6 +153,13 @@ void MainWidget::initializeGL()
     glEnable(GL_CULL_FACE);
 //! [2]
 
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    int posLum[4] = {0,5,0,1};
+    glLightiv(GL_LIGHT0, GL_POSITION, posLum); //Positionnement de la lumière (restera fixe)
+    glLightfv(GL_LIGHT0, GL_POSITION, light); //Couleur de la lumière
+
     geometries = new GeometryEngine(parentWidget());
 
     // Use QBasicTimer because its faster than QTimer
@@ -239,6 +246,8 @@ void MainWidget::paintGL()
     // matrix.lookAt(eye,center,up);
 
     matrix.rotate(rotation);
+
+    glLightfv(GL_LIGHT0, GL_POSITION, light); //Changement de la lumière si besoin
 
 
     // Set modelview-projection matrix

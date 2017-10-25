@@ -106,6 +106,7 @@ private:
     int fps; float vitesse = 1;
 
     Saison saison;
+    float light[4] = {0,1,1,1};
 };
 
 #endif // MAINWIDGET_H
