@@ -51,9 +51,9 @@
 #include <QApplication>
 #include <QLabel>
 #include <QSurfaceFormat>
-
-#ifndef QT_NO_OPENGL
+#include <QTimer>
 #include "mainwidget.h"
+#ifndef QT_NO_OPENGL
 #endif
 
 int main(int argc, char *argv[])
@@ -68,8 +68,30 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("0.1");
 
 #ifndef QT_NO_OPENGL
-    MainWidget widget(nullptr, 30, AUTOMN);
-    widget.show();
+    MainWidget* win_hiver     = new MainWidget(nullptr, 30, WINTER);
+    MainWidget* win_printemps = new MainWidget(nullptr, 30, SPRING);
+    MainWidget* win_ete       = new MainWidget(nullptr, 30, SUMMER);
+    MainWidget* win_automne   = new MainWidget(nullptr, 30, AUTOMN);
+
+    win_hiver->move(0, 0);
+    win_printemps->move(win_hiver->size().width(), 0);
+    win_ete->move(0, win_hiver->size().height());
+    win_automne->move(win_hiver->size().width(), win_hiver->size().height());
+
+    win_hiver->show();
+    win_printemps->show();
+    win_ete->show();
+    win_automne->show();
+
+    // Prepare le timer des saisons
+    QTimer* saisonTimer = new QTimer;
+
+    QObject::connect(saisonTimer, SIGNAL(timeout()), win_hiver, SLOT(nextSaison()));
+    QObject::connect(saisonTimer, SIGNAL(timeout()), win_printemps, SLOT(nextSaison()));
+    QObject::connect(saisonTimer, SIGNAL(timeout()), win_ete, SLOT(nextSaison()));
+    QObject::connect(saisonTimer, SIGNAL(timeout()), win_automne, SLOT(nextSaison()));
+
+    saisonTimer->start(10*1000);
 #else
     QLabel note("OpenGL Support required");
     note.show();

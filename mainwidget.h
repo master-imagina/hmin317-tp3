@@ -112,6 +112,8 @@ private:
     int m_actualSaison;
 
     void setSaison(int saison);
+
+public slots:
     void nextSaison();
 };
 

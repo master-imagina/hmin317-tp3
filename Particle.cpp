@@ -95,9 +95,6 @@ void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
         // Enable depth buffer
         glDisable(GL_DEPTH_TEST);
 
-        // Enable back face culling
-        glDisable(GL_CULL_FACE);
-
         // Transparency
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -108,10 +105,6 @@ void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
         matrix.translate(m_pos);
         matrix.scale(m_model.getSize());
         QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-70.0);
-        //matrix.rotate(framing);
-       // matrix.translate(0.0, -1.8, 0.0);
-
-
 
         // Set modelview-projection matrix
         program->setUniformValue("mvp_matrix", proj * matrix);
@@ -124,9 +117,6 @@ void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
 
         // Enable depth buffer
         glEnable(GL_DEPTH_TEST);
-
-        // Enable back face culling
-        glEnable(GL_CULL_FACE);
 
         // Transparency
         glDisable(GL_BLEND);

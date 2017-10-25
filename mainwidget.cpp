@@ -88,33 +88,6 @@ MainWidget::~MainWidget()
     doneCurrent();
 }
 
-/*
-void MainWidget::mousePressEvent(QMouseEvent *e)
-{
-    // Save mouse press position
-    //mousePressPosition = QVector2D(e->localPos());
-}
-
-void MainWidget::mouseReleaseEvent(QMouseEvent *e)
-{
-    // Mouse release position - mouse press position
-    QVector2D diff = QVector2D(e->localPos()) - mousePressPosition;
-
-    // Rotation axis along the z axis
-    //QVector3D n = QVector3D(diff.y(), diff.x(), 0.0).normalized();
-    QVector3D n = QVector3D(0.0,0.0,1.0).normalized();
-
-    // Accelerate angular speed relative to the length of the mouse sweep
-    qreal acc = diff.length() / 100.0;
-
-    // Calculate new rotation axis as weighted sum
-    rotationAxis = (rotationAxis * angularSpeed + n * acc).normalized();
-
-    // Increase angular speed
-    angularSpeed += acc;
-}
-*/
-
 void MainWidget::timerEvent(QTimerEvent *)
 {
     // Update rotation
@@ -246,15 +219,6 @@ void MainWidget::paintGL()
     //matrix.translate(0.0, 0.0, 0.0);
     matrix.scale(5.0f);
 
-    /*
-    QVector3D eye = QVector3D(0.0,0.5,-5.0);
-    QVector3D center = QVector3D(0.0,0.0,2.0);
-    QVector3D up = QVector3D(-1,0,0);
-    matrix.lookAt(eye,center,up);*/
-
-    //matrix.rotate(rotation);
-
-
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 
@@ -283,10 +247,11 @@ void MainWidget::setSaison(int saison)
             break;
 
         case SPRING:
-            m_ep->setNbParticles(200);
+            m_ep->setNbParticles(50);
             m_ep->setModel(m_mpSpring);
             m_ep->setHeight(0);
             m_ep->setRadius(4.f);
+            m_ep->resetAllParticles();
             setWindowTitle("Printemps");
             break;
 
@@ -295,14 +260,16 @@ void MainWidget::setSaison(int saison)
             m_ep->setModel(m_mpSummer);
             m_ep->setHeight(2.5f);
             m_ep->setRadius(3.f);
+            m_ep->resetAllParticles();
             setWindowTitle("Ete (en bretagne)");
             break;
 
         case AUTOMN:
-            m_ep->setNbParticles(50);
+            m_ep->setNbParticles(500);
             m_ep->setModel(m_mpAutomn);
             m_ep->setHeight(2.5f);
             m_ep->setRadius(3.f);
+            m_ep->resetAllParticles();
             setWindowTitle("Automne");
             break;
     }

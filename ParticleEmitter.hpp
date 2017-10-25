@@ -32,6 +32,8 @@ public:
     void update(float delta);
     void draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program);
 
+    void resetAllParticles();
+
 private:
     unsigned int m_nbParticles;
     float m_height, m_radius;
