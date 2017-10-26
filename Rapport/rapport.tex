@@ -49,21 +49,26 @@
 
     \section{Question 1}
     \subsection{Synchroniser les fenêtres entre elles}
+	La synchronisation des fenêtres se fera via les signaux de Qt, et en mettant le timer des fenêtres à la même cadence.
 
-
-	\pagebreak
 	\section{Question 2}
 	\subsection{Création des saisons}
+	On va reprendre les éléments du TP précédent. Pour le printemps et l'été, nous aurons juste à gérer la lumière, et pour l'automne et l'hiver, nous allons devoir rajouter des particules.
+	\subsubsection{Création du printemps et de l'été}
+	La première étape est de refaire le terrain, on va repartir sur un terrain plat et simple, et modifier le matériau pour le rendre blanc et sensible à la lumière de la couleur.
 	
 	\subsection{Changement de la saison}
 	
 	\pagebreak
 	\section{Questions bonus}
 	\subsection{Accumulation de particules}
+	On pourrait utiliser un plan parallèle et détecter le point d'impact de la particule pour faire monter le sommet, et faire une accumulation de ce plan parallèle avec la même texture (ou couleur) pour simuler cette accumulation.
 	
 	\subsection{Localisation des effets climatiques}
+	Le rendu différent peut être effectué en jouant sur quelques éléments, comme la lumière, ou l'affichage via les shaders, et plus précisément le contraste ou la luminosité, on peut faire un rendu plus terne pour rendre plus triste et donc évoquer encore plus l'automne par exemple.	
 	
 	\subsection{Utilisation d'OpenMP}
+	Pour OpenMP, on peut s'en servir facilement pour paralléliser les événements (ce qui permet d'améliorer la vitesse de rendu), comme par exemple à attribuer une fenêtre à un thread différent, ou lors du parcours de \texttt{for} en parallélisant les calculs.
 		
 	
 		%\lstinputlisting[language=C++, caption=Rotation du terrain, firstline=231, lastline=232, firstnumber=231]{../mainwidget.cpp}

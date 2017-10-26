@@ -65,7 +65,6 @@ public:
 
 private:
     void initPlaneGeometry();
-    void initPlaneGeometry(QWidget* qw);
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
