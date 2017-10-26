@@ -238,7 +238,6 @@ void MainWidget::paintGL()
 
 void MainWidget::setSaison(int saison)
 {
-    // ParticleEmitter(1000, m_mpWinter, QVector3D(), 2.5f, 4.f);
     switch(saison)
     {
         case WINTER:

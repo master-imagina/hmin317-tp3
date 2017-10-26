@@ -135,6 +135,6 @@ void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
 
 void Particle::resetLife()
 {
-    float random = static_cast<float>(rand() % 200) / 50.f;
+    float random = static_cast<float>(rand() % 200) / 100.f;
     setActualLife(m_model.getLife() * (random));
 }

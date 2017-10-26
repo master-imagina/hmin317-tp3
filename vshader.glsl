@@ -14,7 +14,6 @@ attribute vec2 a_texcoord;
 varying vec2 v_texcoord;
 varying vec4 v_color;
 
-//! [0]
 void main()
 {
     // Calculate vertex position in screen space
@@ -25,4 +24,3 @@ void main()
     v_texcoord = a_texcoord;
     v_color = a_color;
 }
-//! [0]
