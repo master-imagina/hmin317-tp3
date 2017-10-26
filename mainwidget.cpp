@@ -225,6 +225,9 @@ void MainWidget::paintGL()
     // Use texture unit 0 which contains cube.png
     program.setUniformValue("texture", 0);
 
+    // Use color for the ground
+    program.setUniformValue("a_color", groundColor);
+
     // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
 
@@ -243,6 +246,7 @@ void MainWidget::setSaison(int saison)
             m_ep->setModel(m_mpWinter);
             m_ep->setHeight(2.5f);
             m_ep->setRadius(4.f);
+            groundColor = QVector4D(1.3f,1.3f,1.3f,1.f);
             setWindowTitle("Hiver");
             break;
 
@@ -252,6 +256,7 @@ void MainWidget::setSaison(int saison)
             m_ep->setHeight(0);
             m_ep->setRadius(4.f);
             m_ep->resetAllParticles();
+            groundColor = QVector4D(0.7f,1.1f,0.7f,1.f);
             setWindowTitle("Printemps");
             break;
 
@@ -261,6 +266,7 @@ void MainWidget::setSaison(int saison)
             m_ep->setHeight(2.5f);
             m_ep->setRadius(3.f);
             m_ep->resetAllParticles();
+            groundColor = QVector4D(0.8f,0.8f,0.5f,1.f);
             setWindowTitle("Ete (en bretagne)");
             break;
 
@@ -270,6 +276,7 @@ void MainWidget::setSaison(int saison)
             m_ep->setHeight(2.5f);
             m_ep->setRadius(3.f);
             m_ep->resetAllParticles();
+            groundColor = QVector4D(1.0f,0.7f,0.5f,1.f);
             setWindowTitle("Automne");
             break;
     }

@@ -109,8 +109,11 @@ void Particle::draw(QMatrix4x4 &proj, QOpenGLShaderProgram *program)
         // Set modelview-projection matrix
         program->setUniformValue("mvp_matrix", proj * matrix);
 
-        // Use texture unit 0 which contains cube.png
+        // Use texture unit 0 which contains
         program->setUniformValue("texture", 0);
+
+        // Use color for the particule (white)
+        program->setUniformValue("a_color", QVector4D(1.f,1.f,1.f,1.f));
 
         // Draw cube geometry
         m_plan.drawPlaneGeometry(program);

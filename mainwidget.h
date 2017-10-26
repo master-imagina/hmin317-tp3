@@ -110,6 +110,7 @@ private:
     ModelParticle m_mpWinter, m_mpSpring, m_mpSummer, m_mpAutomn;
     ParticleEmitter *m_ep;
     int m_actualSaison;
+    QVector4D groundColor;
 
     void setSaison(int saison);
 
