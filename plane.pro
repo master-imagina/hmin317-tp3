@@ -5,7 +5,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     speed.cpp \
-    calendrier.cpp
+    calendrier.cpp \
+    particle.cpp \
+    emetteur.cpp
 
 SOURCES += \
     mainwidget.cpp \
@@ -15,7 +17,9 @@ HEADERS += \
     mainwidget.h \
     geometryengine.h \
     speed.h \
-    calendrier.h
+    calendrier.h \
+    particle.h \
+    emetteur.h
 
 RESOURCES += \
     shaders.qrc \
@@ -24,3 +28,5 @@ RESOURCES += \
 # install
 target.path = .
 INSTALLS += target
+
+DISTFILES +=

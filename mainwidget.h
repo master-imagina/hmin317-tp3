@@ -52,6 +52,7 @@
 #define MAINWIDGET_H
 
 #include "geometryengine.h"
+#include "emetteur.h"
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -94,9 +95,13 @@ protected:
 private:
     //QBasicTimer timer;
     QOpenGLShaderProgram program;
+    QOpenGLShaderProgram programEmetteur;
+	
     GeometryEngine *geometries;
+    Emetteur *emetteur;
 
     QOpenGLTexture *texture;
+    QOpenGLTexture *emetteur_texture;
 
     QMatrix4x4 projection;
 
@@ -112,6 +117,8 @@ private:
     void rotate();
 
     int saison;
+
+    bool rain;
 
 private slots:
     void changeSaison();

@@ -111,7 +111,7 @@ void GeometryEngine::initPlaneGeometry()
     // Draw 15 bands each with 32 vertices, with repeated vertices at the end of each band
     int nb_vertices = size * 2 + 4;
     taille_vertices = nb_vertices * (size - 1);
-    GLushort indices[(size - 1) * nb_vertices];
+    GLushort indices[taille_vertices];
 
     for (int i=0;i<size-1;i++)
         {

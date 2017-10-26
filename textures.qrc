@@ -6,5 +6,7 @@
         <file>heightmap-3.png</file>
         <file>labyrinthe.png</file>
         <file>Antartique.jpg</file>
+        <file>eau.png</file>
+        <file>flocon.png</file>
     </qresource>
 </RCC>

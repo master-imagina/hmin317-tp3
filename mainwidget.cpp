@@ -156,6 +156,8 @@ void MainWidget::initializeGL()
 {
     initializeOpenGLFunctions();
 
+    rain = false;
+
     glClearColor(0, 0, 0, 1);
 
     initShaders();
@@ -170,6 +172,9 @@ void MainWidget::initializeGL()
 //! [2]
 
     geometries = new GeometryEngine;
+
+    if(rain)
+        emetteur = new Emetteur(100);
 
     // Use QBasicTimer because its faster than QTimer
     //timer.start(12, this);
@@ -195,6 +200,22 @@ void MainWidget::initShaders()
     // Bind shader pipeline for use
     if (!program.bind())
         close();
+
+    if(rain) {
+
+    if(!programEmetteur.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/vParticleShader.glsl"))
+        close();
+
+    if (!programEmetteur.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fParticleShader.glsl"))
+        close();
+
+    if (!programEmetteur.link())
+        close();
+
+    if (!programEmetteur.bind())
+        close();
+    }
+
 }
 //! [3]
 
@@ -213,6 +234,14 @@ void MainWidget::initTextures()
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
     texture->setWrapMode(QOpenGLTexture::Repeat);
+
+    if(rain) {
+        emetteur_texture = new QOpenGLTexture(QImage(":/eau.png"));
+        emetteur_texture->setMinificationFilter(QOpenGLTexture::Nearest);
+        emetteur_texture->setMagnificationFilter(QOpenGLTexture::Linear);
+        emetteur_texture->setWrapMode(QOpenGLTexture::Repeat);
+    }
+
 }
 //! [4]
 
@@ -293,28 +322,18 @@ void MainWidget::paintGL()
 
     rotate();
 
+    if(rain) {
+        emetteur_texture->bind();
+        programEmetteur.setUniformValue("mvp_matrix", projection * matrix);
+        programEmetteur.setUniformValue("texture", 0);
+        emetteur->drawParticles(&programEmetteur);
+    }
+
 }
 
 void MainWidget::changeSaison() {
     saison++;
     if(saison == 5) saison = 1;
-
-    switch (saison) {
-    case 1: //printemps
-        program.setUniformValue("v_color", QVector3D(119, 249, 152));
-        break;
-    case 2: //ete
-        program.setUniformValue("v_color", QVector3D(242, 167, 46));
-        break;
-    case 3: //Automne
-        program.setUniformValue("v_color", QVector3D(175, 85, 15));
-        break;
-    case 4: //hiver
-        program.setUniformValue("v_color", QVector3D(255, 255, 255));
-        break;
-    default:
-        break;
-    }
 }
 
 void MainWidget::afficheSaison() {
