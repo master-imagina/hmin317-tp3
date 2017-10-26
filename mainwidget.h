@@ -64,14 +64,17 @@
 
 class GeometryEngine;
 
-enum Saison{PRINTEMPS, ETE, AUTOMNE, HIVER};
+const int PRINTEMPS = 0;
+const int ETE = 1;
+const int AUTOMNE = 2;
+const int HIVER = 3;
 
 class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
 public:
-    explicit MainWidget(QWidget *parent = 0, int _fps = 60, Saison _season = Saison::PRINTEMPS);
+    explicit MainWidget(QWidget *parent = 0, int _fps = 60, int _season = PRINTEMPS);
     ~MainWidget();
 
 protected:
@@ -105,8 +108,14 @@ private:
     float posx = 0, posy = -5;
     int fps; float vitesse = 1;
 
-    Saison saison;
-    float light[4] = {0,1,1,1};
+    int saison;
+
+    QVector4D groundColor;
+
+    void updateSeason();
+
+    public slots:
+        void nextSeason();
 };
 
 #endif // MAINWIDGET_H

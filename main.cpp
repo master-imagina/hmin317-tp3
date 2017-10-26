@@ -51,6 +51,7 @@
 #include <QApplication>
 #include <QLabel>
 #include <QSurfaceFormat>
+#include <QTimer>
 
 #ifndef QT_NO_OPENGL
 #include "mainwidget.h"
@@ -67,15 +68,25 @@ int main(int argc, char *argv[])
     app.setApplicationName("TP 3 - Moteurs");
     app.setApplicationVersion("0.3");
 #ifndef QT_NO_OPENGL
-    MainWidget widgetP(nullptr, 60, Saison::PRINTEMPS);
-    MainWidget widgetE(nullptr, 60, Saison::ETE);
-    MainWidget widgetA(nullptr, 60, Saison::AUTOMNE);
-    MainWidget widgetH(nullptr, 60, Saison::HIVER);
+    MainWidget* widgetP = new MainWidget(nullptr, 60, PRINTEMPS);
+    MainWidget* widgetE = new MainWidget(nullptr, 60, ETE);
+    MainWidget* widgetA = new MainWidget(nullptr, 60, AUTOMNE);
+    MainWidget* widgetH = new MainWidget(nullptr, 60, HIVER);
 
-    widgetP.show();
-    widgetE.show();
-    widgetA.show();
-    widgetH.show();
+    widgetP->show();
+    widgetE->show();
+    widgetA->show();
+    widgetH->show();
+
+    QTimer* seasonTimer = new QTimer;
+
+    QObject::connect(seasonTimer, SIGNAL(timeout()), widgetP, SLOT(nextSeason()));
+    QObject::connect(seasonTimer, SIGNAL(timeout()), widgetE, SLOT(nextSeason()));
+    QObject::connect(seasonTimer, SIGNAL(timeout()), widgetA, SLOT(nextSeason()));
+    QObject::connect(seasonTimer, SIGNAL(timeout()), widgetH, SLOT(nextSeason()));
+
+    seasonTimer->start(5000);
+
 #else
     QLabel note("OpenGL Support required");
     note.show();

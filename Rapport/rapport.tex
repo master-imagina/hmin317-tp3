@@ -55,9 +55,12 @@
 	\subsection{Création des saisons}
 	On va reprendre les éléments du TP précédent. Pour le printemps et l'été, nous aurons juste à gérer la lumière, et pour l'automne et l'hiver, nous allons devoir rajouter des particules.
 	\subsubsection{Création du printemps et de l'été}
-	La première étape est de refaire le terrain, on va repartir sur un terrain plat et simple, et modifier le matériau pour le rendre blanc et sensible à la lumière de la couleur.
+	La première étape est de refaire le terrain, on va repartir sur un terrain plat et simple, et modifier le matériau pour changer sa couleur.
 	
 	\subsection{Changement de la saison}
+	Pour cela, nous allons utiliser un timer qu'on va appliquer aux 4 fenêtres :
+	\lstinputlisting[language=C++, caption=Déclaration des fenêtres et raccordement au timer, firstline=71, lastline=88, firstnumber=71]{../main.cpp}
+	Ensuite, il suffit de se référencer aux fonctions types \texttt{public slots} (ici nextSeason()). qui vont être appelées à chaque fois que le timer est écoulé. On effectuera le changement de paramètres dans cette fonction.
 	
 	\pagebreak
 	\section{Questions bonus}

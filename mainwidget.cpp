@@ -54,7 +54,7 @@
 
 #include <math.h>
 
-MainWidget::MainWidget(QWidget *parent, int _fps, Saison _saison) :
+MainWidget::MainWidget(QWidget *parent, int _fps, int _saison) :
     QOpenGLWidget(parent),
     geometries(0),
     texture(0),
@@ -153,12 +153,12 @@ void MainWidget::initializeGL()
     glEnable(GL_CULL_FACE);
 //! [2]
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    //glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHT0);
 
-    int posLum[4] = {0,5,0,1};
-    glLightiv(GL_LIGHT0, GL_POSITION, posLum); //Positionnement de la lumière (restera fixe)
-    glLightfv(GL_LIGHT0, GL_POSITION, light); //Couleur de la lumière
+    //int posLum[4] = {0,5,0,1};
+    //glLightiv(GL_LIGHT0, GL_POSITION, posLum); //Positionnement de la lumière (restera fixe)
+    //glLightfv(GL_LIGHT0, GL_POSITION, light); //Couleur de la lumière
 
     geometries = new GeometryEngine(parentWidget());
 
@@ -247,7 +247,7 @@ void MainWidget::paintGL()
 
     matrix.rotate(rotation);
 
-    glLightfv(GL_LIGHT0, GL_POSITION, light); //Changement de la lumière si besoin
+    //glLightfv(GL_LIGHT0, GL_POSITION, light); //Changement de la lumière si besoin
 
 
     // Set modelview-projection matrix
@@ -276,4 +276,32 @@ void MainWidget::keyPressEvent(QKeyEvent *e) {
 
     update(); //Il faut mettre a jour la scene !
 
+}
+
+void MainWidget::nextSeason() {
+    ++saison;
+    saison %= 4;
+    updateSeason();
+
+}
+
+void MainWidget::updateSeason() {
+    switch (saison)
+    {
+        case PRINTEMPS:
+            setWindowTitle("Printemps");
+            break;
+
+        case ETE:
+            setWindowTitle("Été");
+            break;
+
+        case AUTOMNE:
+            setWindowTitle("Automne");
+            break;
+
+        case HIVER:
+            setWindowTitle("Hiver");
+            break;
+    }
 }
