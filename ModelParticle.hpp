@@ -9,7 +9,7 @@ class ModelParticle
 {
 public:
     explicit ModelParticle(QOpenGLTexture *texture, float life = 10.f, float mass = 0.05f, float ground = -0.f,
-                           QVector3D size = QVector3D(0.5f, 0.5f, 0), const QVector3D &zigzag = QVector3D());
+                           QVector3D size = QVector3D(0.5f, 0.5f, 0), bool dieOnGround = false);
     virtual ~ModelParticle();
 
     void setTexture(QOpenGLTexture *texture);
@@ -27,15 +27,16 @@ public:
     void setSize(const QVector3D &size);
     const QVector3D &getSize() const;
 
-    void setZigzag(const QVector3D &zigzag);
-    const QVector3D &getZigzag() const;
+    void setDieOnGround(bool dieOnGround);
+    bool isDieOnGround() const;
 
     static const float MASS;
 
 private:
     QOpenGLTexture *m_texture;
     float m_mass, m_ground, m_life; // Masse en gramme
-    QVector3D m_size, m_zigzag;
+    QVector3D m_size;
+    bool m_dieOnGround;
 };
 
 

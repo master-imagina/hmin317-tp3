@@ -3,8 +3,8 @@
 const float ModelParticle::MASS = 9.98f;
 
 ModelParticle::ModelParticle(QOpenGLTexture *texture, float life, float mass, float ground, QVector3D size,
-                             const QVector3D &zigzag) :
-    m_texture(texture), m_mass(mass), m_ground(ground), m_life(life), m_size(size), m_zigzag(zigzag)
+                             bool dieOnGround) :
+    m_texture(texture), m_mass(mass), m_ground(ground), m_life(life), m_size(size), m_dieOnGround(dieOnGround)
 {}
 
 ModelParticle::~ModelParticle()
@@ -60,12 +60,13 @@ const QVector3D &ModelParticle::getSize() const
     return m_size;
 }
 
-const QVector3D &ModelParticle::getZigzag() const
+void ModelParticle::setDieOnGround(bool dieOnGround)
 {
-    return m_zigzag;
+    m_dieOnGround = dieOnGround;
 }
 
-void ModelParticle::setZigzag(const QVector3D &zigzag)
+bool ModelParticle::isDieOnGround() const
 {
-    m_zigzag = zigzag;
+    return m_dieOnGround;
 }
+

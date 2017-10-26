@@ -111,7 +111,9 @@ void ParticleEmitter::resetParticlePosition(Particle &particule)
     float posZ = sinf(radius) * m_radius * random;
 
     particule.setPosition(QVector3D(posX + m_postion.x(), m_height + m_postion.y(), posZ + m_postion.z()));
-    particule.resetLife();
+
+    if(rand()%5 == 1) // Un change sur cinq d'être reveillé
+        particule.resetLife();
 }
 
 void ParticleEmitter::resetAllParticles()

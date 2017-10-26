@@ -77,14 +77,21 @@ void Particle::update(const ParticleEmitter& emit, float delta)
     if(m_alive && delta > 0.f)
     {
         delta /= 1000.f;
+        float groundPosition = m_model.getGround() + emit.getPostion().y();
         m_actualLife = m_actualLife < delta ? 0 : m_actualLife - delta;
 
-        if(m_pos.y() > (m_model.getGround() + emit.getPostion().y()))
+        if(m_pos.y() > groundPosition)
             m_pos.setY(m_pos.y() - (ModelParticle::MASS * m_model.getMass() * delta));
         else
-            m_pos.setY(m_model.getGround() + emit.getPostion().y());
+            m_pos.setY(groundPosition);
 
         m_alive = m_actualLife > 0;
+
+        if(m_model.isDieOnGround() && m_pos.y() == groundPosition)
+        {
+            m_actualLife = 0;
+            m_alive = false;
+        }
     }
 }
 

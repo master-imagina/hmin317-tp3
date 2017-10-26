@@ -65,7 +65,7 @@ MainWidget::MainWidget(QWidget *parent, int fps, int start_saison, float worldTi
     m_worldTime(worldTime),
     m_mpWinter(nullptr, 30.f, 0.05f, 0, QVector3D(0.3f,0.3f,0.0f)),
     m_mpSpring(nullptr, 30.f, 0.0f),
-    m_mpSummer(nullptr, 2.f, 1.f, -2.0f, QVector3D(1.5f,1.5f,0.0f)),
+    m_mpSummer(nullptr, 1.f, 1.f, -2.0f, QVector3D(1.5f,1.5f,0.0f), true),
     m_mpAutomn(nullptr, 30.f, 0.1f),
     m_ep(nullptr),
     m_actualSaison(start_saison)
@@ -261,7 +261,7 @@ void MainWidget::setSaison(int saison)
             break;
 
         case SUMMER:
-            m_ep->setNbParticles(1000);
+            m_ep->setNbParticles(100);
             m_ep->setModel(m_mpSummer);
             m_ep->setHeight(2.5f);
             m_ep->setRadius(3.f);
