@@ -110,7 +110,7 @@ private:
 
     int saison;
 
-    QVector4D groundColor;
+    QVector4D groundColor = QVector4D(1.0,1.0,0.0,1.0);
 
     void updateSeason();
 

@@ -60,6 +60,7 @@ MainWidget::MainWidget(QWidget *parent, int _fps, int _saison) :
     texture(0),
     angularSpeed(1), fps(_fps), saison(_saison)
 {
+    updateSeason();
 }
 
 MainWidget::~MainWidget()
@@ -191,7 +192,7 @@ void MainWidget::initShaders()
 void MainWidget::initTextures()
 {
     // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/cube.png").mirrored());
+    texture = new QOpenGLTexture(QImage(":/floor.jpg").mirrored());
 
     // Set nearest filtering mode for texture minification
     texture->setMinificationFilter(QOpenGLTexture::Nearest);
@@ -250,6 +251,9 @@ void MainWidget::paintGL()
     //glLightfv(GL_LIGHT0, GL_POSITION, light); //Changement de la lumière si besoin
 
 
+    // Use color for the ground
+    program.setUniformValue("a_color", groundColor);
+
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 
@@ -290,18 +294,22 @@ void MainWidget::updateSeason() {
     {
         case PRINTEMPS:
             setWindowTitle("Printemps");
+            groundColor = QVector4D(0.8,1.0,0.8,1.0);
             break;
 
         case ETE:
             setWindowTitle("Été");
+            groundColor = QVector4D(1.0,1.0,0.5,1.0);
             break;
 
         case AUTOMNE:
             setWindowTitle("Automne");
+            groundColor = QVector4D(1.0,0.6,0.0,1.0);
             break;
 
         case HIVER:
             setWindowTitle("Hiver");
+            groundColor = QVector4D(0.9,0.9,1.0,1.0);
             break;
     }
 }

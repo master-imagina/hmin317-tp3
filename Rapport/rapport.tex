@@ -55,7 +55,13 @@
 	\subsection{Création des saisons}
 	On va reprendre les éléments du TP précédent. Pour le printemps et l'été, nous aurons juste à gérer la lumière, et pour l'automne et l'hiver, nous allons devoir rajouter des particules.
 	\subsubsection{Création du printemps et de l'été}
-	La première étape est de refaire le terrain, on va repartir sur un terrain plat et simple, et modifier le matériau pour changer sa couleur.
+	La première étape est de refaire le terrain, on va repartir sur un terrain plat et simple, et modifier le matériau pour changer sa couleur. Pour cela nous allons modifier le shader pour qu'il prenne en paramètre un Vecteur4D qui va contenir la couleur à appliquer au shader lors de la saison.
+	
+	\image{saisons.png}{Les saisons de base}
+	
+	\pagebreak
+	\subsubsection{Création de l'automne et de l'hiver}
+	Maintenant que nous avons nos saisons de base, il suffit de rajouter des particules. Soit nous utilisons des billboards pour afficher des gouttes ou des flocons de neige, ou dans mon cas, nous allons utiliser des GLPoint soit bleus pour l'automne, soit blancs pour l'hiver.
 	
 	\subsection{Changement de la saison}
 	Pour cela, nous allons utiliser un timer qu'on va appliquer aux 4 fenêtres :

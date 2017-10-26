@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>floor.jpg</file>
         <file>cube.png</file>
     </qresource>
 </RCC>
