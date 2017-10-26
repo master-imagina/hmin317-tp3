@@ -70,6 +70,12 @@ MainWidget::~MainWidget()
     makeCurrent();
     delete texture;
     delete geometries;
+
+    if (!posParticles->isNull())
+        delete[] posParticles;
+
+    delete posParticles;
+
     doneCurrent();
 }
 
@@ -262,6 +268,29 @@ void MainWidget::paintGL()
 
     // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
+
+    //Particles
+
+    if (particles > 0)
+    {
+        glBegin(GL_POINTS);
+        if (saison == AUTOMNE)
+            glColor3f(0,0,1);
+        else
+            glColor3f(1,1,1);
+#pragma omp parallel for
+        for (int i = 0; i < particles; ++i)
+        {
+            posParticles[i].setY(posParticles[i].y() - (GRAVITY) * mass);
+            if (posParticles[i].y() < 0)
+            {
+                posParticles[i] = QVector3D(rand() % 10 - 5, rand() % 10 + 10, rand() % 10 - 5); //On repositionne directement la particule
+            }
+            glVertex3f(posParticles[i].x(), posParticles[i].y(), posParticles[i].z());
+        }
+        glEnd();
+
+    }
 }
 
 void MainWidget::keyPressEvent(QKeyEvent *e) {
@@ -294,22 +323,50 @@ void MainWidget::updateSeason() {
     {
         case PRINTEMPS:
             setWindowTitle("Printemps");
+            particles = 0;
             groundColor = QVector4D(0.8,1.0,0.8,1.0);
+
+            if (posParticles)
+                delete[] posParticles;
+
             break;
 
         case ETE:
             setWindowTitle("Été");
+            particles = 0;
             groundColor = QVector4D(1.0,1.0,0.5,1.0);
             break;
 
         case AUTOMNE:
             setWindowTitle("Automne");
+            particles = 150;
+            mass = 0.3;
             groundColor = QVector4D(1.0,0.6,0.0,1.0);
+
+            posParticles = new QVector3D[particles];
+
+#pragma omp parallel for
+            for (int i = 0; i < particles; ++i)
+            {
+                posParticles[i] = QVector3D(rand() % 10 - 5, rand() % 10 + 10, rand() % 10 - 5);
+            }
+
             break;
 
         case HIVER:
             setWindowTitle("Hiver");
+            particles = 500;
+            mass = .01;
             groundColor = QVector4D(0.9,0.9,1.0,1.0);
+
+            posParticles = new QVector3D[particles];
+
+            #pragma omp parallel for
+            for (int i = 0; i < particles; ++i)
+            {
+                posParticles[i] = QVector3D(rand() % 10 - 5, rand() % 10 + 10, rand() % 10 - 5);
+            }
+
             break;
     }
 }

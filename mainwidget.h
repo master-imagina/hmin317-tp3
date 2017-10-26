@@ -69,6 +69,8 @@ const int ETE = 1;
 const int AUTOMNE = 2;
 const int HIVER = 3;
 
+const float GRAVITY = 9.81;
+
 class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -111,6 +113,9 @@ private:
     int saison;
 
     QVector4D groundColor = QVector4D(1.0,1.0,0.0,1.0);
+    unsigned int particles = 0;
+    float mass = 1;
+    QVector3D* posParticles = nullptr;
 
     void updateSeason();
 
