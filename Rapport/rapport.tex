@@ -1,0 +1,90 @@
+% Document description
+\documentclass[a4paper,11pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[francais]{babel}
+\usepackage{listings}
+\usepackage{graphicx} %Pour inclure les images
+\usepackage{float} %Pour plus de précision sur le placement
+\usepackage{color}
+\usepackage[hidelinks]{hyperref} %Pour les liens dans le PDF
+\usepackage{fancyhdr} %En-tête + pieds de page
+\usepackage{lastpage}
+
+% Metadata
+\title{HMIN317 - Moteur de jeux \\ Compte-rendu TP3}
+\author{BOYER Benoît}
+\date{Octobre 2017}
+
+\input{css.tex}
+
+
+% --------------> Document beginning <--------------
+\begin{document}
+
+  	  %Pattern de Peter Wilson
+  	  \begin{titlepage} % Suppresses displaying the page number on the title page and the subsequent page counts as page 1
+	
+	  \raggedleft % Right align the title page
+	
+	  \rule{1pt}{\textheight} % Vertical line
+	  \hspace{0.05\textwidth} % Whitespace between the vertical line and title page text
+	  \parbox[b]{0.75\textwidth}{ % Paragraph box for holding the title page text, adjust the width to move the title page left or right on the page
+		
+		  {\Huge\bfseries Compte-rendu TP3 \\[0.5\baselineskip] Simulation du passage des saisons}\\[2\baselineskip] % Title
+		  {\large\textit{HMIN317 - Moteur de jeux}}\\[4\baselineskip] % Subtitle or further description
+		  {\Large\textsc{BOYER Benoît}} % Author name, lower case for consistent small caps
+		
+		  \vspace{0.5\textheight} % Whitespace between the title block and the publisher
+		
+		  {\noindent M2 IMAGINA - Octobre 2017}\\[\baselineskip] % Publisher and logo
+	  }
+
+  \end{titlepage}
+  
+    \tableofcontents
+	\pagebreak
+
+
+    \section{Question 1}
+    \subsection{Synchroniser les fenêtres entre elles}
+	La synchronisation des fenêtres se fera via les signaux de Qt, et en mettant le timer des fenêtres à la même cadence.
+
+	\section{Question 2}
+	\subsection{Création des saisons}
+	On va reprendre les éléments du TP précédent. Pour le printemps et l'été, nous aurons juste à gérer la lumière, et pour l'automne et l'hiver, nous allons devoir rajouter des particules.
+	\subsubsection{Création du printemps et de l'été}
+	La première étape est de refaire le terrain, on va repartir sur un terrain plat et simple, et modifier le matériau pour changer sa couleur. Pour cela nous allons modifier le shader pour qu'il prenne en paramètre un Vecteur4D qui va contenir la couleur à appliquer au shader lors de la saison.
+	
+	\image{saisons.png}{Les saisons de base}
+	
+	\pagebreak
+	\subsubsection{Création de l'automne et de l'hiver}
+	Maintenant que nous avons nos saisons de base, il suffit de rajouter des particules. Soit nous utilisons des billboards pour afficher des gouttes ou des flocons de neige, ou dans mon cas, nous allons utiliser des GLPoint soit bleus pour l'automne, soit blancs pour l'hiver.
+	Pour cela, nous allons générer un certain nombre de points au dessus de la carte, puis les faire tomber à chaque update avec la gravité.
+	\image{saisons2.png}{Les saisons de base}
+	On constate des particules sur l'automne et hiver. Un des problèmes rencontrés étant la couleur de la pluie, puisqu'elle est affectée par le shader qui change la couleur. Il faudrait améliorer le shader pour qu'il ne modifie que le terrain.
+	
+	\pagebreak
+	\subsection{Changement de la saison}
+	Pour cela, nous allons utiliser un timer qu'on va appliquer aux 4 fenêtres :
+	\lstinputlisting[language=C++, caption=Déclaration des fenêtres et raccordement au timer, firstline=71, lastline=88, firstnumber=71]{../main.cpp}
+	Ensuite, il suffit de se référencer aux fonctions types \texttt{public slots} (ici nextSeason()). qui vont être appelées à chaque fois que le timer est écoulé. On effectuera le changement de paramètres dans cette fonction.
+	
+	\pagebreak
+	\section{Questions bonus}
+	\subsection{Accumulation de particules}
+	On pourrait utiliser un plan parallèle et détecter le point d'impact de la particule pour faire monter le sommet, et faire une accumulation de ce plan parallèle avec la même texture (ou couleur) pour simuler cette accumulation.
+	
+	\subsection{Localisation des effets climatiques}
+	Le rendu différent peut être effectué en jouant sur quelques éléments, comme la lumière, ou l'affichage via les shaders, et plus précisément le contraste ou la luminosité, on peut faire un rendu plus terne pour rendre plus triste et donc évoquer encore plus l'automne par exemple.	
+	
+	\subsection{Utilisation d'OpenMP}
+	Pour OpenMP, on peut s'en servir facilement pour paralléliser les événements (ce qui permet d'améliorer la vitesse de rendu), comme par exemple à attribuer une fenêtre à un thread différent, ou lors du parcours de \texttt{for} en parallélisant les calculs.
+		
+	
+		%\lstinputlisting[language=C++, caption=Rotation du terrain, firstline=231, lastline=232, firstnumber=231]{../mainwidget.cpp}
+		%\image{apresInclinaison.png}{Après l'inclinaison}
+
+\end{document}
