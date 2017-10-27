@@ -34,13 +34,20 @@ void ParticleEmitter::Update(float DT)
         k++;
     }
     currentTime += DT;
-    Particle * p = new Particle(0.0,0.0,5.0, -(250.0f/8000.0f)+(qrand()%500)/8000.0f,-(250.0f/8000.0f)+(qrand()%500)/8000.0f,0.02f ,0.1f ,1.0 ,1.0,1.0,1.0);
-    std::cout << p->GetXm() << ":" << p->GetYm() << std::endl;
-    if (currentTime > 0.1)
+    for (int i=0;i<30;i++)
     {
-        currentTime -=0.1;
+        float x = qrand()%(int)((1024*0.3)/2)-20;
+        float y = qrand()%(int)((1024*0.3)/2)-20;
+        float z = 25.0;
+        Particle * p = new Particle(x,y,z, 0.02f,0.02f,-0.01f ,0.1f ,1.0 ,1.0,0.05,1.0);
 
-        Particles.push_back(p);
+        if (currentTime > 0.1)
+        {
+            currentTime -=0.1;
+
+            Particles.push_back(p);
+        }
+
     }
 
     std::cout <<"Particles: " <<  Particles.size() << std::endl;
@@ -67,18 +74,18 @@ void ParticleEmitter::Render(QOpenGLShaderProgram *program)
         for(QVector<Particle*>::iterator i=Particles.begin();i<Particles.end();i++)
         {
             Particle * p = Particles.at(k);
-            vertices[k*6+0] = {QVector3D(p->GetX(), p->GetY(), p->GetZ() ),QVector2D(0.0f, 0.0f)};
+            vertices[k*6+0] = {QVector3D(p->GetX(), p->GetY(), p->GetZ() ),QVector2D(0.6f, 0.6f)};
             indices[k*6+0] = (GLuint)(k*6+0);
-            vertices[k*6+1] = {QVector3D(p->GetX()+1.0f, p->GetY(), p->GetZ() ),QVector2D(1.0f, 0.0f)};
+            vertices[k*6+1] = {QVector3D(p->GetX()+1.0f, p->GetY(), p->GetZ() ),QVector2D(0.6f, 0.6f)};
             indices[k*6+1] = (GLuint)(k*6+1);
-            vertices[k*6+2] = {QVector3D(p->GetX()+1.0f, p->GetY()+1.0f, p->GetZ() ),QVector2D(1.0f, 1.0f)};
+            vertices[k*6+2] = {QVector3D(p->GetX()+1.0f, p->GetY()+1.0f, p->GetZ() ),QVector2D(0.6f, 0.6f)};
             indices[k*6+2] = (GLuint)(k*6+2);
 
-            vertices[k*6+3] = {QVector3D(p->GetX(), p->GetY(), p->GetZ() ),QVector2D(0.0f, 0.0f)};
+            vertices[k*6+3] = {QVector3D(p->GetX(), p->GetY(), p->GetZ() ),QVector2D(0.6f, 0.6f)};
             indices[k*6+3] = (GLuint)(k*6+3);
-            vertices[k*6+4] = {QVector3D(p->GetX()+1.0f, p->GetY()+1.0f, p->GetZ() ),QVector2D(1.0f, 1.0f)};
+            vertices[k*6+4] = {QVector3D(p->GetX()+1.0f, p->GetY()+1.0f, p->GetZ() ),QVector2D(0.6f, 0.6f)};
             indices[k*6+4] = (GLuint)(k*6+4);
-            vertices[k*6+5] = {QVector3D(p->GetX(), p->GetY()+1.0f, p->GetZ() ),QVector2D(0.0f, 1.0f)};
+            vertices[k*6+5] = {QVector3D(p->GetX(), p->GetY()+1.0f, p->GetZ() ),QVector2D(0.6f, 0.6f)};
             indices[k*6+5] = (GLuint)(k*6+5);
 
             k++;

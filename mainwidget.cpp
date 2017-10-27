@@ -297,8 +297,8 @@ void MainWidget::paintGL()
     geometries->drawPlaneGeometry(&program);
     program.setUniformValue("texture", 0);
     program.setUniformValue("r", 1.0f);
-    program.setUniformValue("g", 0.2f);
-    program.setUniformValue("b", 0.2f);
+    program.setUniformValue("g", 1.0f);
+    program.setUniformValue("b", 1.0f);
 
 
 

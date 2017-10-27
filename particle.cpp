@@ -25,7 +25,11 @@ bool Particle::Update(float DT)
     z += zmove*DT;
     z-= gravitypull;
     gravitypull*=1.05f;
+    gravitypull = std::min (0.1f,gravitypull);
     ttl -= DT;
+
+    if (z <0) return true;
+
     if (ttl <= 0) return true;
     else return false;
 }
