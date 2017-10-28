@@ -17,6 +17,7 @@
 
 #include "aabb.h"
 #include "camera.h"
+#include "cameraactions.h"
 #include "cameracontroller.h"
 #include "gameloop.h"
 #include "gamewidget.h"
@@ -77,7 +78,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     // Viewports
     auto viewportsLayout = new QGridLayout;
 
-    m_computeFpsTimer->setInterval(1000);
+    m_computeFpsTimer->setInterval(500);
 
     for (int i = 0; i < m_gameWidgets.size(); i++) {
         auto gameWidget = new GameWidget(m_scene.get(), centralWidget);
@@ -169,17 +170,7 @@ void MainWindow::pointCameraToTerrainCenter()
 {
     m_scene->terrainBoundingBox.processVertices(m_terrain->vertices);
 
-    const QVector3D terrainCenter = m_scene->terrainBoundingBox.center();
-    const QVector3D terrainAABBRadius = m_scene->terrainBoundingBox.radius();
-
-    const QVector3D flatCenter(terrainCenter.x(), 0.f, terrainCenter.z());
-
-    const QVector3D newEye(flatCenter.x() + 50,
-                           terrainCenter.y() + terrainAABBRadius.y() + 50,
-                           flatCenter.z() + 50);
-
-    m_camera->setEyePos(newEye);
-    m_camera->setTargetPos(flatCenter);
+    centerCameraOnBBox(m_camera.get(), m_scene->terrainBoundingBox);
 }
 
 void MainWindow::iterateGameLoop(float dt)
@@ -224,8 +215,6 @@ void MainWindow::initScene()
 {
     m_camera->setEyePos({8, 20, 8});
     m_particleEffect->setDirection({0, -1, 0});
-
-    m_terrain->primitiveType = Geometry::Triangles;
 
     m_scene->geometries.push_back(m_terrain.get());
     m_scene->geometries.push_back(m_particleEffect->geometry());
