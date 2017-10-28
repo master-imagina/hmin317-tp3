@@ -19,14 +19,14 @@ public:
 
     void initialize(QOpenGLContext *glContext);
 
-    void createGLBuffer(GLBuffer &buffer);
-    void destroyGLBuffer(GLBuffer &buffer);
-    void bindGLBuffer(const GLBuffer &buffer);
-    void releaseGLBuffer(const GLBuffer &buffer);
-    void allocateGLBuffer(const GLBuffer &buffer, unsigned int size, const void *data);
+    void createBuffer(GLBuffer &buffer);
+    void destroyBuffer(GLBuffer &buffer);
+    void bindBuffer(const GLBuffer &buffer);
+    void releaseBuffer(const GLBuffer &buffer);
+    void allocateBuffer(const GLBuffer &buffer, unsigned int size, const void *data);
 
-    void setupVaoForBufferAndShader(const QOpenGLShaderProgram &program,
-                                    GLuint vao,
+    void setupVaoForBufferAndShader(GLuint programId,
+                                    GLuint vaoId,
                                     const VertexLayout &geometryLayout,
                                     GLBuffer &vertexBuffer,
                                     GLBuffer *indexBuffer = nullptr);

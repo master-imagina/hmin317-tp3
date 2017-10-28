@@ -23,29 +23,29 @@ void GLWrapper::initialize(QOpenGLContext *glContext)
                 "GLWrapper::initialize()", "OpenGL 3.3 failed to initialize");
 }
 
-void GLWrapper::createGLBuffer(GLBuffer &buffer)
+void GLWrapper::createBuffer(GLBuffer &buffer)
 {
     m_gl->glGenBuffers(1, &buffer.id);
 
     Q_ASSERT(buffer.id > 0);
 }
 
-void GLWrapper::destroyGLBuffer(GLBuffer &buffer)
+void GLWrapper::destroyBuffer(GLBuffer &buffer)
 {
     m_gl->glDeleteBuffers(1, &buffer.id);
 }
 
-void GLWrapper::bindGLBuffer(const GLBuffer &buffer)
+void GLWrapper::bindBuffer(const GLBuffer &buffer)
 {
     m_gl->glBindBuffer(buffer.type, buffer.id);
 }
 
-void GLWrapper::releaseGLBuffer(const GLBuffer &buffer)
+void GLWrapper::releaseBuffer(const GLBuffer &buffer)
 {
     m_gl->glBindBuffer(buffer.type, 0);
 }
 
-void GLWrapper::allocateGLBuffer(const GLBuffer &buffer,
+void GLWrapper::allocateBuffer(const GLBuffer &buffer,
                                  unsigned int size, const void *data)
 {
     // Orphan allocation
@@ -53,19 +53,20 @@ void GLWrapper::allocateGLBuffer(const GLBuffer &buffer,
     m_gl->glBufferData(buffer.type, size, data, buffer.usage);
 }
 
-void GLWrapper::setupVaoForBufferAndShader(const QOpenGLShaderProgram &program,
-                                           GLuint vao,
+void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
+                                           GLuint vaoId,
                                            const VertexLayout &vertexLayout,
                                            GLBuffer &arrayBuffer,
                                            GLBuffer *indexBuffer)
 {
-    m_gl->glUseProgram(program.programId());
-    m_gl->glBindVertexArray(vao);
+    m_gl->glUseProgram(programId);
+    m_gl->glBindVertexArray(vaoId);
 
-    bindGLBuffer(arrayBuffer);
+    bindBuffer(arrayBuffer);
 
     for (const VertexAttrib &attrib : vertexLayout.attributes()) {
-        const int location = program.attributeLocation(attrib.name);
+        const int location =
+                m_gl->glGetAttribLocation(programId, attrib.name.toLatin1().constData());
 
         m_gl->glEnableVertexAttribArray(location);
         m_gl->glVertexAttribPointer(location,
@@ -76,16 +77,16 @@ void GLWrapper::setupVaoForBufferAndShader(const QOpenGLShaderProgram &program,
     }
 
     if (indexBuffer) {
-        bindGLBuffer(*indexBuffer);
+        bindBuffer(*indexBuffer);
     }
 
-    releaseGLBuffer(arrayBuffer);
+    releaseBuffer(arrayBuffer);
 
     m_gl->glBindVertexArray(0);
     m_gl->glUseProgram(0);
 
     if (indexBuffer) {
-        releaseGLBuffer(*indexBuffer);
+        releaseBuffer(*indexBuffer);
     }
 }
 

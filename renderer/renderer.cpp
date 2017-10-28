@@ -47,15 +47,15 @@ void Renderer::initialize()
     // Create VBOs
     m_arrayVbos[0].type = GLBuffer::Type::ArrayBuffer;
     m_arrayVbos[0].usage = GLBuffer::Usage::StaticDraw;
-    m_glWrapper.createGLBuffer(m_arrayVbos[0]);
+    m_glWrapper.createBuffer(m_arrayVbos[0]);
 
     m_indexVbos[0].type = GLBuffer::Type::IndexBuffer;
     m_indexVbos[0].usage = GLBuffer::Usage::StaticDraw;
-    m_glWrapper.createGLBuffer(m_indexVbos[0]);
+    m_glWrapper.createBuffer(m_indexVbos[0]);
 
     m_arrayVbos[1].type = GLBuffer::Type::ArrayBuffer;
     m_arrayVbos[1].usage = GLBuffer::Usage::StreamDraw;
-    m_glWrapper.createGLBuffer(m_arrayVbos[1]);
+    m_glWrapper.createBuffer(m_arrayVbos[1]);
 
     // Create shaders and VAOs
     m_shaderPrograms[0].addShaderFromSourceFile(QOpenGLShader::Vertex,
@@ -81,7 +81,7 @@ void Renderer::initialize()
     VertexAttrib terrainVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
     terrainVertexLayout.addAttribute(terrainVertexAttrib);
 
-    m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[0], m_vaos[0],
+    m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[0].programId(), m_vaos[0],
                                            terrainVertexLayout,
                                            m_arrayVbos[0],
                                            &m_indexVbos[0]);
@@ -91,7 +91,7 @@ void Renderer::initialize()
     VertexAttrib particlesVertexAttrib {"particleWorldPos", 3, VertexAttrib::Type::Float, false, 0};
     particlesVertexLayout.addAttribute(particlesVertexAttrib);
 
-    m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[1], m_vaos[1],
+    m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[1].programId(), m_vaos[1],
                                            particlesVertexLayout,
                                            m_arrayVbos[1]);
 
@@ -110,11 +110,11 @@ void Renderer::updateBuffers(const std::vector<Geometry *> &geoms)
 
         const std::vector<QVector3D> &vertices = geom->vertices;
 
-        m_glWrapper.bindGLBuffer(vertexGLBuffer);
-        m_glWrapper.allocateGLBuffer(vertexGLBuffer,
+        m_glWrapper.bindBuffer(vertexGLBuffer);
+        m_glWrapper.allocateBuffer(vertexGLBuffer,
                                      vertices.size() * Geometry::vertexSize,
                                      vertices.data());
-        m_glWrapper.releaseGLBuffer(vertexGLBuffer);
+        m_glWrapper.releaseBuffer(vertexGLBuffer);
 
         // Upload indices, if any
         GLBuffer *indexGLBuffer = buffers.second;
@@ -122,11 +122,11 @@ void Renderer::updateBuffers(const std::vector<Geometry *> &geoms)
         if (indexGLBuffer) {
             const std::vector<unsigned int> &indices = geom->indices;
 
-            m_glWrapper.bindGLBuffer(*indexGLBuffer);
-            m_glWrapper.allocateGLBuffer(*indexGLBuffer,
+            m_glWrapper.bindBuffer(*indexGLBuffer);
+            m_glWrapper.allocateBuffer(*indexGLBuffer,
                                          indices.size() * Geometry::indexSize,
                                          indices.data());
-            m_glWrapper.releaseGLBuffer(*indexGLBuffer);
+            m_glWrapper.releaseBuffer(*indexGLBuffer);
         }
 
 //        geom->isDirty = false;
@@ -202,9 +202,9 @@ void Renderer::cleanup()
 {
     gl->glDeleteVertexArrays(2, m_vaos.data());
 
-    m_glWrapper.destroyGLBuffer(m_arrayVbos[0]);
-    m_glWrapper.destroyGLBuffer(m_arrayVbos[1]);
-    m_glWrapper.destroyGLBuffer(m_indexVbos[0]);
+    m_glWrapper.destroyBuffer(m_arrayVbos[0]);
+    m_glWrapper.destroyBuffer(m_arrayVbos[1]);
+    m_glWrapper.destroyBuffer(m_indexVbos[0]);
 
     cglPrintAnyError();
 }
