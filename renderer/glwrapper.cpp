@@ -46,7 +46,7 @@ void GLWrapper::releaseGLBuffer(const GLBuffer &buffer)
 }
 
 void GLWrapper::allocateGLBuffer(const GLBuffer &buffer,
-                                   unsigned int size, const void *data)
+                                 unsigned int size, const void *data)
 {
     // Orphan allocation
     m_gl->glBufferData(buffer.type, size, nullptr, buffer.usage);
@@ -54,10 +54,10 @@ void GLWrapper::allocateGLBuffer(const GLBuffer &buffer,
 }
 
 void GLWrapper::setupVaoForBufferAndShader(const QOpenGLShaderProgram &program,
-                                             GLuint vao,
-                                             const VertexLayout &vertexLayout,
-                                             GLBuffer &arrayBuffer,
-                                             GLBuffer *indexBuffer)
+                                           GLuint vao,
+                                           const VertexLayout &vertexLayout,
+                                           GLBuffer &arrayBuffer,
+                                           GLBuffer *indexBuffer)
 {
     m_gl->glUseProgram(program.programId());
     m_gl->glBindVertexArray(vao);
@@ -92,26 +92,21 @@ void GLWrapper::setupVaoForBufferAndShader(const QOpenGLShaderProgram &program,
 void GLWrapper::draw(const std::vector<DrawCommand> &commands)
 {
     for (const DrawCommand &cmd : commands) {
-        draw(cmd);
-    }
-}
+        m_gl->glUseProgram(cmd.shaderId);
+        m_gl->glBindVertexArray(cmd.vaoId);
 
-void GLWrapper::draw(const DrawCommand &command)
-{
-    m_gl->glUseProgram(command.shaderId);
-    m_gl->glBindVertexArray(command.vaoId);
+        if (cmd.indexGLBuffer) {
+            m_gl->glDrawElements(cmd.geometry.primitiveType,
+                                 cmd.geometry.primitiveCount,
+                                 GL_UNSIGNED_INT,
+                                 nullptr);
+        }
+        else {
+            m_gl->glDrawArrays(cmd.geometry.primitiveType, 0,
+                               cmd.geometry.primitiveCount);
+        }
 
-    if (command.indexGLBuffer) {
-        m_gl->glDrawElements(command.geometry.primitiveType,
-                             command.geometry.primitiveCount,
-                             GL_UNSIGNED_INT,
-                             nullptr);
+        m_gl->glBindVertexArray(0);
+        m_gl->glUseProgram(0);
     }
-    else {
-        m_gl->glDrawArrays(command.geometry.primitiveType, 0,
-                           command.geometry.primitiveCount);
-    }
-
-    m_gl->glBindVertexArray(0);
-    m_gl->glUseProgram(0);
 }

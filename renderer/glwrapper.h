@@ -34,9 +34,6 @@ public:
     void draw(const std::vector<DrawCommand> &commands);
 
 private:
-    void draw(const DrawCommand &command);
-
-private:
     OpenGLFuncs *m_gl;
 };
 
