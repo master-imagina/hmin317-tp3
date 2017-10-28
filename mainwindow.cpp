@@ -161,9 +161,12 @@ void MainWindow::loadHeightMap(const QString &filePath)
 
     *m_terrain = heightmapToGeometry(heightmap);
 
+
     m_terrain->isDirty = true;
 
     pointCameraToTerrainCenter();
+
+    m_particleEffect->setRadius(heightmap.width());
 }
 
 void MainWindow::pointCameraToTerrainCenter()
