@@ -144,7 +144,36 @@ void Renderer::updateUniforms(const QVariantMap &uniforms)
             const QString uniformName = it.key();
             const QVariant uniformValue = it.value();
 
-            sendVariantUniform(shaderProgram, uniformName, uniformValue);
+            const char *rawName = uniformName.toLatin1().constData();
+            const int valueType = uniformValue.type();
+
+            switch (valueType) {
+            case QMetaType::Int:
+                shaderProgram.setUniformValue(rawName, uniformValue.toInt());
+                break;
+            case QMetaType::Float:
+                shaderProgram.setUniformValue(rawName, uniformValue.toFloat());
+                break;
+            case QMetaType::QVector2D:
+                shaderProgram.setUniformValue(rawName, uniformValue.value<QVector2D>());
+                break;
+            case QMetaType::QVector3D:
+                shaderProgram.setUniformValue(rawName, uniformValue.value<QVector3D>());
+                break;
+            case QMetaType::QVector4D:
+                shaderProgram.setUniformValue(rawName, uniformValue.value<QVector4D>());
+                break;
+            case QMetaType::QColor:
+                shaderProgram.setUniformValue(rawName, uniformValue.value<QColor>());
+                break;
+            case QMetaType::QMatrix4x4:
+                shaderProgram.setUniformValue(rawName, uniformValue.value<QMatrix4x4>());
+                break;
+            default:
+                qCritical() << "Renderer: unsupported uniform type :"
+                            << QMetaType::typeName(valueType);
+                break;
+            }
         }
 
         shaderProgram.release();
@@ -207,41 +236,6 @@ void Renderer::cleanup()
     m_glWrapper.destroyBuffer(m_indexVbos[0]);
 
     cglPrintAnyError();
-}
-
-void Renderer::sendVariantUniform(QOpenGLShaderProgram &program,
-                                  const QString &name, const QVariant &value)
-{
-    const char *rawName = name.toLatin1().constData();
-    const int valueType = value.type();
-
-    switch (valueType) {
-    case QMetaType::Int:
-        program.setUniformValue(rawName, value.toInt());
-        break;
-    case QMetaType::Float:
-        program.setUniformValue(rawName, value.toFloat());
-        break;
-    case QMetaType::QVector2D:
-        program.setUniformValue(rawName, value.value<QVector2D>());
-        break;
-    case QMetaType::QVector3D:
-        program.setUniformValue(rawName, value.value<QVector3D>());
-        break;
-    case QMetaType::QVector4D:
-        program.setUniformValue(rawName, value.value<QVector4D>());
-        break;
-    case QMetaType::QColor:
-        program.setUniformValue(rawName, value.value<QColor>());
-        break;
-    case QMetaType::QMatrix4x4:
-        program.setUniformValue(rawName, value.value<QMatrix4x4>());
-        break;
-    default:
-        qCritical() << "Renderer: unsupported uniform type :"
-                    << QMetaType::typeName(valueType);
-        break;
-    }
 }
 
 void Renderer::cglPrintAnyError()

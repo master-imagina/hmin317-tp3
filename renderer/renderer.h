@@ -28,8 +28,6 @@ public:
     void cleanup();
 
 private:
-    void sendVariantUniform(QOpenGLShaderProgram &program,
-                            const QString &name, const QVariant &value);
     void updateBuffers(const std::vector<Geometry *> &geoms);
 
 private:
