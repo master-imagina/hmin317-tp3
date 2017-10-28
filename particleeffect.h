@@ -1,10 +1,13 @@
 #ifndef PARTICLEEFFECT_H
 #define PARTICLEEFFECT_H
 
+#include <memory>
 #include <random>
 #include <vector>
 
 #include <QVector3D>
+
+#include "geometry.h"
 
 
 class ParticleEffect
@@ -30,7 +33,7 @@ public:
 
     void live(float dt);
 
-    const std::vector<QVector3D> &worldPositions() const;
+    Geometry *geometry() const;
 
 private:
     void resetRadiusRandDistribs();
@@ -52,7 +55,7 @@ private:
     //TODO float m_count; (adapt m_worldPositions and m_lifes)
     float m_particlesSize;
 
-    std::vector<QVector3D> m_worldPositions;
+    std::unique_ptr<Geometry> m_geometry;
     std::vector<unsigned int> m_lifes;
 };
 

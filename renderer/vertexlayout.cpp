@@ -1,11 +1,11 @@
-#include "geometrydesc.h"
+#include "vertexlayout.h"
 
 
-GeometryDesc::GeometryDesc() :
+VertexLayout::VertexLayout() :
     m_attributes()
 {}
 
-void GeometryDesc::addAttribute(const VertexAttrib &attrib)
+void VertexLayout::addAttribute(const VertexAttrib &attrib)
 {
     auto attribFound =
             std::find(m_attributes.begin(), m_attributes.end(), attrib);
@@ -15,7 +15,7 @@ void GeometryDesc::addAttribute(const VertexAttrib &attrib)
     }
 }
 
-const std::vector<VertexAttrib> &GeometryDesc::attributes() const
+const std::vector<VertexAttrib> &VertexLayout::attributes() const
 {
     return m_attributes;
 }

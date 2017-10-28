@@ -1,4 +1,5 @@
 #include "particleeffect.h"
+#include <QDebug>
 
 
 namespace {
@@ -25,10 +26,16 @@ ParticleEffect::ParticleEffect() :
     m_direction(m_directionDefaultValue),
     m_speed(m_speedDefaultValue),
     m_particlesSize(m_particlesSizeDefaultValue),
-    m_worldPositions(m_count, m_worldPos),
+    m_geometry(std::make_unique<Geometry>()),
     m_lifes(m_count, m_maxLife)
 {
     resetRadiusRandDistribs();
+
+    m_geometry->vertices.resize(m_count);
+
+    std::fill(m_geometry->vertices.begin(),
+              m_geometry->vertices.end(),
+              m_worldPos);
 }
 
 ParticleEffect::ParticleEffect(const QVector3D &pos, int count, unsigned int maxLife) :
@@ -43,10 +50,18 @@ ParticleEffect::ParticleEffect(const QVector3D &pos, int count, unsigned int max
     m_direction(m_directionDefaultValue),
     m_speed(m_speedDefaultValue),
     m_particlesSize(m_particlesSizeDefaultValue),
-    m_worldPositions(m_count, m_worldPos),
+    m_geometry(std::make_unique<Geometry>()),
     m_lifes(m_count, m_maxLife)
 {
     resetRadiusRandDistribs();
+
+    m_geometry->vertices.resize(m_count);
+
+    std::fill(m_geometry->vertices.begin(),
+              m_geometry->vertices.end(),
+              m_worldPos);
+
+    m_geometry->primitiveCount = m_count;
 }
 
 QVector3D ParticleEffect::worldPos() const
@@ -107,7 +122,7 @@ void ParticleEffect::live(float dt)
 {
     for (int i = 0; i < m_lifes.size(); i++) {
         unsigned int &life = m_lifes[i];
-        QVector3D &particlePos = m_worldPositions[i];
+        QVector3D &particlePos = m_geometry->vertices[i];
 
         // Recycle particle
         if (life == 0) {
@@ -129,11 +144,13 @@ void ParticleEffect::live(float dt)
             particlePos += m_speed * direction() * dt;
         }
     }
+
+    m_geometry->isDirty = true;
 }
 
-const std::vector<QVector3D> &ParticleEffect::worldPositions() const
+Geometry *ParticleEffect::geometry() const
 {
-    return m_worldPositions;
+    return m_geometry.get();
 }
 
 void ParticleEffect::resetRadiusRandDistribs()

@@ -13,6 +13,7 @@ class GameLoop;
 class GameWidget;
 class Geometry;
 class ParticleEffect;
+class Scene;
 
 class QLabel;
 class QTimer;
@@ -38,6 +39,7 @@ private:
     void createActions();
 
 private:
+    void initScene();
     void initSeasons();
 
 private:
@@ -45,7 +47,8 @@ private:
 
     GameLoop *m_theGameLoop;
 
-    std::unique_ptr<Geometry> m_terrainGeometry;
+    std::unique_ptr<Scene> m_scene;
+    std::unique_ptr<Geometry> m_terrain;
     std::unique_ptr<ParticleEffect> m_particleEffect;
 
     std::array<GameWidget *, viewportCount> m_gameWidgets;

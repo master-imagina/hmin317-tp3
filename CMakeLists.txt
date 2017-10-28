@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(gameengines_pw3)
 
-# C++ language version
+# C++
 set(CMAKE_CXX_STANDARD 14)
 
 # Files
@@ -12,34 +12,38 @@ set(HEADERS
     gamewidget.h
     geometry.h
     heightmap.h
-    renderer.h
     camera.h
     cameracontroller.h
     gameloop.h
     mainwindow.h
     particleeffect.h
+    scene.h
+    renderer/buffermanager.h
     renderer/openglversion.h
-    renderer/buffer.h
+    renderer/renderer.h
+    renderer/glbuffer.h
     renderer/vertexattrib.h
-    renderer/geometrydesc.h
-    )
+    renderer/vertexlayout.h
+    renderer/glwrapper.h
+    renderer/drawcommand.h
+)
 
 set(SOURCES
     aabb.cpp
     cameraactions.cpp
     gamewidget.cpp
-    geometry.cpp
     heightmap.cpp
-    renderer.cpp
     camera.cpp
     cameracontroller.cpp
     mainwindow.cpp
     gameloop.cpp
     particleeffect.cpp
     main.cpp
-    renderer/buffer.cpp
+    renderer/buffermanager.cpp
+    renderer/renderer.cpp
     renderer/vertexattrib.cpp
-    renderer/geometrydesc.cpp
+    renderer/vertexlayout.cpp
+    renderer/glwrapper.cpp
     )
 
 set(QT_RESOURCES
@@ -56,5 +60,4 @@ set(CMAKE_AUTORCC true)
 
 #  Binary
 add_executable(pw3 ${SOURCES} ${HEADERS} ${QT_RESOURCES})
-
 target_link_libraries(pw3 Qt5::Widgets)

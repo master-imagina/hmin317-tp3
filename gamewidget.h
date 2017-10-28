@@ -14,6 +14,7 @@ class Camera;
 class Geometry;
 class ParticleEffect;
 class Renderer;
+class Scene;
 
 
 enum class Season
@@ -31,17 +32,11 @@ class GameWidget : public QOpenGLWidget
     Q_OBJECT
 
 public:
-    explicit GameWidget(QWidget *parent = 0);
+    explicit GameWidget(Scene *scene, QWidget *parent = 0);
     ~GameWidget();
-
-    void setGeometry(Geometry *geom);
-    void setParticleEffect(ParticleEffect *effect);
-    void setRendererDirty();
 
     Camera *camera() const;
     void setCamera(Camera *camera);
-
-    Season season() const;
 
     void startNewFrame(float dt);
 
@@ -54,9 +49,7 @@ protected:
     void paintGL() override;
 
 private:
-    Geometry *m_geometry;
-    ParticleEffect *m_particleEffect;
-    AABoundingBox m_terrainAABB;
+    Scene *m_scene;
     std::unique_ptr<Renderer> m_renderer;
 
     Camera *m_camera;

@@ -6,7 +6,9 @@
 #include "camera.h"
 #include "geometry.h"
 #include "particleeffect.h"
-#include "renderer.h"
+#include "scene.h"
+
+#include "renderer/renderer.h"
 
 
 namespace {
@@ -38,11 +40,9 @@ QColor colorFromSeason(Season season)
 } // anon namespace
 
 
-GameWidget::GameWidget(QWidget *parent) :
+GameWidget::GameWidget(Scene *scene, QWidget *parent) :
     QOpenGLWidget(parent),
-    m_geometry(nullptr),
-    m_particleEffect(nullptr),
-    m_terrainAABB(),
+    m_scene(scene),
     m_renderer(std::make_unique<Renderer>()),
     m_camera(nullptr),
     m_currentSeason(Season::None)
@@ -58,27 +58,6 @@ GameWidget::~GameWidget()
     doneCurrent();
 }
 
-void GameWidget::setGeometry(Geometry *geom)
-{
-    if (m_geometry != geom) {
-        m_geometry = geom;
-    }
-}
-
-void GameWidget::setParticleEffect(ParticleEffect *effect)
-{
-    if (m_particleEffect != effect) {
-        m_particleEffect = effect;
-    }
-}
-
-void GameWidget::setRendererDirty()
-{
-    m_renderer->setDirty();
-
-    m_terrainAABB.processVertices(m_geometry->vertices);
-}
-
 Camera *GameWidget::camera() const
 {
     return m_camera;
@@ -91,11 +70,6 @@ void GameWidget::setCamera(Camera *camera)
     }
 }
 
-Season GameWidget::season() const
-{
-    return m_currentSeason;
-}
-
 void GameWidget::setSeason(Season season)
 {
     if (m_currentSeason != season) {
@@ -106,11 +80,6 @@ void GameWidget::setSeason(Season season)
 void GameWidget::startNewFrame(float dt)
 {
     m_deltaTime = dt;
-
-    if (m_renderer->isDirty()) {
-        m_renderer->updateBuffers(m_geometry, m_particleEffect);
-        m_renderer->unsetDirty();
-    }
 
     update();
 }
@@ -131,8 +100,8 @@ void GameWidget::paintGL()
     const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
     const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
 
-    const QVector3D terrainAABBCenter = m_terrainAABB.center();
-    const QVector3D terrainAABBRadius = m_terrainAABB.radius();
+    const QVector3D terrainAABBCenter = m_scene->terrainBoundingBox.center();
+    const QVector3D terrainAABBRadius = m_scene->terrainBoundingBox.radius();
 
     const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
     const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
@@ -148,9 +117,10 @@ void GameWidget::paintGL()
         {"maxHeight", maxHeight},
         {"terrainColor", drawColor},
         {"particleColor", drawColor},
-        {"particlesSize", m_particleEffect->particlesSize()}
+        {"particlesSize", 4.f}
     };
 
     m_renderer->updateUniforms(uniforms);
-    m_renderer->render(m_deltaTime);
+
+    m_renderer->render(m_scene, m_deltaTime);
 }

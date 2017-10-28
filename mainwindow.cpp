@@ -23,7 +23,7 @@
 #include "geometry.h"
 #include "heightmap.h"
 #include "particleeffect.h"
-
+#include "scene.h"
 
 namespace {
 
@@ -40,7 +40,8 @@ const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
 
 MainWindow::MainWindow(GameLoop *gameLoop) :
     m_theGameLoop(gameLoop),
-    m_terrainGeometry(std::make_unique<Geometry>()),
+    m_scene(std::make_unique<Scene>()),
+    m_terrain(std::make_unique<Geometry>()),
     m_particleEffect(std::make_unique<ParticleEffect>(QVector3D(0, 400, 0), 50, 100)),
     m_gameWidgets(),
     m_fpsLabels(),
@@ -50,9 +51,10 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_seasonTimer(new QTimer(this)),
     m_gameWidgetsDates()
 {
-    m_camera->setEyePos({8, 20, 8});
-    m_particleEffect->setDirection({0, -1, 0});
+    // Scene creation
+    initScene();
 
+    // Build UI
     auto centralWidget = new QWidget(this);
     centralWidget->setFocusPolicy(Qt::StrongFocus);
 
@@ -78,10 +80,8 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_computeFpsTimer->setInterval(1000);
 
     for (int i = 0; i < m_gameWidgets.size(); i++) {
-        auto gameWidget = new GameWidget(centralWidget);
+        auto gameWidget = new GameWidget(m_scene.get(), centralWidget);
 
-        gameWidget->setGeometry(m_terrainGeometry.get());
-        gameWidget->setParticleEffect(m_particleEffect.get());
         gameWidget->setCamera(m_camera.get());
 
         m_gameWidgets[i] = gameWidget;
@@ -152,30 +152,30 @@ void MainWindow::loadHeightMap(const QString &filePath)
 {
     QImage heightmap(filePath);
 
-    if (heightmap.isNull() || !heightmap.isGrayscale()) {
+    if (heightmap.isNull() || !heightmap.isGrayscale() ||
+            heightmap.width() != heightmap.height()) {
+        qCritical() << "Invalid heightmap";
         return;
     }
 
-    *m_terrainGeometry = heightmapToGeometry(heightmap);
+    *m_terrain = heightmapToGeometry(heightmap);
 
-    for (GameWidget *gameWidget : m_gameWidgets) {
-        gameWidget->setRendererDirty();
-    }
+    m_terrain->isDirty = true;
 
     pointCameraToTerrainCenter();
 }
 
 void MainWindow::pointCameraToTerrainCenter()
 {
-    AABoundingBox terrainAABB(m_terrainGeometry->vertices);
-    const QVector3D terrainAABBCenter = terrainAABB.center();
-    const QVector3D terrainAABBRadius = terrainAABB.radius();
+    m_scene->terrainBoundingBox.processVertices(m_terrain->vertices);
 
-    const QVector3D terrainCenter = terrainAABB.center();
+    const QVector3D terrainCenter = m_scene->terrainBoundingBox.center();
+    const QVector3D terrainAABBRadius = m_scene->terrainBoundingBox.radius();
+
     const QVector3D flatCenter(terrainCenter.x(), 0.f, terrainCenter.z());
 
     const QVector3D newEye(flatCenter.x() + 50,
-                           terrainAABBCenter.y() + terrainAABBRadius.y() + 50,
+                           terrainCenter.y() + terrainAABBRadius.y() + 50,
                            flatCenter.z() + 50);
 
     m_camera->setEyePos(newEye);
@@ -189,8 +189,6 @@ void MainWindow::iterateGameLoop(float dt)
     m_cameraController->updateCamera(m_camera.get(), dt);
 
     for (GameWidget *gameWidget : m_gameWidgets) {
-        gameWidget->setRendererDirty();
-
         gameWidget->startNewFrame(dt);
     }
 
@@ -220,6 +218,17 @@ void MainWindow::createActions()
     menuBar->addMenu(cameraMenu);
 
     setMenuBar(menuBar);
+}
+
+void MainWindow::initScene()
+{
+    m_camera->setEyePos({8, 20, 8});
+    m_particleEffect->setDirection({0, -1, 0});
+
+    m_terrain->primitiveType = Geometry::Triangles;
+
+    m_scene->geometries.push_back(m_terrain.get());
+    m_scene->geometries.push_back(m_particleEffect->geometry());
 }
 
 void MainWindow::initSeasons()

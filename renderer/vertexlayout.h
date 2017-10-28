@@ -1,15 +1,15 @@
-#ifndef GEOMETRYDESC_H
-#define GEOMETRYDESC_H
+#ifndef VERTEXLAYOUT_H
+#define VERTEXLAYOUT_H
 
 #include <vector>
 
 #include "vertexattrib.h"
 
 
-class GeometryDesc
+class VertexLayout
 {
 public:
-    GeometryDesc();
+    VertexLayout();
 
     void addAttribute(const VertexAttrib &attrib);
 
@@ -19,4 +19,4 @@ private:
     std::vector<VertexAttrib> m_attributes;
 };
 
-#endif // GEOMETRYDESC_H
+#endif // VERTEXLAYOUT_H
