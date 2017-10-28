@@ -4,13 +4,11 @@
 Particle::Particle()
     : _position(QVector3D(0.0f, 0.0f, 0.0f))
     , _color(QVector3D(1.0f, 1.0f, 1.0f))
-    , _life(3000.0f)
+    , _life(-1000.0f)
     , _velocity(QVector3D(0.0f, 0.0f, 0.0f))
     , lastTime(0)
     , _size(5.0f)
-{
-
-}
+{}
 
 Particle::Particle(QVector3D pos, QVector3D color, float theta, float phi, float speed, int life, float size)
     : _position(pos)
@@ -47,4 +45,8 @@ QVector3D Particle::getPosition() {
 
 QVector4D Particle::getPosSize() {
     return QVector4D(_position.x(), _position.y(), _position.z(), _size);
+}
+
+bool Particle::isAlive() {
+    return _life > 0.0f;
 }

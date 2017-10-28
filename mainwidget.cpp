@@ -70,7 +70,7 @@ MainWidget::MainWidget(int fps, Seasons s, QWidget *parent) :
     seasonTimer = new QTimer();
     seasonM = new SeasonManager(s);
     seasonTimer->connect(seasonTimer, SIGNAL(timeout()), seasonM, SLOT(changeSeason()));
-    seasonTimer->start(5000);
+    seasonTimer->start(15000);
 }
 
 MainWidget::~MainWidget()
@@ -321,6 +321,7 @@ void MainWidget::paintGL()
     particlesProgram.bind();
     particlesProgram.setUniformValue("mvp_matrix", projection * matrix);
     if(seasonM->getSeason() == Seasons::Winter) {
+        particleEngine->generateParticles();
         particleEngine->updateParticles();
         particleEngine->drawParticles(&particlesProgram);
     }

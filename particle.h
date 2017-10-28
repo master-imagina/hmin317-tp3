@@ -14,6 +14,7 @@ public:
     void update();
     QVector3D getPosition();
     QVector4D getPosSize();
+    bool isAlive();
 private:
     // _position: position of particle
     // _color : color of particle
