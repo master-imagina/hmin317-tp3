@@ -10,6 +10,14 @@
 
 #define MAX_PARTICULES 10000
 
+struct ParticleData {
+    QVector4D posSize, color;
+    ParticleData(QVector4D ps, QVector4D c)
+        : posSize(ps)
+        , color(c)
+    {}
+};
+
 class ParticleEngine : QOpenGLFunctions
 {
 public:
@@ -25,7 +33,8 @@ public:
 private:
     Particle particleContainer[MAX_PARTICULES];
     QOpenGLBuffer arrayBuffer;
-    std::vector<QVector4D> particlePosSizeData;
+    //std::vector<QVector4D> particlePosSizeData;
+    std::vector<ParticleData> particlesData;
     int lastUsedParticles;
     double lastTime;
     std::random_device rd;

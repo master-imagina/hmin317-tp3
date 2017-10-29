@@ -2,7 +2,7 @@
 #include <iostream>
 
 ParticleEngine::ParticleEngine()
-    : particlePosSizeData()
+    : particlesData()
     , lastUsedParticles(0)
     , gen(rd())
     , lastTime(0)
@@ -19,27 +19,30 @@ ParticleEngine::~ParticleEngine(){
 
 void ParticleEngine::initParticles() {
     arrayBuffer.bind();
-    arrayBuffer.allocate(particlePosSizeData.data(), particlePosSizeData.size() * sizeof(QVector4D));
+    arrayBuffer.allocate(particlesData.data(), particlesData.size() * sizeof(ParticleData));
 }
 
 void ParticleEngine::updateParticles() {
-    particlePosSizeData.clear();
+    particlesData.clear();
     for(Particle &p : particleContainer) {
         if(p.isAlive()) {
             p.update();
-            particlePosSizeData.push_back(p.getPosSize());
+            particlesData.emplace_back(p.getPosSize(), p.getColor());
         }
     }
     arrayBuffer.bind();
-    arrayBuffer.allocate(particlePosSizeData.data(), particlePosSizeData.size() * sizeof(QVector4D));
+    arrayBuffer.allocate(particlesData.data(), particlesData.size() * sizeof(ParticleData));
 }
 
 void ParticleEngine::drawParticles(QOpenGLShaderProgram *program) {
     arrayBuffer.bind();
     int vertexLocation = program->attributeLocation("a_position");
+    int vertexColor = program->attributeLocation("a_color");
     program->enableAttributeArray(vertexLocation);
-    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 4, 0);
-    glDrawArrays(GL_POINTS, 0, particlePosSizeData.size());
+    program->setAttributeBuffer(vertexLocation, GL_FLOAT, 0, 4, sizeof(ParticleData));
+    program->enableAttributeArray(vertexColor);
+    program->setAttributeBuffer(vertexColor, GL_FLOAT, sizeof(QVector4D), 4, sizeof(ParticleData));
+    glDrawArrays(GL_POINTS, 0, particlesData.size());
 }
 
 void ParticleEngine::generateParticles() {
@@ -58,7 +61,7 @@ void ParticleEngine::generateParticles() {
     for(int i = 0; i < newParticles; ++i) {
         int index = findUnusedParticles();
         particleContainer[index] = ParticleEngine::generateSnowParticle();
-        particlePosSizeData.push_back(particleContainer[index].getPosSize());
+        particlesData.emplace_back(particleContainer[index].getPosSize(), particleContainer[index].getColor());
     }
 }
 
@@ -83,9 +86,9 @@ Particle ParticleEngine::generateSnowParticle() {
     std::uniform_real_distribution<> disY(4.0, 5.0);
     std::uniform_real_distribution<> disSp(0.5, 1.0);
     std::uniform_int_distribution<> disPhi(160, 170);
-    std::uniform_real_distribution<> disSi(1.0f, 2.0f);
+    std::uniform_real_distribution<> disSi(3.0f, 4.0f);
     return Particle(QVector3D(disXZ(gen), disY(gen), disXZ(gen))
-                    , QVector3D(1.0f, 1.0f, 1.0f)
+                    , QVector4D(1.0f, 1.0f, 1.0f, 1.0f)
                     , 0.0f
                     , disPhi(gen)
                     , disSp(gen)

@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("0.1");
 #ifndef QT_NO_OPENGL
     app.setApplicationName("plan 60 fps");
-    MainWidget widget60(60, Seasons::Summer);
+    MainWidget widget60(60, Seasons::Autumn);
     widget60.show();
 #else
     QLabel note("OpenGL Support required");

@@ -113,6 +113,7 @@ private:
     int fov, fps;
     SeasonManager *seasonM;
     ParticleEngine *particleEngine;
+    QVector3D lightPos;
 };
 
 #endif // MAINWIDGET_H

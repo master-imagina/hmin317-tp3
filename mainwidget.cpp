@@ -64,7 +64,8 @@ MainWidget::MainWidget(int fps, Seasons s, QWidget *parent) :
     camera(),
     orbit(false),
     fps(fps),
-    particleEngine(0)
+    particleEngine(0),
+    lightPos(4.0f, 10.0f, -4.0f)
 {
     setMouseTracking(true);
     seasonTimer = new QTimer();
@@ -185,8 +186,10 @@ void MainWidget::initializeGL()
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_BLEND);
     // Enable back face culling
     //glEnable(GL_CULL_FACE);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //! [2]
     geometries = new GeometryEngine;
     particleEngine = new ParticleEngine;
@@ -301,7 +304,7 @@ void MainWidget::paintGL()
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]
-
+    program.setUniformValue("lightColor", QVector3D(1.0f, 1.0f, 1.0f));
     program.setUniformValue("height_map", 0);
     // Use texture unit 1 which contains cube.png
     if(seasonM->getSeason() != Seasons::Winter) {
@@ -314,12 +317,12 @@ void MainWidget::paintGL()
     } else {
         program.setUniformValue("rock", 3);
     }
-
     // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
     // draw particles
     particlesProgram.bind();
     particlesProgram.setUniformValue("mvp_matrix", projection * matrix);
+    particlesProgram.setUniformValue("lightColor", QVector3D(1.0f, 1.0f, 1.0f));
     if(seasonM->getSeason() == Seasons::Winter) {
         particleEngine->generateParticles();
         particleEngine->updateParticles();

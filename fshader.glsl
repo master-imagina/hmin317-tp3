@@ -6,6 +6,7 @@ precision mediump float;
 
 uniform sampler2D sand;
 uniform sampler2D rock;
+uniform vec3 lightColor;
 
 varying vec2 v_texcoord;
 varying float h;
@@ -13,16 +14,20 @@ varying float h;
 //! [0]
 void main()
 {
+    float ambientStrength = 0.1;
     float rockH = 0.3f;
     float sandH = 0.20f;
+    vec3 ambient = ambientStrength * lightColor;
+    vec4 result;
     // Set fragment color from texture
     if(h > rockH) {
-        gl_FragColor = texture2D(rock, v_texcoord * 5);
+        result = texture2D(rock, v_texcoord * 5)  * vec4(ambient, 1.0);
     } else if (h > sandH && h < rockH ){
-        gl_FragColor = mix(texture2D(sand, v_texcoord * 5),texture2D(rock, v_texcoord * 5), (h - sandH) / (rockH - sandH));
+        result = mix(texture2D(sand, v_texcoord * 5),texture2D(rock, v_texcoord * 5), (h - sandH) / (rockH - sandH))  * vec4(ambient, 1.0);
     } else {
-        gl_FragColor = texture2D(sand, v_texcoord * 5);
+        result = texture2D(sand, v_texcoord * 5) * vec4(ambient, 1.0);
     }
+    gl_FragColor = result;
 }
 //! [0]
 
