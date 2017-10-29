@@ -27,3 +27,24 @@ void centerCameraOnBBox(Camera *camera, const AABoundingBox &aabb)
     camera->setEyePos(newEye);
     camera->setTargetPos({aabbCenter.x(), 0.f, aabbCenter.z()});
 }
+
+void moveCamera(Camera *camera, const QVector3D &amount)
+{
+    camera->setEyePos(camera->eyePos() + amount);
+    camera->setTargetPos(camera->targetPos() + amount);
+}
+
+void moveCameraForward(Camera *camera, float offset)
+{
+    const QVector3D moveAmount = camera->viewVector() * offset;
+
+    camera->setEyePos(camera->eyePos() + moveAmount);
+}
+
+void truckCamera(Camera *camera, float dx, float dy)
+{
+    const QVector3D amountX = camera->rightVector() * dx;
+    const QVector3D amountY = camera->upVector() * dy;
+
+    moveCamera(camera, amountX + amountY);
+}

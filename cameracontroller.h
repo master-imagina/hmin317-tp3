@@ -23,9 +23,22 @@ public:
 
     void updateCamera(Camera *camera, float dt);
 
+    float moveSpeed() const;
+    void setMoveSpeed(float moveSpeed);
+
+    float linearSpeed() const;
+    void setLinearSpeed(float linearSpeed);
+
+    float turboFactor() const;
+    void setTurboFactor(float turboFactor);
+
 private:
     void keyPressEvent(QKeyEvent* e);
     void keyReleaseEvent(QKeyEvent* e);
+
+    void mousePressEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+    void mouseMoveEvent(QMouseEvent *e);
 
     QVector3D computeDirectionFromKeys(Camera *camera) const;
 
@@ -41,12 +54,18 @@ private:
 
     KeyDirection m_keyDirection;
 
-    bool m_isRotateAroundTargetPressed;
-    float m_rotateSpeed;
-
     float m_moveSpeed;
-    float m_turboSpeed;
+    float m_linearSpeed;
+    float m_turboFactor;
+
+    QPoint m_oldMousePos;
+    QPoint m_lastMouseDelta;
+    QPoint m_lastMousePosOnPress;
+    QPoint m_lastMousePos;
+
     bool m_turboKeyPressed;
+    bool m_isRotateAroundTargetPressed;
+    bool m_isTruckBtnPressed;
 };
 
 #endif // CAMERACONTROLLER_H

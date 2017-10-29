@@ -1,7 +1,6 @@
 #include "gamewidget.h"
 
 #include <QMatrix4x4>
-#include <QtMath>
 
 #include "aabb.h"
 #include "camera.h"

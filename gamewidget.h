@@ -4,8 +4,6 @@
 #include <memory>
 
 #include <QOpenGLWidget>
-#include <QQuaternion>
-#include <QVector2D>
 
 class Camera;
 class Renderer;

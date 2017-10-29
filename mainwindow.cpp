@@ -19,6 +19,7 @@
 #include "camera.h"
 #include "cameraactions.h"
 #include "cameracontroller.h"
+#include "cameracontrollercontrols.h"
 #include "gameloop.h"
 #include "gamewidget.h"
 #include "geometry.h"
@@ -106,8 +107,12 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
 
     fpsSlider->setValue(gameLoop->framerate());
 
+    auto cameraControllerControls = new CameraControllerControls(m_cameraController,
+                                                                 centralWidget);
+
     centralLayout->addLayout(fpsControlsLayout);
-    centralLayout->addLayout(viewportsLayout);
+    centralLayout->addLayout(viewportsLayout, 1);
+    centralLayout->addWidget(cameraControllerControls);
 
     setCentralWidget(centralWidget);
 
