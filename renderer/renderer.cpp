@@ -78,8 +78,8 @@ void Renderer::initialize()
 
     // Setup terrain geometry
     VertexLayout terrainVertexLayout;
-    VertexAttrib terrainVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
-    terrainVertexLayout.addAttribute(terrainVertexAttrib);
+    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
+    terrainVertexLayout.addAttribute(standardVertexAttrib);
 
     m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[0].programId(), m_vaos[0],
                                            terrainVertexLayout,
@@ -88,8 +88,7 @@ void Renderer::initialize()
 
     // Setup particles geometry
     VertexLayout particlesVertexLayout;
-    VertexAttrib particlesVertexAttrib {"particleWorldPos", 3, VertexAttrib::Type::Float, false, 0};
-    particlesVertexLayout.addAttribute(particlesVertexAttrib);
+    particlesVertexLayout.addAttribute(standardVertexAttrib);
 
     m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[1].programId(), m_vaos[1],
                                            particlesVertexLayout,
@@ -112,8 +111,8 @@ void Renderer::updateBuffers(const std::vector<Geometry *> &geoms)
 
         m_glWrapper.bindBuffer(vertexGLBuffer);
         m_glWrapper.allocateBuffer(vertexGLBuffer,
-                                     vertices.size() * Geometry::vertexSize,
-                                     vertices.data());
+                                   vertices.size() * Geometry::vertexSize,
+                                   vertices.data());
         m_glWrapper.releaseBuffer(vertexGLBuffer);
 
         // Upload indices, if any
@@ -124,8 +123,8 @@ void Renderer::updateBuffers(const std::vector<Geometry *> &geoms)
 
             m_glWrapper.bindBuffer(*indexGLBuffer);
             m_glWrapper.allocateBuffer(*indexGLBuffer,
-                                         indices.size() * Geometry::indexSize,
-                                         indices.data());
+                                       indices.size() * Geometry::indexSize,
+                                       indices.data());
             m_glWrapper.releaseBuffer(*indexGLBuffer);
         }
 
@@ -193,7 +192,7 @@ std::vector<DrawCommand> Renderer::prepareDrawCommands(Scene *scene)
 
         const DrawCommand cmd {
             m_shaderPrograms[i].programId(), m_vaos[i],
-            *geometry, *gpuBuffers.first, gpuBuffers.second
+                    *geometry, *gpuBuffers.first, gpuBuffers.second
         };
 
         ret.push_back(cmd);
