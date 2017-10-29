@@ -12,6 +12,7 @@
 class Geometry;
 class Scene;
 
+
 class Renderer
 {
 public:
@@ -22,13 +23,13 @@ public:
 
     void updateUniforms(const QVariantMap &uniforms);
 
-    std::vector<DrawCommand> prepareDrawCommands(Scene *scene);
     void render(Scene *scene, float dt);
 
     void cleanup();
 
 private:
     void updateBuffers(const std::vector<Geometry *> &geoms);
+    std::vector<DrawCommand> prepareDrawCommands(Scene *scene);
 
 private:
     void cglPrintAnyError();

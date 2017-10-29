@@ -192,7 +192,7 @@ std::vector<DrawCommand> Renderer::prepareDrawCommands(Scene *scene)
 
         const DrawCommand cmd {
             m_shaderPrograms[i].programId(), m_vaos[i],
-                    *geometry, *gpuBuffers.first, gpuBuffers.second
+            *geometry, *gpuBuffers.first, gpuBuffers.second
         };
 
         ret.push_back(cmd);

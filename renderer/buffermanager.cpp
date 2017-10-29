@@ -1,7 +1,5 @@
 #include "buffermanager.h"
 
-#include <QDebug>
-
 #include "../geometry.h"
 
 
