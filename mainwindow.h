@@ -40,7 +40,6 @@ private:
 
 private:
     void initScene();
-    void initSeasons();
 
 private:
     static constexpr int viewportCount = 4;
@@ -55,12 +54,9 @@ private:
     std::array<QLabel *, viewportCount> m_fpsLabels;
     std::unique_ptr<Camera> m_camera;
 
-    QTimer *m_computeFpsTimer;
+    QTimer *m_estimateFpsTimer;
 
     CameraController *m_cameraController;
-
-    QTimer *m_seasonTimer;
-    std::array<QDate, viewportCount> m_gameWidgetsDates;
 };
 
 #endif // MAINWINDOW_H

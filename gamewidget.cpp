@@ -3,49 +3,20 @@
 #include <QMatrix4x4>
 #include <QtMath>
 
+#include "aabb.h"
 #include "camera.h"
-#include "geometry.h"
-#include "particleeffect.h"
+#include "seasoncontroller.h"
 #include "scene.h"
 
 #include "renderer/renderer.h"
 
 
-namespace {
-
-QColor colorFromSeason(Season season)
-{
-    QColor ret;
-
-    switch (season) {
-    case Season::Autumn:
-        ret = QColor(244, 183, 51);
-        break;
-    case Season::Winter:
-        ret = Qt::white;
-        break;
-    case Season::Spring:
-        ret = Qt::green;
-        break;
-    case Season::Summer:
-        ret = Qt::yellow;
-        break;
-    default:
-        break;
-    }
-
-    return ret;
-}
-
-} // anon namespace
-
-
-GameWidget::GameWidget(Scene *scene, QWidget *parent) :
+GameWidget::GameWidget(Scene *scene, SeasonController *seasons, QWidget *parent) :
     QOpenGLWidget(parent),
     m_scene(scene),
+    m_seasons(seasons),
     m_renderer(std::make_unique<Renderer>()),
-    m_camera(nullptr),
-    m_currentSeason(Season::None)
+    m_camera(nullptr)
 {}
 
 GameWidget::~GameWidget()
@@ -67,13 +38,6 @@ void GameWidget::setCamera(Camera *camera)
 {
     if (m_camera != camera) {
         m_camera = camera;
-    }
-}
-
-void GameWidget::setSeason(Season season)
-{
-    if (m_currentSeason != season) {
-        m_currentSeason = season;
     }
 }
 
@@ -106,7 +70,7 @@ void GameWidget::paintGL()
     const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
     const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
 
-    const QColor drawColor = colorFromSeason(m_currentSeason);
+    const QColor drawColor = m_seasons->colorFromSeason(objectName().toInt());
 
     //TODO helper classes for uniforms ; don't send uniforms every frame
     QVariantMap uniforms {

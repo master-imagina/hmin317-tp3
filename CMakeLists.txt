@@ -18,6 +18,7 @@ set(HEADERS
     mainwindow.h
     particleeffect.h
     scene.h
+    seasoncontroller.h
     renderer/buffermanager.h
     renderer/openglversion.h
     renderer/renderer.h
@@ -38,6 +39,7 @@ set(SOURCES
     mainwindow.cpp
     gameloop.cpp
     particleeffect.cpp
+    seasoncontroller.cpp
     main.cpp
     renderer/buffermanager.cpp
     renderer/renderer.cpp

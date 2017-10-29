@@ -24,19 +24,8 @@
 #include "geometry.h"
 #include "heightmap.h"
 #include "particleeffect.h"
+#include "seasoncontroller.h"
 #include "scene.h"
-
-namespace {
-
-const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
-    {{9, 22}, Season::Autumn},
-    {{12, 21}, Season::Winter},
-    {{3, 20}, Season::Spring},
-    {{6, 21}, Season::Summer}
-};
-
-} // anon namespace
-
 
 
 MainWindow::MainWindow(GameLoop *gameLoop) :
@@ -47,13 +36,12 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_gameWidgets(),
     m_fpsLabels(),
     m_camera(std::make_unique<Camera>()),
-    m_computeFpsTimer(new QTimer(this)),
-    m_cameraController(nullptr),
-    m_seasonTimer(new QTimer(this)),
-    m_gameWidgetsDates()
+    m_estimateFpsTimer(new QTimer(this)),
+    m_cameraController(nullptr)
 {
     // Scene creation
     initScene();
+    auto *seasons = new SeasonController(this);
 
     // Build UI
     auto centralWidget = new QWidget(this);
@@ -78,10 +66,11 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     // Viewports
     auto viewportsLayout = new QGridLayout;
 
-    m_computeFpsTimer->setInterval(500);
+    m_estimateFpsTimer->setInterval(500);
 
     for (int i = 0; i < m_gameWidgets.size(); i++) {
-        auto gameWidget = new GameWidget(m_scene.get(), centralWidget);
+        auto gameWidget = new GameWidget(m_scene.get(), seasons, centralWidget);
+        gameWidget->setObjectName(QString::number(i));
 
         gameWidget->setCamera(m_camera.get());
 
@@ -93,7 +82,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
         fpsLabel->setStyleSheet("QLabel { background-color : red }");
         fpsLabel->move(20, 20);
 
-        connect(m_computeFpsTimer, &QTimer::timeout,
+        connect(m_estimateFpsTimer, &QTimer::timeout,
                 [this, fpsLabel] {
             const unsigned int fps = m_theGameLoop->effectiveFramerate();
             fpsLabel->setText(QString::number(fps) + " fps");
@@ -117,8 +106,6 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
 
     fpsSlider->setValue(gameLoop->framerate());
 
-    initSeasons();
-
     centralLayout->addLayout(fpsControlsLayout);
     centralLayout->addLayout(viewportsLayout);
 
@@ -128,8 +115,10 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
 
     centralWidget->setFocus();
 
+    seasons->start();
+
     gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
-    m_computeFpsTimer->start();
+    m_estimateFpsTimer->start();
 }
 
 MainWindow::~MainWindow()
@@ -221,39 +210,4 @@ void MainWindow::initScene()
 
     m_scene->geometries.push_back(m_terrain.get());
     m_scene->geometries.push_back(m_particleEffect->geometry());
-}
-
-void MainWindow::initSeasons()
-{
-    // Init season for each game widget
-    for (auto it = DATE_TO_SEASON.begin(); it != DATE_TO_SEASON.end(); it++) {
-        const int i = DATE_TO_SEASON.size() - std::distance(it, DATE_TO_SEASON.end());
-
-        m_gameWidgetsDates[i] = QDate(2017, it->first.first, it->first.second - 1);
-        m_gameWidgets[i]->setSeason(it->second);
-    }
-
-    // Init and start timer
-    m_seasonTimer->setInterval(75);
-
-    connect(m_seasonTimer, &QTimer::timeout, [this] {
-        for (int i = 0; i < m_gameWidgetsDates.size(); i++) {
-            QDate &date = m_gameWidgetsDates[i];
-            date = date.addDays(1);
-
-            GameWidget *gameWidget = m_gameWidgets[i];
-
-            const std::pair<int, int> dayAndMonth {date.month(), date.day()};
-
-            auto seasonChangedIt = DATE_TO_SEASON.find(dayAndMonth);
-
-            if (seasonChangedIt != DATE_TO_SEASON.end()) {
-                const Season newSeason = seasonChangedIt->second;
-
-                gameWidget->setSeason(newSeason);
-            }
-        }
-    });
-
-    m_seasonTimer->start();
 }
