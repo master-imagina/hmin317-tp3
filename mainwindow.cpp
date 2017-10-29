@@ -19,6 +19,7 @@
 #include "camera.h"
 #include "cameraactions.h"
 #include "cameracontroller.h"
+#include "cameracontrols.h"
 #include "cameracontrollercontrols.h"
 #include "gameloop.h"
 #include "gamewidget.h"
@@ -70,15 +71,16 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_estimateFpsTimer->setInterval(500);
 
     for (int i = 0; i < m_gameWidgets.size(); i++) {
+        // Create game widget
         auto gameWidget = new GameWidget(m_scene.get(), seasons, centralWidget);
         gameWidget->setObjectName(QString::number(i));
-
         gameWidget->setCamera(m_camera.get());
 
         m_gameWidgets[i] = gameWidget;
 
         viewportsLayout->addWidget(gameWidget, i / 2, i % 2);
 
+        // Create fps label
         auto fpsLabel = new QLabel(gameWidget);
         fpsLabel->setStyleSheet("QLabel { background-color : red }");
         fpsLabel->move(20, 20);
@@ -90,6 +92,15 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
         });
 
         m_fpsLabels[i] = fpsLabel;
+
+        // Add controls to game widget
+        auto *gameWidgetLayout = new QVBoxLayout(gameWidget);
+        auto *gameWidgetTopLayout = new QHBoxLayout;
+        gameWidgetTopLayout->addWidget(fpsLabel);
+        gameWidgetTopLayout->addStretch();
+        gameWidgetTopLayout->addWidget(new CameraControls(m_camera.get(), gameWidget));
+        gameWidgetLayout->addLayout(gameWidgetTopLayout);
+        gameWidgetLayout->addStretch();
     }
 
     connect(fpsSlider, &QSlider::valueChanged,

@@ -20,6 +20,8 @@ set(HEADERS
     scene.h
     seasoncontroller.h
     cameracontrollercontrols.h
+    cameracontrols.h
+    dragtoolbutton.h
     renderer/buffermanager.h
     renderer/openglversion.h
     renderer/renderer.h
@@ -37,6 +39,8 @@ set(SOURCES
     heightmap.cpp
     camera.cpp
     cameracontroller.cpp
+    cameracontrols.cpp
+    dragtoolbutton.cpp
     mainwindow.cpp
     gameloop.cpp
     particleeffect.cpp
@@ -51,7 +55,8 @@ set(SOURCES
     )
 
 set(QT_RESOURCES
-    shaders.qrc)
+    shaders.qrc
+    editor_resources.qrc)
 
 # Copy <source>/res/images to <build>/
 file(INSTALL res/images DESTINATION ${CMAKE_BINARY_DIR})

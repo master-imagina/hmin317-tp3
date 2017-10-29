@@ -36,9 +36,10 @@ void moveCamera(Camera *camera, const QVector3D &amount)
 
 void moveCameraForward(Camera *camera, float offset)
 {
-    const QVector3D moveAmount = camera->viewVector() * offset;
+    const QVector3D moveAmount = camera->viewVector().normalized() * offset;
 
     camera->setEyePos(camera->eyePos() + moveAmount);
+    camera->setTargetPos(camera->targetPos() + moveAmount);
 }
 
 void truckCamera(Camera *camera, float dx, float dy)
