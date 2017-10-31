@@ -238,8 +238,6 @@ void MainWindow::initScene()
 
     m_scene->materials.emplace_back(terrainMaterial);
     m_scene->materials.emplace_back(particleMaterial);
-
-    gatherShadersParams();
 }
 
 void MainWindow::gatherShadersParams()
