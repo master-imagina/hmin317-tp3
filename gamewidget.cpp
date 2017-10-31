@@ -1,8 +1,5 @@
 #include "gamewidget.h"
 
-#include <QMatrix4x4>
-
-#include "aabb.h"
 #include "camera.h"
 #include "scene.h"
 
