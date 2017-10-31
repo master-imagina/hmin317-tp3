@@ -27,7 +27,7 @@ public:
     void cleanup();
 
 private:
-    void updateBuffers(const std::vector<Geometry *> &geoms);
+    void updateDirtyBuffers(const std::vector<Geometry *> &geoms);
     void updatePassParameters(const std::vector<Material *> &materials);
 
     std::vector<DrawCommand> prepareDrawCommands(Scene *scene);

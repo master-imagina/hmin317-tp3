@@ -103,15 +103,7 @@ void Renderer::render(Scene *scene, float dt)
     m_shaderManager.addShaderProgram(scene->materials[0]->renderPasses()[0]->shaderProgram(), m_shaderIds[0]);
     m_shaderManager.addShaderProgram(scene->materials[1]->renderPasses()[0]->shaderProgram(), m_shaderIds[1]);
 
-
-    std::vector<Geometry *> dirtyGeoms;
-    dirtyGeoms.reserve(scene->geometries.size());
-    for (Geometry *geom : scene->geometries) {
-        if (geom->isDirty) {
-            dirtyGeoms.emplace_back(geom);
-        }
-    }
-    updateBuffers(dirtyGeoms);
+    updateDirtyBuffers(scene->geometries);
 
     updatePassParameters(scene->materials);
 
@@ -138,37 +130,39 @@ void Renderer::cleanup()
     m_glWrapper.printAnyError();
 }
 
-void Renderer::updateBuffers(const std::vector<Geometry *> &geoms)
+void Renderer::updateDirtyBuffers(const std::vector<Geometry *> &geoms)
 {
     for (Geometry *geom : geoms) {
-        std::pair<GLBuffer *, GLBuffer *> buffers =
-                m_bufferManager.buffersForGeometry(geom);
+        if (geom->isDirty) {
+            std::pair<GLBuffer *, GLBuffer *> buffers =
+                    m_bufferManager.buffersForGeometry(geom);
 
-        // Upload vertices
-        const GLBuffer &vertexGLBuffer = *buffers.first;
+            // Upload vertices
+            const GLBuffer &vertexGLBuffer = *buffers.first;
 
-        const std::vector<QVector3D> &vertices = geom->vertices;
+            const std::vector<QVector3D> &vertices = geom->vertices;
 
-        m_glWrapper.bindBuffer(vertexGLBuffer);
-        m_glWrapper.allocateBuffer(vertexGLBuffer,
-                                   vertices.size() * Geometry::vertexSize,
-                                   vertices.data());
-        m_glWrapper.releaseBuffer(vertexGLBuffer);
+            m_glWrapper.bindBuffer(vertexGLBuffer);
+            m_glWrapper.allocateBuffer(vertexGLBuffer,
+                                       vertices.size() * Geometry::vertexSize,
+                                       vertices.data());
+            m_glWrapper.releaseBuffer(vertexGLBuffer);
 
-        // Upload indices, if any
-        GLBuffer *indexGLBuffer = buffers.second;
+            // Upload indices, if any
+            GLBuffer *indexGLBuffer = buffers.second;
 
-        if (indexGLBuffer) {
-            const std::vector<unsigned int> &indices = geom->indices;
+            if (indexGLBuffer) {
+                const std::vector<unsigned int> &indices = geom->indices;
 
-            m_glWrapper.bindBuffer(*indexGLBuffer);
-            m_glWrapper.allocateBuffer(*indexGLBuffer,
-                                       indices.size() * Geometry::indexSize,
-                                       indices.data());
-            m_glWrapper.releaseBuffer(*indexGLBuffer);
+                m_glWrapper.bindBuffer(*indexGLBuffer);
+                m_glWrapper.allocateBuffer(*indexGLBuffer,
+                                           indices.size() * Geometry::indexSize,
+                                           indices.data());
+                m_glWrapper.releaseBuffer(*indexGLBuffer);
+            }
+
+            geom->isDirty = false;
         }
-
-//        geom->isDirty = false;
     }
 
     m_glWrapper.printAnyError();
