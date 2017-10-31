@@ -4,16 +4,14 @@
 
 #include "aabb.h"
 #include "camera.h"
-#include "seasoncontroller.h"
 #include "scene.h"
 
 #include "renderer/renderer.h"
 
 
-GameWidget::GameWidget(Scene *scene, SeasonController *seasons, QWidget *parent) :
+GameWidget::GameWidget(Scene *scene, QWidget *parent) :
     QOpenGLWidget(parent),
     m_scene(scene),
-    m_seasons(seasons),
     m_renderer(std::make_unique<Renderer>()),
     m_camera(nullptr)
 {}
@@ -49,7 +47,7 @@ void GameWidget::startNewFrame(float dt)
 
 void GameWidget::initializeGL()
 {
-    m_renderer->initialize();
+    m_renderer->initialize(m_scene);
 }
 
 void GameWidget::resizeGL(int w, int h)
@@ -59,31 +57,5 @@ void GameWidget::resizeGL(int w, int h)
 
 void GameWidget::paintGL()
 {
-    const QMatrix4x4 viewMatrix = m_camera->viewMatrix();
-    const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
-    const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
-
-    const QVector3D terrainAABBCenter = m_scene->terrainBoundingBox.center();
-    const QVector3D terrainAABBRadius = m_scene->terrainBoundingBox.radius();
-
-    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
-    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
-
-    const QColor drawColor = m_seasons->colorFromSeason(objectName().toInt());
-
-    //TODO helper classes for uniforms ; don't send uniforms every frame
-    QVariantMap uniforms {
-        {"viewMatrix", viewMatrix},
-        {"projectionMatrix", projectionMatrix},
-        {"worldMatrix", worldMatrix},
-        {"minHeight", minHeight},
-        {"maxHeight", maxHeight},
-        {"terrainColor", drawColor},
-        {"particleColor", drawColor},
-        {"particlesSize", 4.f}
-    };
-
-    m_renderer->updateUniforms(uniforms);
-
     m_renderer->render(m_scene, m_deltaTime);
 }

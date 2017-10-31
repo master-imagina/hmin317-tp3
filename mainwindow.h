@@ -14,6 +14,7 @@ class GameWidget;
 class Geometry;
 class ParticleEffect;
 class Scene;
+class SeasonController;
 
 class QLabel;
 class QTimer;
@@ -40,6 +41,7 @@ private:
 
 private:
     void initScene();
+    void gatherShadersParams();
 
 private:
     static constexpr int viewportCount = 4;
@@ -57,6 +59,8 @@ private:
     QTimer *m_estimateFpsTimer;
 
     CameraController *m_cameraController;
+
+    SeasonController *m_seasonController;
 };
 
 #endif // MAINWINDOW_H

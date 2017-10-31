@@ -6,6 +6,7 @@
 #include <QBoxLayout>
 #include <QColor>
 #include <QDate>
+#include <QDebug>
 #include <QFileDialog>
 #include <QGridLayout>
 #include <QLabel>
@@ -26,8 +27,12 @@
 #include "geometry.h"
 #include "heightmap.h"
 #include "particleeffect.h"
-#include "seasoncontroller.h"
 #include "scene.h"
+#include "seasoncontroller.h"
+#include "shaderutils.h"
+
+#include "renderer/material.h"
+#include "renderer/renderpass.h"
 
 
 MainWindow::MainWindow(GameLoop *gameLoop) :
@@ -39,11 +44,11 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_fpsLabels(),
     m_camera(std::make_unique<Camera>()),
     m_estimateFpsTimer(new QTimer(this)),
-    m_cameraController(nullptr)
+    m_cameraController(nullptr),
+    m_seasonController(new SeasonController(this))
 {
     // Scene creation
     initScene();
-    auto *seasons = new SeasonController(this);
 
     // Build UI
     auto centralWidget = new QWidget(this);
@@ -72,7 +77,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
 
     for (int i = 0; i < m_gameWidgets.size(); i++) {
         // Create game widget
-        auto gameWidget = new GameWidget(m_scene.get(), seasons, centralWidget);
+        auto gameWidget = new GameWidget(m_scene.get(), centralWidget);
         gameWidget->setObjectName(QString::number(i));
         gameWidget->setCamera(m_camera.get());
 
@@ -131,7 +136,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
 
     centralWidget->setFocus();
 
-    seasons->start();
+    m_seasonController->start();
 
     gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
     m_estimateFpsTimer->start();
@@ -187,6 +192,8 @@ void MainWindow::iterateGameLoop(float dt)
     m_particleEffect->live(dt);
     m_cameraController->updateCamera(m_camera.get(), dt);
 
+    gatherShadersParams();
+
     for (GameWidget *gameWidget : m_gameWidgets) {
         gameWidget->startNewFrame(dt);
     }
@@ -224,6 +231,58 @@ void MainWindow::initScene()
     m_camera->setEyePos({8, 20, 8});
     m_particleEffect->setDirection({0, -1, 0});
 
-    m_scene->geometries.push_back(m_terrain.get());
-    m_scene->geometries.push_back(m_particleEffect->geometry());
+    m_scene->geometries.emplace_back(m_terrain.get());
+    m_scene->geometries.emplace_back(m_particleEffect->geometry());
+
+    Material *terrainMaterial = new Material;
+    RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
+    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("://res/shaders/terrain_heightmap.vert",
+                                                              "",
+                                                              "://res/shaders/terrain_heightmap.frag");
+    terrainPass->setShaderProgram(std::move(terrainShader));
+
+    Material *particleMaterial = new Material;
+    RenderPass *particlePass = particleMaterial->addRenderPass("base");
+    uptr<ShaderProgram> particleShader = shaderProgramFromFile("://res/shaders/particle.vert",
+                                                               "://res/shaders/particle.geom",
+                                                               "://res/shaders/particle.frag");
+    particlePass->setShaderProgram(std::move(particleShader));
+
+    m_scene->materials.emplace_back(terrainMaterial);
+    m_scene->materials.emplace_back(particleMaterial);
+
+    gatherShadersParams();
+}
+
+void MainWindow::gatherShadersParams()
+{
+    // Update terrain shader parameters
+    RenderPass *terrainPass = m_scene->materials[0]->renderPasses()[0].get();
+    terrainPass->clearParams();
+
+    const QMatrix4x4 viewMatrix = m_camera->viewMatrix();
+    const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
+    const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
+
+    const QVector3D terrainAABBCenter = m_scene->terrainBoundingBox.center();
+    const QVector3D terrainAABBRadius = m_scene->terrainBoundingBox.radius();
+
+    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
+    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
+
+    const QColor drawColor = m_seasonController->colorFromSeason(0);
+
+    terrainPass->addParam({"worldMatrix", worldMatrix});
+    terrainPass->addParam({"minHeight", minHeight});
+    terrainPass->addParam({"maxHeight", maxHeight});
+    terrainPass->addParam({"terrainColor", drawColor});
+
+    // Update particle shader parameters
+    RenderPass *particlePass = m_scene->materials[1]->renderPasses()[0].get();
+    particlePass->clearParams();
+
+    particlePass->addParam({"viewMatrix", viewMatrix});
+    particlePass->addParam({"projectionMatrix", projectionMatrix});
+    particlePass->addParam({"particleColor", drawColor});
+    particlePass->addParam({"particlesSize", 4.f});
 }

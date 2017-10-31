@@ -7,7 +7,6 @@
 
 class Camera;
 class Renderer;
-class SeasonController;
 class Scene;
 
 
@@ -16,7 +15,7 @@ class GameWidget : public QOpenGLWidget
     Q_OBJECT
 
 public:
-    explicit GameWidget(Scene *scene, SeasonController *seasons, QWidget *parent = 0);
+    explicit GameWidget(Scene *scene, QWidget *parent = 0);
     ~GameWidget();
 
     Camera *camera() const;
@@ -31,7 +30,6 @@ protected:
 
 private:
     Scene *m_scene;
-    SeasonController *m_seasons;
     std::unique_ptr<Renderer> m_renderer;
 
     Camera *m_camera;

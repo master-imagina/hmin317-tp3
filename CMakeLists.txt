@@ -22,6 +22,8 @@ set(HEADERS
     cameracontrollercontrols.h
     cameracontrols.h
     dragtoolbutton.h
+    shaderutils.h
+    renderer/aliases.h
     renderer/buffermanager.h
     renderer/openglversion.h
     renderer/renderer.h
@@ -30,6 +32,11 @@ set(HEADERS
     renderer/vertexlayout.h
     renderer/glwrapper.h
     renderer/drawcommand.h
+    renderer/material.h
+    renderer/renderpass.h
+    renderer/shaderparam.h
+    renderer/shaderprogram.h
+    renderer/shadermanager.h
 )
 
 set(SOURCES
@@ -46,12 +53,18 @@ set(SOURCES
     particleeffect.cpp
     seasoncontroller.cpp
     cameracontrollercontrols.cpp
+    shaderutils.cpp
     main.cpp
     renderer/buffermanager.cpp
     renderer/renderer.cpp
     renderer/vertexattrib.cpp
     renderer/vertexlayout.cpp
     renderer/glwrapper.cpp
+    renderer/material.cpp
+    renderer/renderpass.cpp
+    renderer/shaderparam.cpp
+    renderer/shaderprogram.cpp
+    renderer/shadermanager.cpp
     )
 
 set(QT_RESOURCES

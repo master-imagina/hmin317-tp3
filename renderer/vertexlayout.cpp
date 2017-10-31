@@ -11,7 +11,7 @@ void VertexLayout::addAttribute(const VertexAttrib &attrib)
             std::find(m_attributes.begin(), m_attributes.end(), attrib);
 
     if (attribFound == m_attributes.end()) {
-        m_attributes.push_back(attrib);
+        m_attributes.emplace_back(attrib);
     }
 }
 

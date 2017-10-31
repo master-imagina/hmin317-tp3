@@ -1,20 +1,29 @@
 #include "renderer.h"
 
+#include <assert.h>
+#include <iostream>
+
 #include <QColor>
 
 #include "drawcommand.h"
+#include "material.h"
+#include "renderpass.h"
+#include "shaderparam.h"
+#include "shaderprogram.h"
 #include "vertexattrib.h"
 #include "vertexlayout.h"
 
 #include "../geometry.h"
 #include "../scene.h"
+#include "../shaderutils.h"
 
 
 Renderer::Renderer() :
     m_bufferManager(),
-    gl(nullptr),
+    m_shaderManager(),
+    m_gl(nullptr),
     m_glWrapper(),
-    m_shaderPrograms(),
+    m_shaderIds(),
     m_vaos(),
     m_arrayVbos(),
     m_indexVbos()
@@ -25,21 +34,21 @@ Renderer::~Renderer()
     cleanup();
 }
 
-void Renderer::initialize()
+void Renderer::initialize(Scene *scene)
 {
     QOpenGLContext *currentGLContext = QOpenGLContext::currentContext();
 
-    gl = currentGLContext->versionFunctions<OpenGLFuncs>();
-    const bool initialized = gl->initializeOpenGLFunctions();
+    m_gl = currentGLContext->versionFunctions<OpenGLFuncs>();
+    const bool initialized = m_gl->initializeOpenGLFunctions();
     Q_ASSERT_X (initialized,
                 "Renderer::initialize()", "OpenGL 3.3 failed to initialize");
 
     m_glWrapper.initialize(currentGLContext);
 
-    gl->glClearColor(0.f, 0.f, 0.f, 1.f);
+    m_gl->glClearColor(0.f, 0.f, 0.f, 1.f);
 
-    gl->glEnable(GL_DEPTH_TEST);
-    gl->glDepthFunc(GL_LESS);
+    m_gl->glEnable(GL_DEPTH_TEST);
+    m_gl->glDepthFunc(GL_LESS);
 
     //    gl->glEnable(GL_BLEND);
     //    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -58,30 +67,17 @@ void Renderer::initialize()
     m_glWrapper.createBuffer(m_arrayVbos[1]);
 
     // Create shaders and VAOs
-    m_shaderPrograms[0].addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                                "://res/shaders/terrain_heightmap.vert");
+    m_shaderIds[0] = m_glWrapper.buildShaderProgram(scene->materials[0]->renderPasses()[0]->shaderProgram());
+    m_shaderIds[1] = m_glWrapper.buildShaderProgram(scene->materials[1]->renderPasses()[0]->shaderProgram());
 
-    m_shaderPrograms[0].addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                                "://res/shaders/terrain_heightmap.frag");
-
-    m_shaderPrograms[1].addShaderFromSourceFile(QOpenGLShader::Vertex,
-                                                "://res/shaders/particle.vert");
-    m_shaderPrograms[1].addShaderFromSourceFile(QOpenGLShader::Geometry,
-                                                "://res/shaders/particle.geom");
-    m_shaderPrograms[1].addShaderFromSourceFile(QOpenGLShader::Fragment,
-                                                "://res/shaders/particle.frag");
-
-    m_shaderPrograms[0].link();
-    m_shaderPrograms[1].link();
-
-    gl->glGenVertexArrays(2, m_vaos.data());
+    m_gl->glGenVertexArrays(2, m_vaos.data());
 
     // Setup terrain geometry
     VertexLayout terrainVertexLayout;
     VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
     terrainVertexLayout.addAttribute(standardVertexAttrib);
 
-    m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[0].programId(), m_vaos[0],
+    m_glWrapper.setupVaoForBufferAndShader(m_shaderIds[0], m_vaos[0],
                                            terrainVertexLayout,
                                            m_arrayVbos[0],
                                            &m_indexVbos[0]);
@@ -90,12 +86,56 @@ void Renderer::initialize()
     VertexLayout particlesVertexLayout;
     particlesVertexLayout.addAttribute(standardVertexAttrib);
 
-    m_glWrapper.setupVaoForBufferAndShader(m_shaderPrograms[1].programId(), m_vaos[1],
+    m_glWrapper.setupVaoForBufferAndShader(m_shaderIds[1], m_vaos[1],
                                            particlesVertexLayout,
                                            m_arrayVbos[1]);
 
+    m_glWrapper.printAnyError();
+}
 
-    cglPrintAnyError();
+void Renderer::render(Scene *scene, float dt)
+{
+    Q_UNUSED (dt);
+
+    m_bufferManager.addGeometry(scene->geometries[0], &m_arrayVbos[0], &m_indexVbos[0]);
+    m_bufferManager.addGeometry(scene->geometries[1], &m_arrayVbos[1], nullptr);
+
+    m_shaderManager.addShaderProgram(scene->materials[0]->renderPasses()[0]->shaderProgram(), m_shaderIds[0]);
+    m_shaderManager.addShaderProgram(scene->materials[1]->renderPasses()[0]->shaderProgram(), m_shaderIds[1]);
+
+
+    std::vector<Geometry *> dirtyGeoms;
+    dirtyGeoms.reserve(scene->geometries.size());
+    for (Geometry *geom : scene->geometries) {
+        if (geom->isDirty) {
+            dirtyGeoms.emplace_back(geom);
+        }
+    }
+    updateBuffers(dirtyGeoms);
+
+    updatePassParameters(scene->materials);
+
+    const std::vector<DrawCommand> commands = prepareDrawCommands(scene);
+
+    m_gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    m_glWrapper.draw(commands);
+
+    m_glWrapper.printAnyError();
+}
+
+void Renderer::cleanup()
+{
+    m_gl->glDeleteVertexArrays(2, m_vaos.data());
+
+    m_glWrapper.destroyShaderProgram(m_shaderIds[0]);
+    m_glWrapper.destroyShaderProgram(m_shaderIds[1]);
+
+    m_glWrapper.destroyBuffer(m_arrayVbos[0]);
+    m_glWrapper.destroyBuffer(m_arrayVbos[1]);
+    m_glWrapper.destroyBuffer(m_indexVbos[0]);
+
+    m_glWrapper.printAnyError();
 }
 
 void Renderer::updateBuffers(const std::vector<Geometry *> &geoms)
@@ -131,51 +171,22 @@ void Renderer::updateBuffers(const std::vector<Geometry *> &geoms)
 //        geom->isDirty = false;
     }
 
-    cglPrintAnyError();
+    m_glWrapper.printAnyError();
 }
 
-void Renderer::updateUniforms(const QVariantMap &uniforms)
+void Renderer::updatePassParameters(const std::vector<Material *> &materials)
 {
-    for (QOpenGLShaderProgram &shaderProgram : m_shaderPrograms) {
-        shaderProgram.bind();
+    for (const Material *mat : materials) {
+        const uptr_vector<RenderPass> &passes = mat->renderPasses();
 
-        for (auto it = uniforms.begin(); it != uniforms.end(); it++) {
-            const QString uniformName = it.key();
-            const QVariant uniformValue = it.value();
+        for (const uptr<RenderPass> &pass : passes) {
+            assert (pass);
 
-            const char *rawName = uniformName.toLatin1().constData();
-            const int valueType = uniformValue.type();
+            const unsigned int programId =
+                    m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
 
-            switch (valueType) {
-            case QMetaType::Int:
-                shaderProgram.setUniformValue(rawName, uniformValue.toInt());
-                break;
-            case QMetaType::Float:
-                shaderProgram.setUniformValue(rawName, uniformValue.toFloat());
-                break;
-            case QMetaType::QVector2D:
-                shaderProgram.setUniformValue(rawName, uniformValue.value<QVector2D>());
-                break;
-            case QMetaType::QVector3D:
-                shaderProgram.setUniformValue(rawName, uniformValue.value<QVector3D>());
-                break;
-            case QMetaType::QVector4D:
-                shaderProgram.setUniformValue(rawName, uniformValue.value<QVector4D>());
-                break;
-            case QMetaType::QColor:
-                shaderProgram.setUniformValue(rawName, uniformValue.value<QColor>());
-                break;
-            case QMetaType::QMatrix4x4:
-                shaderProgram.setUniformValue(rawName, uniformValue.value<QMatrix4x4>());
-                break;
-            default:
-                qCritical() << "Renderer: unsupported uniform type :"
-                            << QMetaType::typeName(valueType);
-                break;
-            }
+            m_glWrapper.sendUniforms(programId, pass->params());
         }
-
-        shaderProgram.release();
     }
 }
 
@@ -191,57 +202,12 @@ std::vector<DrawCommand> Renderer::prepareDrawCommands(Scene *scene)
                 m_bufferManager.buffersForGeometry(geometry);
 
         const DrawCommand cmd {
-            m_shaderPrograms[i].programId(), m_vaos[i],
+            m_shaderIds[i], m_vaos[i],
             *geometry, *gpuBuffers.first, gpuBuffers.second
         };
 
-        ret.push_back(cmd);
+        ret.emplace_back(cmd);
     }
 
     return ret;
-}
-
-void Renderer::render(Scene *scene, float dt)
-{
-    Q_UNUSED (dt);
-
-    m_bufferManager.addGeometry(scene->geometries[0], &m_arrayVbos[0], &m_indexVbos[0]);
-    m_bufferManager.addGeometry(scene->geometries[1], &m_arrayVbos[1], nullptr);
-
-    std::vector<Geometry *> dirtyGeoms;
-    dirtyGeoms.reserve(scene->geometries.size());
-    for (Geometry *geom : scene->geometries) {
-        if (geom->isDirty) {
-            dirtyGeoms.push_back(geom);
-        }
-    }
-    updateBuffers(dirtyGeoms);
-
-    const std::vector<DrawCommand> commands = prepareDrawCommands(scene);
-
-    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    m_glWrapper.draw(commands);
-
-    cglPrintAnyError();
-}
-
-void Renderer::cleanup()
-{
-    gl->glDeleteVertexArrays(2, m_vaos.data());
-
-    m_glWrapper.destroyBuffer(m_arrayVbos[0]);
-    m_glWrapper.destroyBuffer(m_arrayVbos[1]);
-    m_glWrapper.destroyBuffer(m_indexVbos[0]);
-
-    cglPrintAnyError();
-}
-
-void Renderer::cglPrintAnyError()
-{
-    const GLenum err = gl->glGetError();
-
-    if (err != 0) {
-        qCritical() << "OpenGL error:" << err;
-    }
 }

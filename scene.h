@@ -6,10 +6,14 @@
 #include "aabb.h"
 #include "geometry.h"
 
+#include "renderer/material.h"
+
 
 struct Scene
 {
     std::vector<Geometry *> geometries;
+    std::vector<Material *> materials;
+
     AABoundingBox terrainBoundingBox;
 };
 

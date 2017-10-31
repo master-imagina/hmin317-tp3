@@ -2,7 +2,6 @@
 
 uniform float minHeight;            // Terrain minimum height
 uniform float maxHeight;            // Terrain maximum height
-
 uniform vec4 terrainColor;          // Terrain color
 
 in float vertexHeight;

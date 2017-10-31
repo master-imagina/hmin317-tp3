@@ -1,11 +1,23 @@
 #include "glwrapper.h"
 
+#include <assert.h>
+#include <iostream>
+#include <string>
+
+#include <QColor>
+#include <QMatrix4x4>
+#include <QOpenGLContext>
+#include <QOpenGLShaderProgram>
+#include <QVariant>
+#include <QVector2D>
+#include <QVector3D>
+#include <QVector4D>
+
 #include "drawcommand.h"
 #include "glbuffer.h"
 #include "vertexlayout.h"
-
-#include <QOpenGLContext>
-#include <QOpenGLShader>
+#include "shaderparam.h"
+#include "shaderprogram.h"
 
 
 GLWrapper::GLWrapper()
@@ -46,11 +58,183 @@ void GLWrapper::releaseBuffer(const GLBuffer &buffer)
 }
 
 void GLWrapper::allocateBuffer(const GLBuffer &buffer,
-                                 unsigned int size, const void *data)
+                               unsigned int size, const void *data)
 {
     // Orphan allocation
     m_gl->glBufferData(buffer.type, size, nullptr, buffer.usage);
     m_gl->glBufferData(buffer.type, size, data, buffer.usage);
+}
+
+unsigned int GLWrapper::buildShaderProgram(const ShaderProgram *program)
+{
+    const unsigned int programId = m_gl->glCreateProgram();
+    unsigned int shaderId = 0;
+
+    if (!program->vertexShaderSource.isEmpty()) {
+        shaderId = m_gl->glCreateShader(GL_VERTEX_SHADER);
+        compileShader(programId, shaderId, program->vertexShaderSource);
+    }
+
+    if (!program->geometryShaderSource.isEmpty()) {
+        shaderId = m_gl->glCreateShader(GL_GEOMETRY_SHADER);
+        compileShader(programId, shaderId, program->geometryShaderSource);
+    }
+
+    if (!program->fragmentShaderSource.isEmpty()) {
+        shaderId = m_gl->glCreateShader(GL_FRAGMENT_SHADER);
+        compileShader(programId, shaderId, program->fragmentShaderSource);
+    }
+
+    linkShaderProgram(programId);
+
+    return programId;
+}
+
+void GLWrapper::bindShaderProgram(unsigned int programId)
+{
+    m_gl->glUseProgram(programId);
+}
+
+void GLWrapper::releaseShaderProgram(unsigned int programId)
+{
+    m_gl->glUseProgram(0);
+}
+
+void GLWrapper::destroyShaderProgram(unsigned int programId)
+{
+    m_gl->glDeleteProgram(programId);
+}
+
+void GLWrapper::sendUniforms(unsigned int programId,
+                             const std::vector<ShaderParam> &params)
+{
+    bindShaderProgram(programId);
+
+    for (const ShaderParam &param : params) {
+        const char *rawName = param.name.constData();
+        const QVariant value = param.value;
+        const int valueType = value.type();
+
+        switch (valueType) {
+        case QMetaType::Int:
+            setUniform(programId, rawName, value.toInt());
+            break;
+        case QMetaType::Float:
+            setUniform(programId, rawName, value.toFloat());
+            break;
+        case QMetaType::QVector2D:
+            setUniform(programId, rawName, value.value<QVector2D>());
+            break;
+        case QMetaType::QVector3D:
+            setUniform(programId, rawName, value.value<QVector3D>());
+            break;
+        case QMetaType::QVector4D:
+            setUniform(programId, rawName, value.value<QVector4D>());
+            break;
+        case QMetaType::QColor:
+            setUniform(programId, rawName, value.value<QColor>());
+            break;
+        case QMetaType::QMatrix4x4:
+            setUniform(programId, rawName, value.value<QMatrix4x4>());
+            break;
+        default:
+            std::cerr << "Renderer: unsupported uniform type :"
+                      << QMetaType::typeName(valueType);
+            break;
+        }
+    }
+
+    releaseShaderProgram(programId);
+}
+
+void GLWrapper::compileShader(unsigned int programId,
+                              unsigned int shaderId,
+                              const QByteArray &shaderSource)
+{
+    const char *rawSource = shaderSource.constData();
+    int sourceLength = shaderSource.size();
+    m_gl->glShaderSource(shaderId, 1, &rawSource, &sourceLength);
+    m_gl->glCompileShader(shaderId);
+
+    int compiled = 0;
+    m_gl->glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compiled);
+
+    if (!compiled) {
+        int logSize = 0;
+        m_gl->glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logSize);
+
+        if (logSize > 1) {  // ignore the null termination character
+            std::vector<char> logBuffer(logSize);
+
+            m_gl->glGetShaderInfoLog(shaderId, logSize, nullptr,
+                                     logBuffer.data());
+
+            std::cerr << "Shader compilation error :" << std::endl
+                      << std::string(logBuffer.data()) << "in :" << std::endl
+                      << "--------------------------" << std::endl
+                      << shaderSource.constData()
+                      << std::endl;
+        }
+    }
+
+    m_gl->glAttachShader(programId, shaderId);
+
+    printAnyError();
+}
+
+void GLWrapper::linkShaderProgram(unsigned int programId)
+{
+    m_gl->glLinkProgram(programId);
+
+    int linked = 0;
+    m_gl->glGetProgramiv(programId, GL_LINK_STATUS, &linked);
+
+    if (!linked) {
+        int logSize = 0;
+        m_gl->glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logSize);
+
+        if (logSize > 1) {  // ignore the null termination character
+            std::vector<char> logBuffer(logSize);
+
+            m_gl->glGetProgramInfoLog(programId, logSize, nullptr,
+                                      logBuffer.data());
+
+            std::cerr << "Shader linking error :" << std::endl
+                      << std::string(logBuffer.data())
+                      << std::endl;
+        }
+    }
+
+    printAnyError();
+}
+
+std::vector<std::string> GLWrapper::activeUniforms(unsigned int programId) const
+{
+    std::vector<std::string> ret;
+    ret.reserve(16);
+
+    int count = 0;
+    m_gl->glGetProgramiv(programId, GL_ACTIVE_UNIFORMS, &count);
+
+    for (int i = 0; i < count; i++) {
+        std::array<char, 128> name;
+
+        m_gl->glGetActiveUniformName(programId, i, sizeof(name), nullptr, name.data());
+
+        ret.push_back(std::string(name.data()));
+    }
+
+    return ret;
+}
+
+void GLWrapper::printAnyError()
+{
+    const GLenum err = m_gl->glGetError();
+
+    if (err != 0) {
+        std::cerr << "OpenGL error: " << err << std::endl;
+        assert (false);
+    }
 }
 
 void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
@@ -110,4 +294,67 @@ void GLWrapper::draw(const std::vector<DrawCommand> &commands)
         m_gl->glBindVertexArray(0);
         m_gl->glUseProgram(0);
     }
+}
+
+void GLWrapper::setUniform(unsigned int programId, const char *name, int value)
+{
+    const int location = m_gl->glGetUniformLocation(programId, name);
+    assert (location != -1);
+
+    m_gl->glUniform1i(location, value);
+}
+
+void GLWrapper::setUniform(unsigned int programId, const char *name, float value)
+{
+    const int location = m_gl->glGetUniformLocation(programId, name);
+    assert (location != -1);
+
+    m_gl->glUniform1fv(location, 1, &value);
+}
+
+void GLWrapper::setUniform(unsigned int programId, const char *name, const QVector2D &value)
+{
+    const int location = m_gl->glGetUniformLocation(programId, name);
+    assert (location != -1);
+
+    m_gl->glUniform2fv(location, 1, reinterpret_cast<const float *>(&value));
+}
+
+void GLWrapper::setUniform(unsigned int programId, const char *name, const QVector3D &value)
+{
+    const int location = m_gl->glGetUniformLocation(programId, name);
+    assert (location != -1);
+
+    m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&value));
+}
+
+void GLWrapper::setUniform(unsigned int programId, const char *name, const QVector4D &value)
+{
+    const int location = m_gl->glGetUniformLocation(programId, name);
+    assert (location != -1);
+
+    m_gl->glUniform4fv(location, 1, reinterpret_cast<const float *>(&value));
+}
+
+void GLWrapper::setUniform(unsigned int programId, const char *name, const QColor &value)
+{
+    const int location = m_gl->glGetUniformLocation(programId, name);
+    assert (location != -1);
+
+    const float rawValue[4] {
+        static_cast<float>(value.redF()),
+                static_cast<float>(value.greenF()),
+                static_cast<float>(value.blueF()),
+                static_cast<float>(value.alphaF())
+    };
+
+    m_gl->glUniform4fv(location, 1, rawValue);
+}
+
+void GLWrapper::setUniform(unsigned int programId, const char *name, const QMatrix4x4 &value)
+{
+    const int location = m_gl->glGetUniformLocation(programId, name);
+    assert (location != -1);
+
+    m_gl->glUniformMatrix4fv(location, 1, false, value.constData());
 }

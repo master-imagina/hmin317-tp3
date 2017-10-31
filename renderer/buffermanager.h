@@ -2,7 +2,6 @@
 #define BUFFERMANAGER_H
 
 #include <map>
-#include <vector>
 
 #include "glbuffer.h"
 
