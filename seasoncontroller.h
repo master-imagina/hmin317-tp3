@@ -24,16 +24,16 @@ public:
 
     void start();
 
-    QColor colorFromSeason(int viewportId);
+    QColor colorFromSeason() const;
 
 private:
     void initSeasons();
 
-    QColor colorFromSeason(Season season);
+    QColor colorFromSeason(Season season) const;
 
 private:
-    std::array<Season, 4> m_currentSeasons;
-    std::array<QDate, 4> m_currentDates;
+    Season m_currentSeason;
+    QDate m_currentDate;
     QTimer *m_seasonTimer;
 };
 

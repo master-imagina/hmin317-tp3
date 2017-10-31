@@ -44,16 +44,14 @@ private:
     void gatherShadersParams();
 
 private:
-    static constexpr int viewportCount = 4;
-
     GameLoop *m_theGameLoop;
 
     std::unique_ptr<Scene> m_scene;
     std::unique_ptr<Geometry> m_terrain;
     std::unique_ptr<ParticleEffect> m_particleEffect;
 
-    std::array<GameWidget *, viewportCount> m_gameWidgets;
-    std::array<QLabel *, viewportCount> m_fpsLabels;
+    GameWidget *m_gameWidget;
+    QLabel *m_fpsLabel;
     std::unique_ptr<Camera> m_camera;
 
     QTimer *m_estimateFpsTimer;

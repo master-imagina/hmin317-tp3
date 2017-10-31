@@ -5,8 +5,8 @@
 
 SeasonController::SeasonController(QObject *parent) :
     QObject(parent),
-    m_currentSeasons(),
-    m_currentDates(),
+    m_currentSeason(),
+    m_currentDate(),
     m_seasonTimer(new QTimer(this))
 {
     initSeasons();
@@ -17,11 +17,9 @@ void SeasonController::start()
     m_seasonTimer->start();
 }
 
-QColor SeasonController::colorFromSeason(int viewportId)
+QColor SeasonController::colorFromSeason() const
 {
-    Q_ASSERT (viewportId < 4);
-
-    return colorFromSeason(m_currentSeasons[viewportId]);
+    return colorFromSeason(m_currentSeason);
 }
 
 void SeasonController::initSeasons()
@@ -37,32 +35,29 @@ void SeasonController::initSeasons()
     for (auto it = DATE_TO_SEASON.begin(); it != DATE_TO_SEASON.end(); it++) {
         const int i = DATE_TO_SEASON.size() - std::distance(it, DATE_TO_SEASON.end());
 
-        m_currentDates[i] = QDate(2017, it->first.first, it->first.second - 1);
-        m_currentSeasons[i] = it->second;
+        m_currentDate = QDate(2017, it->first.first, it->first.second - 1);
+        m_currentSeason = it->second;
     }
 
     // Init and start timer
     m_seasonTimer->setInterval(75);
 
     connect(m_seasonTimer, &QTimer::timeout, [this] {
-        for (int i = 0; i < m_currentDates.size(); i++) {
-            QDate &date = m_currentDates[i];
-            date = date.addDays(1);
+        m_currentDate = m_currentDate.addDays(1);
 
-            const std::pair<int, int> dayAndMonth {date.month(), date.day()};
+        const std::pair<int, int> dayAndMonth {m_currentDate.month(), m_currentDate.day()};
 
-            auto seasonChangedIt = DATE_TO_SEASON.find(dayAndMonth);
+        auto seasonChangedIt = DATE_TO_SEASON.find(dayAndMonth);
 
-            if (seasonChangedIt != DATE_TO_SEASON.end()) {
-                const Season newSeason = seasonChangedIt->second;
+        if (seasonChangedIt != DATE_TO_SEASON.end()) {
+            const Season newSeason = seasonChangedIt->second;
 
-                m_currentSeasons[i] = newSeason;
-            }
+            m_currentSeason = newSeason;
         }
     });
 }
 
-QColor SeasonController::colorFromSeason(Season season)
+QColor SeasonController::colorFromSeason(Season season) const
 {
     QColor ret;
 

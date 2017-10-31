@@ -40,8 +40,8 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_scene(std::make_unique<Scene>()),
     m_terrain(std::make_unique<Geometry>()),
     m_particleEffect(std::make_unique<ParticleEffect>(QVector3D(0, 400, 0), 50, 100)),
-    m_gameWidgets(),
-    m_fpsLabels(),
+    m_gameWidget(),
+    m_fpsLabel(),
     m_camera(std::make_unique<Camera>()),
     m_estimateFpsTimer(new QTimer(this)),
     m_cameraController(nullptr),
@@ -70,43 +70,35 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     fpsControlsLayout->addWidget(fpsIndicator);
     fpsControlsLayout->addWidget(fpsSlider);
 
-    // Viewports
+    // Viewport
     auto viewportsLayout = new QGridLayout;
 
     m_estimateFpsTimer->setInterval(500);
 
-    for (int i = 0; i < m_gameWidgets.size(); i++) {
-        // Create game widget
-        auto gameWidget = new GameWidget(m_scene.get(), centralWidget);
-        gameWidget->setObjectName(QString::number(i));
-        gameWidget->setCamera(m_camera.get());
+    // Create game widget
+    m_gameWidget = new GameWidget(m_scene.get(), centralWidget);
+    m_gameWidget->setCamera(m_camera.get());
 
-        m_gameWidgets[i] = gameWidget;
+    viewportsLayout->addWidget(m_gameWidget);
 
-        viewportsLayout->addWidget(gameWidget, i / 2, i % 2);
+    // Create fps label
+    m_fpsLabel = new QLabel(m_gameWidget);
+    m_fpsLabel->setStyleSheet("QLabel { background-color : red }");
+    m_fpsLabel->move(20, 20);
 
-        // Create fps label
-        auto fpsLabel = new QLabel(gameWidget);
-        fpsLabel->setStyleSheet("QLabel { background-color : red }");
-        fpsLabel->move(20, 20);
+    connect(m_estimateFpsTimer, &QTimer::timeout, [this] {
+        const unsigned int fps = m_theGameLoop->effectiveFramerate();
+        m_fpsLabel->setText(QString::number(fps) + " fps");
+    });
 
-        connect(m_estimateFpsTimer, &QTimer::timeout,
-                [this, fpsLabel] {
-            const unsigned int fps = m_theGameLoop->effectiveFramerate();
-            fpsLabel->setText(QString::number(fps) + " fps");
-        });
-
-        m_fpsLabels[i] = fpsLabel;
-
-        // Add controls to game widget
-        auto *gameWidgetLayout = new QVBoxLayout(gameWidget);
-        auto *gameWidgetTopLayout = new QHBoxLayout;
-        gameWidgetTopLayout->addWidget(fpsLabel);
-        gameWidgetTopLayout->addStretch();
-        gameWidgetTopLayout->addWidget(new CameraControls(m_camera.get(), gameWidget));
-        gameWidgetLayout->addLayout(gameWidgetTopLayout);
-        gameWidgetLayout->addStretch();
-    }
+    // Add controls to game widget
+    auto *gameWidgetLayout = new QVBoxLayout(m_gameWidget);
+    auto *gameWidgetTopLayout = new QHBoxLayout;
+    gameWidgetTopLayout->addWidget(m_fpsLabel);
+    gameWidgetTopLayout->addStretch();
+    gameWidgetTopLayout->addWidget(new CameraControls(m_camera.get(), m_gameWidget));
+    gameWidgetLayout->addLayout(gameWidgetTopLayout);
+    gameWidgetLayout->addStretch();
 
     connect(fpsSlider, &QSlider::valueChanged,
             [this, gameLoop, fpsIndicator] (int fps) {
@@ -114,9 +106,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
 
         const QString fpsText = QString::number(fps);
 
-        for (QLabel *fpsLabel : m_fpsLabels) {
-            fpsLabel->setText(fpsText + " fps");
-        }
+        m_fpsLabel->setText(fpsText + " fps");
 
         fpsIndicator->setText("fps :" + fpsText);
     });
@@ -194,9 +184,7 @@ void MainWindow::iterateGameLoop(float dt)
 
     gatherShadersParams();
 
-    for (GameWidget *gameWidget : m_gameWidgets) {
-        gameWidget->startNewFrame(dt);
-    }
+    m_gameWidget->startNewFrame(dt);
 
     //FIXME Avoid file dialogs freezing. Implement threaded rendering instead
     qApp->processEvents();
@@ -270,7 +258,7 @@ void MainWindow::gatherShadersParams()
     const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
     const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
 
-    const QColor drawColor = m_seasonController->colorFromSeason(0);
+    const QColor drawColor = m_seasonController->colorFromSeason();
 
     terrainPass->addParam({"worldMatrix", worldMatrix});
     terrainPass->addParam({"minHeight", minHeight});
