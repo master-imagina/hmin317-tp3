@@ -7,29 +7,31 @@
 #include <QObject>
 #include <QTime>
 
+#include "aliases_int.h"
+
 
 class GameLoop : public QObject
 {
 public:
-    explicit GameLoop(unsigned int framerate, QObject *parent = nullptr);
+    explicit GameLoop(uint32 framerate, QObject *parent = nullptr);
 
-    unsigned int framerate() const;
-    void setFramerate(unsigned int framerate);
+    uint32 framerate() const;
+    void setFramerate(uint32 framerate);
 
-    unsigned int effectiveFramerate() const;
+    uint32 effectiveFramerate() const;
 
     void setCallback(const std::function<void (float)> &callback);
 
     void run();
 
 public:
-    static const unsigned int MAX_FPS = 60;
+    static const uint32 MAX_FPS = 60;
 
 protected:
     void timerEvent(QTimerEvent *) override;
 
 private:
-    unsigned int m_fps;
+    uint32 m_fps;
     QBasicTimer m_timer;
     QTime m_deltaTime;
 

@@ -5,7 +5,7 @@
 namespace {
 
 const int m_countDefaultValue = 20;
-const unsigned int m_maxLifeDefaultValue = 50;
+const uint32 m_maxLifeDefaultValue = 50;
 const float m_radiusDefaultValue = 50.f;
 const QVector3D m_directionDefaultValue = {0, 1, 0};
 const float m_speedDefaultValue = 0.4f;
@@ -38,7 +38,7 @@ ParticleEffect::ParticleEffect() :
               m_worldPos);
 }
 
-ParticleEffect::ParticleEffect(const QVector3D &pos, int count, unsigned int maxLife) :
+ParticleEffect::ParticleEffect(const QVector3D &pos, int count, uint32 maxLife) :
     m_randDevice(),
     m_randEngine(m_randDevice()),
     m_radiusXRandDistrib(),
@@ -121,7 +121,7 @@ void ParticleEffect::setParticlesSize(float particlesSize)
 void ParticleEffect::live(float dt)
 {
     for (int i = 0; i < m_lifes.size(); i++) {
-        unsigned int &life = m_lifes[i];
+        uint32 &life = m_lifes[i];
         QVector3D &particlePos = m_geometry->vertices[i];
 
         // Recycle particle

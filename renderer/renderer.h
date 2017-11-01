@@ -39,7 +39,7 @@ private:
     OpenGLFuncs *m_gl;
     GLWrapper m_glWrapper;
 
-    std::array<unsigned int, 2> m_shaderIds;
+    std::array<uint32, 2> m_shaderIds;
     std::array<GLuint, 2> m_vaos;
     std::array<GLBuffer, 2> m_arrayVbos;
     std::array<GLBuffer, 2> m_indexVbos;

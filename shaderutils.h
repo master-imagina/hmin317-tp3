@@ -5,7 +5,7 @@
 
 #include <QFile>
 
-#include "renderer/aliases.h"
+#include "renderer/aliases_memory.h"
 #include "renderer/shaderprogram.h"
 
 

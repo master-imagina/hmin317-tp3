@@ -3,11 +3,13 @@
 
 #include <QString>
 
+#include "../aliases_int.h"
+
 
 struct VertexAttrib
 {
 public:
-    enum class Type : unsigned int
+    enum class Type : uint32
     {
         Int = 0x1404,       // GL_INT
         UInt = 0x1405,      // GL_UNSIGNED_INT

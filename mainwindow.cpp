@@ -87,7 +87,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_fpsLabel->move(20, 20);
 
     connect(m_estimateFpsTimer, &QTimer::timeout, [this] {
-        const unsigned int fps = m_theGameLoop->effectiveFramerate();
+        const uint32 fps = m_theGameLoop->effectiveFramerate();
         m_fpsLabel->setText(QString::number(fps) + " fps");
     });
 

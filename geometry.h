@@ -5,6 +5,8 @@
 
 #include <QVector3D>
 
+#include "aliases_int.h"
+
 
 class Geometry
 {
@@ -16,13 +18,13 @@ public:
     };
 
     std::vector<QVector3D> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<uint32> indices;
 
     std::size_t primitiveCount = 0;
     PrimitiveType primitiveType = Points;
 
     static const std::size_t vertexSize = sizeof(QVector3D);
-    static const std::size_t indexSize = sizeof(unsigned int);
+    static const std::size_t indexSize = sizeof(uint32);
 
     bool isDirty = false;
 };

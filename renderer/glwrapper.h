@@ -2,6 +2,7 @@
 #define GLWRAPPER_H
 
 #include "openglversion.h"
+#include "../aliases_int.h"
 
 class DrawCommand;
 class GLBuffer;
@@ -29,13 +30,13 @@ public:
     void destroyBuffer(GLBuffer &buffer);
     void bindBuffer(const GLBuffer &buffer);
     void releaseBuffer(const GLBuffer &buffer);
-    void allocateBuffer(const GLBuffer &buffer, unsigned int size, const void *data);
+    void allocateBuffer(const GLBuffer &buffer, uint32 size, const void *data);
 
-    unsigned int buildShaderProgram(const ShaderProgram *program);
-    void bindShaderProgram(unsigned int programId);
-    void releaseShaderProgram(unsigned int programId);
-    void destroyShaderProgram(unsigned int programId);
-    void sendUniforms(unsigned int programId,
+    uint32 buildShaderProgram(const ShaderProgram *program);
+    void bindShaderProgram(uint32 programId);
+    void releaseShaderProgram(uint32 programId);
+    void destroyShaderProgram(uint32 programId);
+    void sendUniforms(uint32 programId,
                       const std::vector<ShaderParam> &params);
 
     void setupVaoForBufferAndShader(GLuint programId,
@@ -49,20 +50,20 @@ public:
     void printAnyError();
 
 private:
-    void compileShader(unsigned int programId, unsigned int shaderId,
+    void compileShader(uint32 programId, uint32 shaderId,
                        const QByteArray &shaderSource);
-    void linkShaderProgram(unsigned int programId);
+    void linkShaderProgram(uint32 programId);
 
-    std::vector<std::string> activeUniforms(unsigned int programId) const;
+    std::vector<std::string> activeUniforms(uint32 programId) const;
 
 private:
-    void setUniform(unsigned int programId, const char *name, int value);
-    void setUniform(unsigned int programId, const char *name, float value);
-    void setUniform(unsigned int programId, const char *name, const QVector2D &value);
-    void setUniform(unsigned int programId, const char *name, const QVector3D &value);
-    void setUniform(unsigned int programId, const char *name, const QVector4D &value);
-    void setUniform(unsigned int programId, const char *name, const QColor &value);
-    void setUniform(unsigned int programId, const char *name, const QMatrix4x4 &value);
+    void setUniform(uint32 programId, const char *name, int value);
+    void setUniform(uint32 programId, const char *name, float value);
+    void setUniform(uint32 programId, const char *name, const QVector2D &value);
+    void setUniform(uint32 programId, const char *name, const QVector3D &value);
+    void setUniform(uint32 programId, const char *name, const QVector4D &value);
+    void setUniform(uint32 programId, const char *name, const QColor &value);
+    void setUniform(uint32 programId, const char *name, const QMatrix4x4 &value);
 
 private:
     OpenGLFuncs *m_gl;

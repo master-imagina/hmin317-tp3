@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include "../aliases_int.h"
+
 class ShaderProgram;
 
 
@@ -11,12 +13,12 @@ class ShaderManager
 public:
     ShaderManager();
 
-    void addShaderProgram(ShaderProgram *shaderProgram, unsigned int shaderId);
+    void addShaderProgram(ShaderProgram *shaderProgram, uint32 shaderId);
 
-    unsigned int shaderIdForShaderProgram(ShaderProgram *shaderProgram);
+    uint32 shaderIdForShaderProgram(ShaderProgram *shaderProgram);
 
 private:
-    std::map<ShaderProgram *, unsigned int> m_shaderProgramToId;
+    std::map<ShaderProgram *, uint32> m_shaderProgramToId;
 };
 
 #endif // SHADERMANAGER_H

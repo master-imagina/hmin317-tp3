@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "aliases.h"
+#include "aliases_memory.h"
 #include "shaderparam.h"
 
 class ShaderProgram;

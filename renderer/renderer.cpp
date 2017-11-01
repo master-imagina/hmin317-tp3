@@ -152,7 +152,7 @@ void Renderer::updateDirtyBuffers(const std::vector<Geometry *> &geoms)
             GLBuffer *indexGLBuffer = buffers.second;
 
             if (indexGLBuffer) {
-                const std::vector<unsigned int> &indices = geom->indices;
+                const std::vector<uint32> &indices = geom->indices;
 
                 m_glWrapper.bindBuffer(*indexGLBuffer);
                 m_glWrapper.allocateBuffer(*indexGLBuffer,
@@ -176,7 +176,7 @@ void Renderer::updatePassParameters(const std::vector<Material *> &materials)
         for (const uptr<RenderPass> &pass : passes) {
             assert (pass);
 
-            const unsigned int programId =
+            const uint32 programId =
                     m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
 
             m_glWrapper.sendUniforms(programId, pass->params());

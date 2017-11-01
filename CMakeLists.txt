@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 # Files
 set(HEADERS
+    aliases_int.h
     aabb.h
     cameraactions.h
     gamewidget.h
@@ -23,7 +24,7 @@ set(HEADERS
     cameracontrols.h
     dragtoolbutton.h
     shaderutils.h
-    renderer/aliases.h
+    renderer/aliases_memory.h
     renderer/buffermanager.h
     renderer/openglversion.h
     renderer/renderer.h

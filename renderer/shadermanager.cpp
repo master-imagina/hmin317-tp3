@@ -7,7 +7,7 @@ ShaderManager::ShaderManager() :
     m_shaderProgramToId()
 {}
 
-void ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, unsigned int shaderId)
+void ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, uint32 shaderId)
 {
     const auto isHandled = m_shaderProgramToId.find(shaderProgram);
 
@@ -16,11 +16,11 @@ void ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, unsigned int 
     }
 }
 
-unsigned int ShaderManager::shaderIdForShaderProgram(ShaderProgram *shaderProgram)
+uint32 ShaderManager::shaderIdForShaderProgram(ShaderProgram *shaderProgram)
 {
     const auto shaderProgramFound = m_shaderProgramToId.find(shaderProgram);
 
-    unsigned int ret = 0;
+    uint32 ret = 0;
 
     if (shaderProgramFound != m_shaderProgramToId.end()) {
         ret = shaderProgramFound->second;

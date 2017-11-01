@@ -1,7 +1,7 @@
 #include "gameloop.h"
 
 
-GameLoop::GameLoop(unsigned int fps, QObject *parent) :
+GameLoop::GameLoop(uint32 fps, QObject *parent) :
     QObject(parent),
     m_fps(fps),
     m_timer(),
@@ -11,12 +11,12 @@ GameLoop::GameLoop(unsigned int fps, QObject *parent) :
     m_callback()
 {}
 
-unsigned int GameLoop::framerate() const
+uint32 GameLoop::framerate() const
 {
     return m_fps;
 }
 
-void GameLoop::setFramerate(unsigned int fps)
+void GameLoop::setFramerate(uint32 fps)
 {
     if (m_fps != fps) {
         m_fps = fps;
@@ -25,7 +25,7 @@ void GameLoop::setFramerate(unsigned int fps)
     }
 }
 
-unsigned int GameLoop::effectiveFramerate() const
+uint32 GameLoop::effectiveFramerate() const
 {
     float fps = 0;
 

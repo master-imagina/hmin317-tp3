@@ -14,7 +14,7 @@ class ParticleEffect
 {
 public:
     ParticleEffect();
-    ParticleEffect(const QVector3D &worldPos, int count, unsigned int maxLife);
+    ParticleEffect(const QVector3D &worldPos, int count, uint32 maxLife);
 
     QVector3D worldPos() const;
     void setWorldPos(const QVector3D &worldPos);
@@ -46,7 +46,7 @@ private:
     std::uniform_real_distribution<float> m_radiusZRandDistrib;
 
     int m_count;
-    unsigned int m_maxLife;
+    uint32 m_maxLife;
 
     QVector3D m_worldPos;
     float m_radius;
@@ -56,7 +56,7 @@ private:
     float m_particlesSize;
 
     std::unique_ptr<Geometry> m_geometry;
-    std::vector<unsigned int> m_lifes;
+    std::vector<uint32> m_lifes;
 };
 
 #endif // PARTICLEEFFECT_H

@@ -58,17 +58,17 @@ void GLWrapper::releaseBuffer(const GLBuffer &buffer)
 }
 
 void GLWrapper::allocateBuffer(const GLBuffer &buffer,
-                               unsigned int size, const void *data)
+                               uint32 size, const void *data)
 {
     // Orphan allocation
     m_gl->glBufferData(buffer.type, size, nullptr, buffer.usage);
     m_gl->glBufferData(buffer.type, size, data, buffer.usage);
 }
 
-unsigned int GLWrapper::buildShaderProgram(const ShaderProgram *program)
+uint32 GLWrapper::buildShaderProgram(const ShaderProgram *program)
 {
-    const unsigned int programId = m_gl->glCreateProgram();
-    unsigned int shaderId = 0;
+    const uint32 programId = m_gl->glCreateProgram();
+    uint32 shaderId = 0;
 
     if (!program->vertexShaderSource.isEmpty()) {
         shaderId = m_gl->glCreateShader(GL_VERTEX_SHADER);
@@ -90,22 +90,22 @@ unsigned int GLWrapper::buildShaderProgram(const ShaderProgram *program)
     return programId;
 }
 
-void GLWrapper::bindShaderProgram(unsigned int programId)
+void GLWrapper::bindShaderProgram(uint32 programId)
 {
     m_gl->glUseProgram(programId);
 }
 
-void GLWrapper::releaseShaderProgram(unsigned int programId)
+void GLWrapper::releaseShaderProgram(uint32 programId)
 {
     m_gl->glUseProgram(0);
 }
 
-void GLWrapper::destroyShaderProgram(unsigned int programId)
+void GLWrapper::destroyShaderProgram(uint32 programId)
 {
     m_gl->glDeleteProgram(programId);
 }
 
-void GLWrapper::sendUniforms(unsigned int programId,
+void GLWrapper::sendUniforms(uint32 programId,
                              const std::vector<ShaderParam> &params)
 {
     bindShaderProgram(programId);
@@ -147,8 +147,8 @@ void GLWrapper::sendUniforms(unsigned int programId,
     releaseShaderProgram(programId);
 }
 
-void GLWrapper::compileShader(unsigned int programId,
-                              unsigned int shaderId,
+void GLWrapper::compileShader(uint32 programId,
+                              uint32 shaderId,
                               const QByteArray &shaderSource)
 {
     const char *rawSource = shaderSource.constData();
@@ -182,7 +182,7 @@ void GLWrapper::compileShader(unsigned int programId,
     printAnyError();
 }
 
-void GLWrapper::linkShaderProgram(unsigned int programId)
+void GLWrapper::linkShaderProgram(uint32 programId)
 {
     m_gl->glLinkProgram(programId);
 
@@ -208,7 +208,7 @@ void GLWrapper::linkShaderProgram(unsigned int programId)
     printAnyError();
 }
 
-std::vector<std::string> GLWrapper::activeUniforms(unsigned int programId) const
+std::vector<std::string> GLWrapper::activeUniforms(uint32 programId) const
 {
     std::vector<std::string> ret;
     ret.reserve(16);
@@ -255,7 +255,7 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
         m_gl->glEnableVertexAttribArray(location);
         m_gl->glVertexAttribPointer(location,
                                     attrib.size,
-                                    static_cast<unsigned int>(attrib.type),
+                                    static_cast<uint32>(attrib.type),
                                     attrib.normalized, attrib.stride,
                                     nullptr);
     }
@@ -296,7 +296,7 @@ void GLWrapper::draw(const std::vector<DrawCommand> &commands)
     }
 }
 
-void GLWrapper::setUniform(unsigned int programId, const char *name, int value)
+void GLWrapper::setUniform(uint32 programId, const char *name, int value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
     assert (location != -1);
@@ -304,7 +304,7 @@ void GLWrapper::setUniform(unsigned int programId, const char *name, int value)
     m_gl->glUniform1i(location, value);
 }
 
-void GLWrapper::setUniform(unsigned int programId, const char *name, float value)
+void GLWrapper::setUniform(uint32 programId, const char *name, float value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
     assert (location != -1);
@@ -312,7 +312,7 @@ void GLWrapper::setUniform(unsigned int programId, const char *name, float value
     m_gl->glUniform1fv(location, 1, &value);
 }
 
-void GLWrapper::setUniform(unsigned int programId, const char *name, const QVector2D &value)
+void GLWrapper::setUniform(uint32 programId, const char *name, const QVector2D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
     assert (location != -1);
@@ -320,7 +320,7 @@ void GLWrapper::setUniform(unsigned int programId, const char *name, const QVect
     m_gl->glUniform2fv(location, 1, reinterpret_cast<const float *>(&value));
 }
 
-void GLWrapper::setUniform(unsigned int programId, const char *name, const QVector3D &value)
+void GLWrapper::setUniform(uint32 programId, const char *name, const QVector3D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
     assert (location != -1);
@@ -328,7 +328,7 @@ void GLWrapper::setUniform(unsigned int programId, const char *name, const QVect
     m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&value));
 }
 
-void GLWrapper::setUniform(unsigned int programId, const char *name, const QVector4D &value)
+void GLWrapper::setUniform(uint32 programId, const char *name, const QVector4D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
     assert (location != -1);
@@ -336,7 +336,7 @@ void GLWrapper::setUniform(unsigned int programId, const char *name, const QVect
     m_gl->glUniform4fv(location, 1, reinterpret_cast<const float *>(&value));
 }
 
-void GLWrapper::setUniform(unsigned int programId, const char *name, const QColor &value)
+void GLWrapper::setUniform(uint32 programId, const char *name, const QColor &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
     assert (location != -1);
@@ -351,7 +351,7 @@ void GLWrapper::setUniform(unsigned int programId, const char *name, const QColo
     m_gl->glUniform4fv(location, 1, rawValue);
 }
 
-void GLWrapper::setUniform(unsigned int programId, const char *name, const QMatrix4x4 &value)
+void GLWrapper::setUniform(uint32 programId, const char *name, const QMatrix4x4 &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
     assert (location != -1);

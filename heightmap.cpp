@@ -64,8 +64,8 @@ Geometry heightmapToGeometry(const QImage &heightmap)
                 continue;
             }
 
-            const unsigned int firstSharedIndex = (z + 1) * terrainSize + x;
-            const unsigned int secondSharedIndex = z * terrainSize + (x + 1);
+            const uint32 firstSharedIndex = (z + 1) * terrainSize + x;
+            const uint32 secondSharedIndex = z * terrainSize + (x + 1);
 
             ret.indices[indexCounter++] = vertexIndex;
             ret.indices[indexCounter++] = firstSharedIndex;
