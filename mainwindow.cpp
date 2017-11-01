@@ -39,7 +39,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_theGameLoop(gameLoop),
     m_scene(std::make_unique<Scene>()),
     m_terrain(std::make_unique<Geometry>()),
-    m_particleEffect(std::make_unique<ParticleEffect>(QVector3D(0, 400, 0), 50, 100)),
+    m_particleEffect(std::make_unique<ParticleEffect>()),
     m_gameWidget(),
     m_fpsLabel(),
     m_camera(std::make_unique<Camera>()),
@@ -217,6 +217,10 @@ void MainWindow::createActions()
 void MainWindow::initScene()
 {
     m_camera->setEyePos({8, 20, 8});
+
+    m_particleEffect->setWorldPos({0, 400, 0});
+    m_particleEffect->setCount(50);
+    m_particleEffect->setMaxLife(100);
     m_particleEffect->setDirection({0, -1, 0});
 
     m_scene->geometries.emplace_back(m_terrain.get());

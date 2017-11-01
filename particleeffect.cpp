@@ -1,17 +1,4 @@
 #include "particleeffect.h"
-#include <QDebug>
-
-
-namespace {
-
-const int m_countDefaultValue = 20;
-const uint32 m_maxLifeDefaultValue = 50;
-const float m_radiusDefaultValue = 50.f;
-const QVector3D m_directionDefaultValue = {0, 1, 0};
-const float m_speedDefaultValue = 0.4f;
-const float m_particlesSizeDefaultValue = 4.f;
-
-} // anon namespace
 
 
 ParticleEffect::ParticleEffect() :
@@ -19,49 +6,44 @@ ParticleEffect::ParticleEffect() :
     m_randEngine(m_randDevice()),
     m_radiusXRandDistrib(),
     m_radiusZRandDistrib(),
-    m_count(m_countDefaultValue),
-    m_maxLife(m_maxLifeDefaultValue),
-    m_worldPos(),
-    m_radius(m_radiusDefaultValue),
-    m_direction(m_directionDefaultValue),
-    m_speed(m_speedDefaultValue),
-    m_particlesSize(m_particlesSizeDefaultValue),
+    m_count(50),
+    m_maxLife(100),
+    m_worldPos({0.f, 0.f, 0.f}),
+    m_radius(50.f),
+    m_direction({0.f, 1.f, 0.f}),
+    m_speed(0.4f),
+    m_particlesSize(4.f),
     m_geometry(std::make_unique<Geometry>()),
-    m_lifes(m_count, m_maxLife)
+    m_lifes()
 {
+    resetCount();
     resetRadiusRandDistribs();
-
-    m_geometry->vertices.resize(m_count);
-
-    std::fill(m_geometry->vertices.begin(),
-              m_geometry->vertices.end(),
-              m_worldPos);
 }
 
-ParticleEffect::ParticleEffect(const QVector3D &pos, int count, uint32 maxLife) :
-    m_randDevice(),
-    m_randEngine(m_randDevice()),
-    m_radiusXRandDistrib(),
-    m_radiusZRandDistrib(),
-    m_count(count),
-    m_maxLife(maxLife),
-    m_worldPos(pos),
-    m_radius(m_radiusDefaultValue),
-    m_direction(m_directionDefaultValue),
-    m_speed(m_speedDefaultValue),
-    m_particlesSize(m_particlesSizeDefaultValue),
-    m_geometry(std::make_unique<Geometry>()),
-    m_lifes(m_count, m_maxLife)
+int ParticleEffect::count() const
 {
-    resetRadiusRandDistribs();
+    return m_count;
+}
 
-    m_geometry->vertices.resize(m_count);
+void ParticleEffect::setCount(int count)
+{
+    if (m_count != count) {
+        m_count = count;
 
-    std::fill(m_geometry->vertices.begin(),
-              m_geometry->vertices.end(),
-              m_worldPos);
+        resetCount();
+    }
+}
 
-    m_geometry->primitiveCount = m_count;
+int ParticleEffect::maxLife() const
+{
+    return m_maxLife;
+}
+
+void ParticleEffect::setMaxLife(int maxLife)
+{
+    if (m_maxLife != maxLife) {
+        m_maxLife = maxLife;
+    }
 }
 
 QVector3D ParticleEffect::worldPos() const
@@ -71,7 +53,11 @@ QVector3D ParticleEffect::worldPos() const
 
 void ParticleEffect::setWorldPos(const QVector3D &pos)
 {
-    m_worldPos = pos;
+    if (m_worldPos != pos) {
+        m_worldPos = pos;
+
+        resetRadiusRandDistribs();
+    }
 }
 
 float ParticleEffect::radius() const
@@ -95,7 +81,9 @@ QVector3D ParticleEffect::direction() const
 
 void ParticleEffect::setDirection(const QVector3D &direction)
 {
-    m_direction = direction.normalized();
+    if (m_direction != direction) {
+        m_direction = direction.normalized();
+    }
 }
 
 float ParticleEffect::speed() const
@@ -105,7 +93,9 @@ float ParticleEffect::speed() const
 
 void ParticleEffect::setSpeed(float speed)
 {
-    m_speed = speed;
+    if (m_speed != speed) {
+        m_speed = speed;
+    }
 }
 
 float ParticleEffect::particlesSize() const
@@ -115,13 +105,15 @@ float ParticleEffect::particlesSize() const
 
 void ParticleEffect::setParticlesSize(float particlesSize)
 {
-    m_particlesSize = particlesSize;
+    if (m_particlesSize != particlesSize) {
+        m_particlesSize = particlesSize;
+    }
 }
 
 void ParticleEffect::live(float dt)
 {
     for (int i = 0; i < m_lifes.size(); i++) {
-        uint32 &life = m_lifes[i];
+        int &life = m_lifes[i];
         QVector3D &particlePos = m_geometry->vertices[i];
 
         // Recycle particle
@@ -141,7 +133,7 @@ void ParticleEffect::live(float dt)
             life--;
 
             //TODO parametrize that by adding a std::function member attribute ?
-            particlePos += m_speed * direction() * dt;
+            particlePos += m_speed * m_direction * dt;
         }
     }
 
@@ -151,6 +143,18 @@ void ParticleEffect::live(float dt)
 Geometry *ParticleEffect::geometry() const
 {
     return m_geometry.get();
+}
+
+void ParticleEffect::resetCount()
+{
+    m_lifes.resize(m_count, m_maxLife);
+
+    m_geometry->vertices.resize(m_count);
+    m_geometry->primitiveCount = m_count;
+
+    std::fill(m_geometry->vertices.begin(),
+              m_geometry->vertices.end(),
+              m_worldPos);
 }
 
 void ParticleEffect::resetRadiusRandDistribs()
