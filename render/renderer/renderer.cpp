@@ -5,17 +5,19 @@
 
 #include <QColor>
 
-#include "drawcommand.h"
+#include "../geometry/geometry.h"
+#include "../geometry/vertexattrib.h"
+#include "../geometry/vertexlayout.h"
 
-#include "../geometry.h"
-#include "../material.h"
-#include "../renderpass.h"
+#include "../material/material.h"
+#include "../material/renderpass.h"
+#include "../material/shaderparam.h"
+#include "../material/shaderprogram.h"
+#include "../material/shaderutils.h"
+
 #include "../scene.h"
-#include "../shaderparam.h"
-#include "../shaderprogram.h"
-#include "../shaderutils.h"
-#include "../vertexattrib.h"
-#include "../vertexlayout.h"
+
+#include "drawcommand.h"
 
 
 Renderer::Renderer() :

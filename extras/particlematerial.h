@@ -4,7 +4,7 @@
 #include <QColor>
 #include <QMatrix4x4>
 
-#include "render/material.h"
+#include "render/material/material.h"
 
 class ShaderParam;
 

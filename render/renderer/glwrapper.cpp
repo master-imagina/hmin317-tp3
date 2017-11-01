@@ -12,13 +12,13 @@
 #include <QVector3D>
 #include <QVector4D>
 
+#include "../geometry/vertexlayout.h"
+
+#include "../material/shaderparam.h"
+#include "../material/shaderprogram.h"
+
 #include "drawcommand.h"
 #include "glbuffer.h"
-
-#include "../shaderparam.h"
-#include "../shaderprogram.h"
-#include "../vertexlayout.h"
-
 
 
 GLWrapper::GLWrapper()

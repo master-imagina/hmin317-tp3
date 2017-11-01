@@ -12,12 +12,12 @@ class ShaderParam;
 class ShaderProgram;
 class VertexLayout;
 
+class QColor;
 class QOpenGLContext;
 class QVector2D;
 class QVector3D;
 class QVector4D;
 class QMatrix4x4;
-class QColor;
 
 
 class GLWrapper

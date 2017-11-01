@@ -12,15 +12,15 @@ set(HEADERS
     core/gameloop.h
     render/aabb.h
     render/camera.h
-    render/geometry.h
-    render/material.h
-    render/renderpass.h
     render/scene.h
-    render/shaderparam.h
-    render/shaderprogram.h
-    render/shaderutils.h
-    render/vertexattrib.h
-    render/vertexlayout.h
+    render/geometry/geometry.h
+    render/geometry/vertexattrib.h
+    render/geometry/vertexlayout.h
+    render/material/material.h
+    render/material/renderpass.h
+    render/material/shaderparam.h
+    render/material/shaderprogram.h
+    render/material/shaderutils.h
     render/renderer/buffermanager.h
     render/renderer/drawcommand.h
     render/renderer/glbuffer.h
@@ -44,14 +44,14 @@ set(HEADERS
 set(SOURCES
     core/gameloop.cpp
     render/camera.cpp
-    render/material.cpp
-    render/renderpass.cpp
-    render/shaderparam.cpp
-    render/shaderprogram.cpp
-    render/shaderutils.cpp
-    render/vertexattrib.cpp
-    render/vertexlayout.cpp
+    render/geometry/vertexattrib.cpp
+    render/geometry/vertexlayout.cpp
     render/renderer/buffermanager.cpp
+    render/material/material.cpp
+    render/material/renderpass.cpp
+    render/material/shaderparam.cpp
+    render/material/shaderprogram.cpp
+    render/material/shaderutils.cpp
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp
     render/renderer/shadermanager.cpp

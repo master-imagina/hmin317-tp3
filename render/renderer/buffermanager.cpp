@@ -1,6 +1,6 @@
 #include "buffermanager.h"
 
-#include "../geometry.h"
+#include "../geometry/geometry.h"
 
 
 BufferManager::BufferManager() :

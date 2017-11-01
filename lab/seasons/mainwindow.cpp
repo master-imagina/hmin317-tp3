@@ -30,11 +30,13 @@
 
 #include "render/aabb.h"
 #include "render/camera.h"
-#include "render/geometry.h"
-#include "render/material.h"
-#include "render/renderpass.h"
 #include "render/scene.h"
-#include "render/shaderutils.h"
+
+#include "render/geometry/geometry.h"
+
+#include "render/material/material.h"
+#include "render/material/renderpass.h"
+#include "render/material/shaderutils.h"
 
 #include "seasoncontroller.h"
 

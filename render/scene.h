@@ -3,9 +3,11 @@
 
 #include <vector>
 
+#include "geometry/geometry.h"
+
+#include "material/material.h"
+
 #include "aabb.h"
-#include "geometry.h"
-#include "material.h"
 
 
 struct Scene
