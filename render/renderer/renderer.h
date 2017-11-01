@@ -1,8 +1,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <QOpenGLVertexArrayObject>
-
 #include "buffermanager.h"
 #include "glbuffer.h"
 #include "glwrapper.h"
