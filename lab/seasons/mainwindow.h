@@ -17,8 +17,10 @@ class GameWidget;
 class Geometry;
 class Material;
 class ParticleEffect;
+class ParticleMaterial;
 class Scene;
 class SeasonController;
+class ShaderParam;
 
 class QLabel;
 class QTimer;
@@ -54,7 +56,11 @@ private:
     uptr<Geometry> m_terrain;
     uptr<ParticleEffect> m_particleEffect;
     uptr<Material> m_terrainMaterial;
-    uptr<Material> m_particleMaterial;
+    ShaderParam *m_terrainMatWorldMatParam;
+    ShaderParam *m_terrainMinHeightParam;
+    ShaderParam *m_terrainMaxHeightParam;
+    ShaderParam *m_terrainColorParam;
+    uptr<ParticleMaterial> m_particleMaterial;
 
     GameWidget *m_gameWidget;
     QLabel *m_fpsLabel;

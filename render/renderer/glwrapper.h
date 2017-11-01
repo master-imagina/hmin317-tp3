@@ -1,8 +1,10 @@
 #ifndef GLWRAPPER_H
 #define GLWRAPPER_H
 
-#include "openglversion.h"
 #include "core/aliases_int.h"
+#include "core/aliases_memory.h"
+
+#include "openglversion.h"
 
 class DrawCommand;
 class GLBuffer;
@@ -37,7 +39,7 @@ public:
     void releaseShaderProgram(uint32 programId);
     void destroyShaderProgram(uint32 programId);
     void sendUniforms(uint32 programId,
-                      const std::vector<ShaderParam> &params);
+                      const uptr_vector<ShaderParam> &params);
 
     void setupVaoForBufferAndShader(GLuint programId,
                                     GLuint vaoId,

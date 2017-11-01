@@ -1,17 +1,16 @@
 #ifndef SHADERPARAM_H
 #define SHADERPARAM_H
 
-#include <string>
-
 #include <QVariant>
 
 
 struct ShaderParam
 {
+    ShaderParam();
+    ShaderParam(const QByteArray &_name, const QVariant &_value);
+
     QByteArray name;
     QVariant value;
 };
-
-bool operator==(const ShaderParam &lhs, const ShaderParam &rhs);
 
 #endif // SHADERPARAM_H

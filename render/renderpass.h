@@ -26,17 +26,17 @@ public:
     ShaderProgram *shaderProgram() const;
     void setShaderProgram(uptr<ShaderProgram> &&program);
 
-    void addParam(const ShaderParam &param);
-    void removeParam(const ShaderParam &param);
+    ShaderParam *addParam(const QByteArray &name, const QVariant &value);
+    void removeParam(ShaderParam *param);
 
-    std::vector<ShaderParam> params() const;
+    const uptr_vector<ShaderParam> &params() const;
 
     void clearParams();
 
 private:
     std::string m_name;
     uptr<ShaderProgram> m_shaderProgram;
-    std::vector<ShaderParam> m_params;
+    uptr_vector<ShaderParam> m_params;
 };
 
 #endif // RENDERPASS_H

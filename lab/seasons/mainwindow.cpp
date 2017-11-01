@@ -23,6 +23,7 @@
 #include "editor/gamewidget.h"
 #include "extras/heightmap.h"
 #include "extras/particleeffect.h"
+#include "extras/particlematerial.h"
 
 #include "extras/cameraactions.h"
 #include "extras/cameracontroller.h"
@@ -45,6 +46,10 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_particleEffect(nullptr),
     m_terrainMaterial(nullptr),
     m_particleMaterial(nullptr),
+    m_terrainMatWorldMatParam(nullptr),
+    m_terrainMinHeightParam(nullptr),
+    m_terrainMaxHeightParam(nullptr),
+    m_terrainColorParam(nullptr),
     m_gameWidget(nullptr),
     m_fpsLabel(nullptr),
     m_camera(nullptr),
@@ -192,7 +197,7 @@ void MainWindow::iterateGameLoop(float dt)
     m_gameWidget->startNewFrame(dt);
 
     //FIXME Avoid file dialogs freezing. Implement threaded rendering instead
-    qApp->processEvents();
+//    qApp->processEvents();
 }
 
 void MainWindow::createActions()
@@ -244,12 +249,12 @@ void MainWindow::initScene()
                                                               "://res/shaders/terrain_heightmap.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
-    m_particleMaterial = std::make_unique<Material>();
-    RenderPass *particlePass = m_particleMaterial->addRenderPass("base");
-    uptr<ShaderProgram> particleShader = shaderProgramFromFile("://res/shaders/particle.vert",
-                                                               "://res/shaders/particle.geom",
-                                                               "://res/shaders/particle.frag");
-    particlePass->setShaderProgram(std::move(particleShader));
+    m_terrainMatWorldMatParam = terrainPass->addParam("worldMatrix", QMatrix4x4());
+    m_terrainMinHeightParam = terrainPass->addParam("minHeight", 0.f);
+    m_terrainMaxHeightParam = terrainPass->addParam("maxHeight", 1.f);
+    m_terrainColorParam = terrainPass->addParam("terrainColor", QColor());
+
+    m_particleMaterial = std::make_unique<ParticleMaterial>();
 
     m_scene->materials.emplace_back(m_terrainMaterial.get());
     m_scene->materials.emplace_back(m_particleMaterial.get());
@@ -257,10 +262,6 @@ void MainWindow::initScene()
 
 void MainWindow::gatherShadersParams()
 {
-    // Update terrain shader parameters
-    RenderPass *terrainPass = m_scene->materials[0]->renderPasses()[0].get();
-    terrainPass->clearParams();
-
     const QMatrix4x4 viewMatrix = m_camera->viewMatrix();
     const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
     const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
@@ -273,17 +274,15 @@ void MainWindow::gatherShadersParams()
 
     const QColor drawColor = m_seasonController->colorFromSeason();
 
-    terrainPass->addParam({"worldMatrix", worldMatrix});
-    terrainPass->addParam({"minHeight", minHeight});
-    terrainPass->addParam({"maxHeight", maxHeight});
-    terrainPass->addParam({"terrainColor", drawColor});
+    // Update terrain material parameters
+    m_terrainMatWorldMatParam->value = worldMatrix;
+    m_terrainMinHeightParam->value = minHeight;
+    m_terrainMaxHeightParam->value = maxHeight;
+    m_terrainColorParam->value = drawColor;
 
-    // Update particle shader parameters
-    RenderPass *particlePass = m_scene->materials[1]->renderPasses()[0].get();
-    particlePass->clearParams();
-
-    particlePass->addParam({"viewMatrix", viewMatrix});
-    particlePass->addParam({"projectionMatrix", projectionMatrix});
-    particlePass->addParam({"particleColor", drawColor});
-    particlePass->addParam({"particlesSize", 4.f});
+    // Update particle material parameters
+    m_particleMaterial->setViewMatrix(viewMatrix);
+    m_particleMaterial->setProjectionMatrix(projectionMatrix);
+    m_particleMaterial->setColor(drawColor);
+    m_particleMaterial->setSize(4.f);
 }

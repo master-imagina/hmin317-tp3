@@ -20,6 +20,7 @@
 #include "../vertexlayout.h"
 
 
+
 GLWrapper::GLWrapper()
 {}
 
@@ -106,13 +107,13 @@ void GLWrapper::destroyShaderProgram(uint32 programId)
 }
 
 void GLWrapper::sendUniforms(uint32 programId,
-                             const std::vector<ShaderParam> &params)
+                             const uptr_vector<ShaderParam> &params)
 {
     bindShaderProgram(programId);
 
-    for (const ShaderParam &param : params) {
-        const char *rawName = param.name.constData();
-        const QVariant value = param.value;
+    for (const uptr<ShaderParam> &param : params) {
+        const char *rawName = param->name.constData();
+        const QVariant value = param->value;
         const int valueType = value.type();
 
         switch (valueType) {

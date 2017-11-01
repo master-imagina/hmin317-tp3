@@ -32,6 +32,7 @@ set(HEADERS
     extras/cameracontroller.h
     extras/heightmap.h
     extras/particleeffect.h
+    extras/particlematerial.h
     lab/seasons/mainwindow.h
     lab/seasons/seasoncontroller.h
     editor/cameracontrols.h
@@ -42,6 +43,7 @@ set(HEADERS
 
 set(SOURCES
     core/gameloop.cpp
+    render/camera.cpp
     render/material.cpp
     render/renderpass.cpp
     render/shaderparam.cpp
@@ -56,7 +58,8 @@ set(SOURCES
     extras/cameraactions.cpp
     extras/cameracontroller.cpp
     extras/heightmap.cpp
-    render/camera.cpp
+    extras/particleeffect.cpp
+    extras/particlematerial.cpp
     lab/seasons/mainwindow.cpp
     lab/seasons/main.cpp
     lab/seasons/seasoncontroller.cpp
@@ -64,12 +67,12 @@ set(SOURCES
     editor/gamewidget.cpp
     editor/cameracontrols.cpp
     editor/dragtoolbutton.cpp
-    extras/particleeffect.cpp
     editor/cameracontrollercontrols.cpp
     )
 
 set(QT_RESOURCES
-    lab/seasons/shaders.qrc
+    extras/extras_shaders.qrc
+    lab/seasons/seasons_shaders.qrc
     editor/editor_resources.qrc)
 
 # Copy <source>/res/images to <build>/

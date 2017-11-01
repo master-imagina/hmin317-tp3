@@ -1,6 +1,7 @@
 #include "renderpass.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include "shaderprogram.h"
 
@@ -48,22 +49,40 @@ void RenderPass::setShaderProgram(uptr<ShaderProgram> &&program)
     }
 }
 
-void RenderPass::addParam(const ShaderParam &param)
+ShaderParam *RenderPass::addParam(const QByteArray &name, const QVariant &value)
 {
-    auto paramFound = std::find(m_params.begin(), m_params.end(), param);
+    auto paramFound = std::find_if(m_params.begin(), m_params.end(),
+                                  [name] (const uptr<ShaderParam> &param) {
+        return param->name == name;
+    });
 
-    if (paramFound == m_params.end()) {
-        m_params.emplace_back(param);
+    if (paramFound != m_params.end()) {
+        std::cerr << "RenderPass : param \"" << name.constData()
+                  << "\" already exists"
+                  << std::endl;
+        return nullptr;
     }
+
+    // Create the shader param and return a handle to it
+    auto param = std::make_unique<ShaderParam>(name, value);
+    ShaderParam *ret = param.get();
+
+    m_params.emplace_back(std::move(param));
+
+    return ret;
 }
 
-void RenderPass::removeParam(const ShaderParam &param)
+void RenderPass::removeParam(ShaderParam *param)
 {
-    m_params.erase(std::remove(m_params.begin(), m_params.end(), param),
+    m_params.erase(std::remove_if(m_params.begin(), m_params.end(),
+                                  [param]
+                                  (const uptr<ShaderParam> &p) {
+                        return p.get() == param;
+                   }),
                    m_params.end());
 }
 
-std::vector<ShaderParam> RenderPass::params() const
+const uptr_vector<ShaderParam> &RenderPass::params() const
 {
     return m_params;
 }
