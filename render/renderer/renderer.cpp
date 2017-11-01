@@ -3,8 +3,6 @@
 #include <assert.h>
 #include <iostream>
 
-#include <QColor>
-
 #include "../geometry/geometry.h"
 #include "../geometry/vertexattrib.h"
 #include "../geometry/vertexlayout.h"
