@@ -2,7 +2,8 @@
 
 #include <QKeyEvent>
 
-#include "camera.h"
+#include "render/camera.h"
+
 #include "cameraactions.h"
 
 

@@ -1,8 +1,11 @@
 #include <QApplication>
+#include <QDebug>
 #include <QSurfaceFormat>
 
-#include "gameloop.h"
+#include "core/gameloop.h"
+
 #include "mainwindow.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -16,9 +19,11 @@ int main(int argc, char *argv[])
 
     QSurfaceFormat::setDefaultFormat(format);
 
+//    EcsManager ecsManager;
+
     GameLoop gameLoop(60);
 
-    MainWindow mw(&gameLoop);
+    MainWindow mw(/*ecsManager, */&gameLoop);
     mw.setMinimumSize(640, 400);
     mw.show();
 

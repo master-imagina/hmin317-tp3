@@ -5,7 +5,7 @@
 
 #include <QVector3D>
 
-#include "aliases_int.h"
+#include "core/aliases_int.h"
 
 
 class Geometry

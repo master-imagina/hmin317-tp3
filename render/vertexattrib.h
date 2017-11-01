@@ -3,7 +3,7 @@
 
 #include <QString>
 
-#include "../aliases_int.h"
+#include "core/aliases_int.h"
 
 
 struct VertexAttrib

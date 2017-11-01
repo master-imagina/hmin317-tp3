@@ -1,7 +1,7 @@
 #ifndef HEIGHTMAP_H
 #define HEIGHTMAP_H
 
-#include "geometry.h"
+#include "render/geometry.h"
 
 
 Geometry heightmapToGeometry(const QImage &heightmap);

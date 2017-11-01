@@ -1,6 +1,6 @@
 #include "particleeffect.h"
 
-#include "geometry.h"
+#include "render/geometry.h"
 
 
 ParticleEffect::ParticleEffect() :

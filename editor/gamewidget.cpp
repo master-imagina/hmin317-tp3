@@ -1,9 +1,9 @@
 #include "gamewidget.h"
 
-#include "camera.h"
-#include "scene.h"
+#include "render/camera.h"
+#include "render/scene.h"
 
-#include "renderer/renderer.h"
+#include "render/renderer/renderer.h"
 
 
 GameWidget::GameWidget(Scene *scene, QWidget *parent) :

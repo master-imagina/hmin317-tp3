@@ -7,7 +7,6 @@
 #include <QColor>
 #include <QMatrix4x4>
 #include <QOpenGLContext>
-#include <QOpenGLShaderProgram>
 #include <QVariant>
 #include <QVector2D>
 #include <QVector3D>
@@ -15,9 +14,10 @@
 
 #include "drawcommand.h"
 #include "glbuffer.h"
-#include "vertexlayout.h"
-#include "shaderparam.h"
-#include "shaderprogram.h"
+
+#include "../shaderparam.h"
+#include "../shaderprogram.h"
+#include "../vertexlayout.h"
 
 
 GLWrapper::GLWrapper()

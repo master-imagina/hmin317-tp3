@@ -1,6 +1,6 @@
 #include "shadermanager.h"
 
-#include "shaderprogram.h"
+#include "../shaderprogram.h"
 
 
 ShaderManager::ShaderManager() :

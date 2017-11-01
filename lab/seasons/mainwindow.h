@@ -7,7 +7,7 @@
 #include <QDate>
 #include <QMainWindow>
 
-#include "aliases_memory.h"
+#include "core/aliases_memory.h"
 
 
 class Camera;

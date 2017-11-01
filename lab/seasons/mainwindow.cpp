@@ -16,23 +16,26 @@
 #include <QtMath>
 #include <QTimer>
 
-#include "aabb.h"
-#include "camera.h"
-#include "cameraactions.h"
-#include "cameracontroller.h"
-#include "cameracontrols.h"
-#include "cameracontrollercontrols.h"
-#include "gameloop.h"
-#include "gamewidget.h"
-#include "geometry.h"
-#include "heightmap.h"
-#include "particleeffect.h"
-#include "scene.h"
-#include "seasoncontroller.h"
-#include "shaderutils.h"
+#include "core/gameloop.h"
 
-#include "renderer/material.h"
-#include "renderer/renderpass.h"
+#include "editor/cameracontrols.h"
+#include "editor/cameracontrollercontrols.h"
+#include "editor/gamewidget.h"
+#include "extras/heightmap.h"
+#include "extras/particleeffect.h"
+
+#include "extras/cameraactions.h"
+#include "extras/cameracontroller.h"
+
+#include "render/aabb.h"
+#include "render/camera.h"
+#include "render/geometry.h"
+#include "render/material.h"
+#include "render/renderpass.h"
+#include "render/scene.h"
+#include "render/shaderutils.h"
+
+#include "seasoncontroller.h"
 
 
 MainWindow::MainWindow(GameLoop *gameLoop) :

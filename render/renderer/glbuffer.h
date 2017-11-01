@@ -1,7 +1,7 @@
 #ifndef GLBUFFER_H
 #define GLBUFFER_H
 
-#include "../aliases_int.h"
+#include "core/aliases_int.h"
 
 
 struct GLBuffer

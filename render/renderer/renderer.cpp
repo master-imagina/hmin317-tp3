@@ -6,16 +6,16 @@
 #include <QColor>
 
 #include "drawcommand.h"
-#include "material.h"
-#include "renderpass.h"
-#include "shaderparam.h"
-#include "shaderprogram.h"
-#include "vertexattrib.h"
-#include "vertexlayout.h"
 
 #include "../geometry.h"
+#include "../material.h"
+#include "../renderpass.h"
 #include "../scene.h"
+#include "../shaderparam.h"
+#include "../shaderprogram.h"
 #include "../shaderutils.h"
+#include "../vertexattrib.h"
+#include "../vertexlayout.h"
 
 
 Renderer::Renderer() :

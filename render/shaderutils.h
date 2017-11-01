@@ -1,9 +1,9 @@
 #ifndef SHADERUTILS_H
 #define SHADERUTILS_H
 
-#include "aliases_memory.h"
+#include "core/aliases_memory.h"
 
-#include "renderer/shaderprogram.h"
+#include "shaderprogram.h"
 
 
 uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,

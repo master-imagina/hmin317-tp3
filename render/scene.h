@@ -5,8 +5,7 @@
 
 #include "aabb.h"
 #include "geometry.h"
-
-#include "renderer/material.h"
+#include "material.h"
 
 
 struct Scene

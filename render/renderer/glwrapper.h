@@ -2,7 +2,7 @@
 #define GLWRAPPER_H
 
 #include "openglversion.h"
-#include "../aliases_int.h"
+#include "core/aliases_int.h"
 
 class DrawCommand;
 class GLBuffer;

@@ -2,8 +2,9 @@
 
 #include <QHBoxLayout>
 
-#include "cameraactions.h"
-#include "dragtoolbutton.h"
+#include "editor/dragtoolbutton.h"
+
+#include "extras/cameraactions.h"
 
 
 CameraControls::CameraControls(Camera *camera, QWidget *parent) :

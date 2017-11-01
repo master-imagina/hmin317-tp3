@@ -4,7 +4,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-#include "cameracontroller.h"
+#include "extras/cameracontroller.h"
 
 
 CameraControllerControls::CameraControllerControls(CameraController *controller,

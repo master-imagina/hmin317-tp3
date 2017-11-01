@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "../aliases_int.h"
+#include "core/aliases_int.h"
 
 class ShaderProgram;
 

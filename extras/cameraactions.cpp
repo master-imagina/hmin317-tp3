@@ -2,8 +2,8 @@
 
 #include <QQuaternion>
 
-#include "camera.h"
-#include "aabb.h"
+#include "render/camera.h"
+#include "render/aabb.h"
 
 
 void rotateCameraAroundTarget(Camera *camera, float angle)
