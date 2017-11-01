@@ -7,7 +7,7 @@
 
 #include <QVector3D>
 
-#include "geometry.h"
+class Geometry;
 
 
 class ParticleEffect

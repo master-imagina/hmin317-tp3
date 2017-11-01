@@ -1,5 +1,7 @@
 #include "particleeffect.h"
 
+#include "geometry.h"
+
 
 ParticleEffect::ParticleEffect() :
     m_randDevice(),
