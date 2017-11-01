@@ -7,11 +7,15 @@
 #include <QDate>
 #include <QMainWindow>
 
+#include "aliases_memory.h"
+
+
 class Camera;
 class CameraController;
 class GameLoop;
 class GameWidget;
 class Geometry;
+class Material;
 class ParticleEffect;
 class Scene;
 class SeasonController;
@@ -46,13 +50,15 @@ private:
 private:
     GameLoop *m_theGameLoop;
 
-    std::unique_ptr<Scene> m_scene;
-    std::unique_ptr<Geometry> m_terrain;
-    std::unique_ptr<ParticleEffect> m_particleEffect;
+    uptr<Scene> m_scene;
+    uptr<Geometry> m_terrain;
+    uptr<ParticleEffect> m_particleEffect;
+    uptr<Material> m_terrainMaterial;
+    uptr<Material> m_particleMaterial;
 
     GameWidget *m_gameWidget;
     QLabel *m_fpsLabel;
-    std::unique_ptr<Camera> m_camera;
+    uptr<Camera> m_camera;
 
     QTimer *m_estimateFpsTimer;
 

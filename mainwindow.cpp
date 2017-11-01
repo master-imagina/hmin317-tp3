@@ -37,12 +37,14 @@
 
 MainWindow::MainWindow(GameLoop *gameLoop) :
     m_theGameLoop(gameLoop),
-    m_scene(std::make_unique<Scene>()),
-    m_terrain(std::make_unique<Geometry>()),
-    m_particleEffect(std::make_unique<ParticleEffect>()),
-    m_gameWidget(),
-    m_fpsLabel(),
-    m_camera(std::make_unique<Camera>()),
+    m_scene(nullptr),
+    m_terrain(nullptr),
+    m_particleEffect(nullptr),
+    m_terrainMaterial(nullptr),
+    m_particleMaterial(nullptr),
+    m_gameWidget(nullptr),
+    m_fpsLabel(nullptr),
+    m_camera(nullptr),
     m_estimateFpsTimer(new QTimer(this)),
     m_cameraController(nullptr),
     m_seasonController(new SeasonController(this))
@@ -216,8 +218,14 @@ void MainWindow::createActions()
 
 void MainWindow::initScene()
 {
+    m_scene = std::make_unique<Scene>();
+
+    m_camera = std::make_unique<Camera>();
     m_camera->setEyePos({8, 20, 8});
 
+    m_terrain = std::make_unique<Geometry>();
+
+    m_particleEffect = std::make_unique<ParticleEffect>();
     m_particleEffect->setWorldPos({0, 400, 0});
     m_particleEffect->setCount(50);
     m_particleEffect->setMaxLife(100);
@@ -226,22 +234,22 @@ void MainWindow::initScene()
     m_scene->geometries.emplace_back(m_terrain.get());
     m_scene->geometries.emplace_back(m_particleEffect->geometry());
 
-    Material *terrainMaterial = new Material;
-    RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
+    m_terrainMaterial = std::make_unique<Material>();
+    RenderPass *terrainPass = m_terrainMaterial->addRenderPass("base");
     uptr<ShaderProgram> terrainShader = shaderProgramFromFile("://res/shaders/terrain_heightmap.vert",
                                                               "",
                                                               "://res/shaders/terrain_heightmap.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
-    Material *particleMaterial = new Material;
-    RenderPass *particlePass = particleMaterial->addRenderPass("base");
+    m_particleMaterial = std::make_unique<Material>();
+    RenderPass *particlePass = m_particleMaterial->addRenderPass("base");
     uptr<ShaderProgram> particleShader = shaderProgramFromFile("://res/shaders/particle.vert",
                                                                "://res/shaders/particle.geom",
                                                                "://res/shaders/particle.frag");
     particlePass->setShaderProgram(std::move(particleShader));
 
-    m_scene->materials.emplace_back(terrainMaterial);
-    m_scene->materials.emplace_back(particleMaterial);
+    m_scene->materials.emplace_back(m_terrainMaterial.get());
+    m_scene->materials.emplace_back(m_particleMaterial.get());
 }
 
 void MainWindow::gatherShadersParams()
