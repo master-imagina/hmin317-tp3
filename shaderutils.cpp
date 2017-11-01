@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <QFile>
+
 
 namespace {
 

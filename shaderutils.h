@@ -1,11 +1,8 @@
 #ifndef SHADERUTILS_H
 #define SHADERUTILS_H
 
-#include <memory>
+#include "aliases_memory.h"
 
-#include <QFile>
-
-#include "renderer/aliases_memory.h"
 #include "renderer/shaderprogram.h"
 
 

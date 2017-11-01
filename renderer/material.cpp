@@ -22,7 +22,7 @@ RenderPass *Material::addRenderPass(const std::string &name)
 {
     auto passFound = std::find_if(m_passes.begin(), m_passes.end(),
                                   [name]
-                                  (const std::unique_ptr<RenderPass> &pass) {
+                                  (const uptr<RenderPass> &pass) {
         return pass->name() == name;
     });
 
@@ -40,7 +40,7 @@ void Material::removeRenderPass(RenderPass *renderPass)
 {
     m_passes.erase(std::remove_if(m_passes.begin(), m_passes.end(),
                                   [renderPass]
-                                  (const std::unique_ptr<RenderPass> &pass) {
+                                  (const uptr<RenderPass> &pass) {
                         return pass.get() == renderPass;
                    }),
                    m_passes.end());

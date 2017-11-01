@@ -1,5 +1,5 @@
-#ifndef MEMORYTOOLS_H
-#define MEMORYTOOLS_H
+#ifndef ALIASES_MEMORY_H
+#define ALIASES_MEMORY_H
 
 #include <memory>
 #include <vector>
@@ -11,4 +11,4 @@ using uptr = std::unique_ptr<T>;
 template <class T>
 using uptr_vector = std::vector<std::unique_ptr<T>>;
 
-#endif // MEMORYTOOLS_H
+#endif // ALIASES_MEMORY_H
