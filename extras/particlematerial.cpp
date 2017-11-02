@@ -1,7 +1,8 @@
 #include "particlematerial.h"
 
+#include "extras/shaderutils.h"
+
 #include "render/material/renderpass.h"
-#include "render/material/shaderutils.h"
 
 
 ParticleMaterial::ParticleMaterial() :

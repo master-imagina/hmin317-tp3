@@ -20,7 +20,6 @@ set(HEADERS
     render/material/renderpass.h
     render/material/shaderparam.h
     render/material/shaderprogram.h
-    render/material/shaderutils.h
     render/renderer/buffermanager.h
     render/renderer/drawcommand.h
     render/renderer/glbuffer.h
@@ -33,6 +32,7 @@ set(HEADERS
     extras/heightmap.h
     extras/particleeffect.h
     extras/particlematerial.h
+    extras/shaderutils.h
     lab/seasons/mainwindow.h
     lab/seasons/seasoncontroller.h
     editor/cameracontrols.h
@@ -51,7 +51,6 @@ set(SOURCES
     render/material/renderpass.cpp
     render/material/shaderparam.cpp
     render/material/shaderprogram.cpp
-    render/material/shaderutils.cpp
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp
     render/renderer/shadermanager.cpp
@@ -60,6 +59,7 @@ set(SOURCES
     extras/heightmap.cpp
     extras/particleeffect.cpp
     extras/particlematerial.cpp
+    extras/shaderutils.cpp
     lab/seasons/mainwindow.cpp
     lab/seasons/main.cpp
     lab/seasons/seasoncontroller.cpp

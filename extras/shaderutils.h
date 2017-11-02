@@ -3,7 +3,7 @@
 
 #include "core/aliases_memory.h"
 
-#include "shaderprogram.h"
+#include "render/material/shaderprogram.h"
 
 
 uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,

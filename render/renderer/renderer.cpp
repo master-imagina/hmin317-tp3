@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <iostream>
 
+#include "extras/shaderutils.h"
+
 #include "../geometry/geometry.h"
 #include "../geometry/vertexattrib.h"
 #include "../geometry/vertexlayout.h"
@@ -11,7 +13,6 @@
 #include "../material/renderpass.h"
 #include "../material/shaderparam.h"
 #include "../material/shaderprogram.h"
-#include "../material/shaderutils.h"
 
 #include "../scene.h"
 
