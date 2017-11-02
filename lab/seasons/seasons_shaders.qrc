@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/shaders/terrain_heightmap.frag</file>
+        <file>res/shaders/terrain_heightmap.vert</file>
+        <file>res/shaders/terrain_wireframe.frag</file>
+    </qresource>
+</RCC>

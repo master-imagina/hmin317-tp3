@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/shaders/particle.frag</file>
+        <file>res/shaders/particle.geom</file>
+        <file>res/shaders/particle.vert</file>
+    </qresource>
+</RCC>
