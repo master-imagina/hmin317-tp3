@@ -7,6 +7,8 @@
 
 #include "core/aliases_int.h"
 
+#include "vertexlayout.h"
+
 
 class Geometry
 {
@@ -25,6 +27,8 @@ public:
 
     static const std::size_t vertexSize = sizeof(QVector3D);
     static const std::size_t indexSize = sizeof(uint32);
+
+    VertexLayout vertexLayout;
 
     bool isDirty = false;
 };

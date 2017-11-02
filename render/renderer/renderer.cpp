@@ -74,35 +74,29 @@ void Renderer::initialize(Scene *scene)
     m_gl->glGenVertexArrays(2, m_vaos.data());
 
     // Setup terrain geometry
-    VertexLayout terrainVertexLayout;
-    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
-    terrainVertexLayout.addAttribute(standardVertexAttrib);
 
     m_glWrapper.setupVaoForBufferAndShader(m_shaderIds[0], m_vaos[0],
-                                           terrainVertexLayout,
+                                           scene->geometries[0]->vertexLayout,
                                            m_arrayVbos[0],
                                            &m_indexVbos[0]);
 
     // Setup particles geometry
-    VertexLayout particlesVertexLayout;
-    particlesVertexLayout.addAttribute(standardVertexAttrib);
-
     m_glWrapper.setupVaoForBufferAndShader(m_shaderIds[1], m_vaos[1],
-                                           particlesVertexLayout,
+                                           scene->geometries[1]->vertexLayout,
                                            m_arrayVbos[1]);
 
     m_glWrapper.printAnyError();
-}
-
-void Renderer::render(Scene *scene, float dt)
-{
-    Q_UNUSED (dt);
 
     m_bufferManager.addGeometry(scene->geometries[0], &m_arrayVbos[0], &m_indexVbos[0]);
     m_bufferManager.addGeometry(scene->geometries[1], &m_arrayVbos[1], nullptr);
 
     m_shaderManager.addShaderProgram(scene->materials[0]->renderPasses()[0]->shaderProgram(), m_shaderIds[0]);
     m_shaderManager.addShaderProgram(scene->materials[1]->renderPasses()[0]->shaderProgram(), m_shaderIds[1]);
+}
+
+void Renderer::render(Scene *scene, float dt)
+{
+    Q_UNUSED (dt);
 
     updateDirtyBuffers(scene->geometries);
 
