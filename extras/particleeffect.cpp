@@ -18,6 +18,8 @@ ParticleEffect::ParticleEffect() :
     m_geometry(std::make_unique<Geometry>()),
     m_lifes()
 {
+    m_geometry->isDynamic = true;
+
     resetCount();
     resetRadiusRandDistribs();
 }

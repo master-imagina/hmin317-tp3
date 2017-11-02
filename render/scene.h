@@ -1,21 +1,38 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <functional>
 #include <vector>
-
-#include "geometry/geometry.h"
-
-#include "material/material.h"
 
 #include "aabb.h"
 
+class Geometry;
+class Material;
 
-struct Scene
+
+class Scene
 {
-    std::vector<Geometry *> geometries;
-    std::vector<Material *> materials;
+    using RenderableAddedCallback = std::function<void (Geometry *, Material *)>;
 
+public:
+    Scene();
+    ~Scene();
+
+    void addRenderable(Geometry *geom, Material *material);
+
+    void connectRenderableAdded(const RenderableAddedCallback &callback);
+
+    const std::vector<Geometry *> &geometries() const;
+    const std::vector<Material *> &materials() const;
+
+public:
     AABoundingBox terrainBoundingBox;
+
+private:
+    std::vector<Geometry *> m_geometries;
+    std::vector<Material *> m_materials;
+
+    std::vector<RenderableAddedCallback> m_renderableAddedCallbacks;
 };
 
 #endif // SCENE_H

@@ -18,7 +18,6 @@
 #include "../material/shaderprogram.h"
 
 #include "drawcommand.h"
-#include "glbuffer.h"
 
 
 GLWrapper::GLWrapper()
@@ -36,9 +35,14 @@ void GLWrapper::initialize(QOpenGLContext *glContext)
                 "GLWrapper::initialize()", "OpenGL 3.3 failed to initialize");
 }
 
-void GLWrapper::createBuffer(GLBuffer &buffer)
+void GLWrapper::createBuffer(GLBuffer &buffer,
+                             GLBuffer::Type type,
+                             GLBuffer::Usage usage)
 {
     m_gl->glGenBuffers(1, &buffer.id);
+
+    buffer.type = type;
+    buffer.usage = usage;
 
     Q_ASSERT(buffer.id > 0);
 }
@@ -180,7 +184,7 @@ void GLWrapper::compileShader(uint32 programId,
 
     m_gl->glAttachShader(programId, shaderId);
 
-    printAnyError();
+    checkForErrors();
 }
 
 void GLWrapper::linkShaderProgram(uint32 programId)
@@ -206,7 +210,7 @@ void GLWrapper::linkShaderProgram(uint32 programId)
         }
     }
 
-    printAnyError();
+    checkForErrors();
 }
 
 std::vector<std::string> GLWrapper::activeUniforms(uint32 programId) const
@@ -228,7 +232,7 @@ std::vector<std::string> GLWrapper::activeUniforms(uint32 programId) const
     return ret;
 }
 
-void GLWrapper::printAnyError()
+void GLWrapper::checkForErrors()
 {
     const GLenum err = m_gl->glGetError();
 
@@ -273,6 +277,8 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
     if (indexBuffer) {
         releaseBuffer(*indexBuffer);
     }
+
+    checkForErrors();
 }
 
 void GLWrapper::draw(const std::vector<DrawCommand> &commands)

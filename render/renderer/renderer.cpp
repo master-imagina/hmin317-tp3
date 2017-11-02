@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <iostream>
 
+#include <QDebug>
+
 #include "extras/shaderutils.h"
 
 #include "../geometry/geometry.h"
@@ -24,10 +26,7 @@ Renderer::Renderer() :
     m_shaderManager(),
     m_gl(nullptr),
     m_glWrapper(),
-    m_shaderIds(),
-    m_vaos(),
-    m_arrayVbos(),
-    m_indexVbos()
+    m_vaos()
 {}
 
 Renderer::~Renderer()
@@ -54,53 +53,50 @@ void Renderer::initialize(Scene *scene)
     //    gl->glEnable(GL_BLEND);
     //    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Create VBOs
-    m_arrayVbos[0].type = GLBuffer::Type::ArrayBuffer;
-    m_arrayVbos[0].usage = GLBuffer::Usage::StaticDraw;
-    m_glWrapper.createBuffer(m_arrayVbos[0]);
+    auto onRenderableAdded = [this] (Geometry *geom, Material *material) {
+        //TODO OMG optimize that
+        // Generate a vao
+        m_vaos.reserve(m_vaos.capacity() + 1);
 
-    m_indexVbos[0].type = GLBuffer::Type::IndexBuffer;
-    m_indexVbos[0].usage = GLBuffer::Usage::StaticDraw;
-    m_glWrapper.createBuffer(m_indexVbos[0]);
+        uint32 newVaoId = 0;
+        m_gl->glGenVertexArrays(1, &newVaoId);
+        m_vaos.emplace_back(newVaoId);
 
-    m_arrayVbos[1].type = GLBuffer::Type::ArrayBuffer;
-    m_arrayVbos[1].usage = GLBuffer::Usage::StreamDraw;
-    m_glWrapper.createBuffer(m_arrayVbos[1]);
+        // Generate GPU buffers
+        std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
+                m_bufferManager.addGeometry(geom, m_glWrapper);
+        assert (gpuBuffers.first);
 
-    // Create shaders and VAOs
-    m_shaderIds[0] = m_glWrapper.buildShaderProgram(scene->materials[0]->renderPasses()[0]->shaderProgram());
-    m_shaderIds[1] = m_glWrapper.buildShaderProgram(scene->materials[1]->renderPasses()[0]->shaderProgram());
+        // Generate shader program
+        const uint32 programId =
+                m_glWrapper.buildShaderProgram(material->renderPasses()[0]->shaderProgram());
 
-    m_gl->glGenVertexArrays(2, m_vaos.data());
+        m_shaderManager.addShaderProgram(material->renderPasses()[0]->shaderProgram(),
+                programId);
 
-    // Setup terrain geometry
+        m_glWrapper.setupVaoForBufferAndShader(programId, m_vaos.back(),
+                                               geom->vertexLayout,
+                                               *gpuBuffers.first,
+                                               gpuBuffers.second);
+    };
 
-    m_glWrapper.setupVaoForBufferAndShader(m_shaderIds[0], m_vaos[0],
-                                           scene->geometries[0]->vertexLayout,
-                                           m_arrayVbos[0],
-                                           &m_indexVbos[0]);
+    scene->connectRenderableAdded(onRenderableAdded);
 
-    // Setup particles geometry
-    m_glWrapper.setupVaoForBufferAndShader(m_shaderIds[1], m_vaos[1],
-                                           scene->geometries[1]->vertexLayout,
-                                           m_arrayVbos[1]);
+    // Allocate the scene in GPU, if exists
+    for (int i = 0; i < scene->geometries().size(); i++) {
+        onRenderableAdded(scene->geometries()[i], scene->materials()[i]);
+    }
 
-    m_glWrapper.printAnyError();
 
-    m_bufferManager.addGeometry(scene->geometries[0], &m_arrayVbos[0], &m_indexVbos[0]);
-    m_bufferManager.addGeometry(scene->geometries[1], &m_arrayVbos[1], nullptr);
-
-    m_shaderManager.addShaderProgram(scene->materials[0]->renderPasses()[0]->shaderProgram(), m_shaderIds[0]);
-    m_shaderManager.addShaderProgram(scene->materials[1]->renderPasses()[0]->shaderProgram(), m_shaderIds[1]);
+    m_glWrapper.checkForErrors();
 }
 
 void Renderer::render(Scene *scene, float dt)
 {
     Q_UNUSED (dt);
 
-    updateDirtyBuffers(scene->geometries);
-
-    updatePassParameters(scene->materials);
+    updateDirtyBuffers(scene->geometries());
+    updatePassParameters(scene->materials());
 
     const std::vector<DrawCommand> commands = prepareDrawCommands(scene);
 
@@ -108,21 +104,19 @@ void Renderer::render(Scene *scene, float dt)
 
     m_glWrapper.draw(commands);
 
-    m_glWrapper.printAnyError();
+
+    m_glWrapper.checkForErrors();
 }
 
 void Renderer::cleanup()
 {
-    m_gl->glDeleteVertexArrays(2, m_vaos.data());
+    m_gl->glDeleteVertexArrays(m_vaos.size(), m_vaos.data());
 
-    m_glWrapper.destroyShaderProgram(m_shaderIds[0]);
-    m_glWrapper.destroyShaderProgram(m_shaderIds[1]);
+    m_bufferManager.cleanup(m_glWrapper);
+    m_shaderManager.cleanup(m_glWrapper);
 
-    m_glWrapper.destroyBuffer(m_arrayVbos[0]);
-    m_glWrapper.destroyBuffer(m_arrayVbos[1]);
-    m_glWrapper.destroyBuffer(m_indexVbos[0]);
 
-    m_glWrapper.printAnyError();
+    m_glWrapper.checkForErrors();
 }
 
 void Renderer::updateDirtyBuffers(const std::vector<Geometry *> &geoms)
@@ -160,7 +154,8 @@ void Renderer::updateDirtyBuffers(const std::vector<Geometry *> &geoms)
         }
     }
 
-    m_glWrapper.printAnyError();
+
+    m_glWrapper.checkForErrors();
 }
 
 void Renderer::updatePassParameters(const std::vector<Material *> &materials)
@@ -177,21 +172,32 @@ void Renderer::updatePassParameters(const std::vector<Material *> &materials)
             m_glWrapper.sendUniforms(programId, pass->params());
         }
     }
+
+
+    m_glWrapper.checkForErrors();
 }
 
 std::vector<DrawCommand> Renderer::prepareDrawCommands(Scene *scene)
 {
-    std::vector<DrawCommand> ret;
-    ret.reserve(scene->geometries.size());
+    const std::vector<Geometry *> geometries = scene->geometries();
+    const std::vector<Material *> materials = scene->materials();
 
-    for (int i = 0; i < scene->geometries.size(); i++) {
-        Geometry *geometry = scene->geometries[i];
+    const int32 maxCommandCount = geometries.size();
+
+    std::vector<DrawCommand> ret;
+    ret.reserve(maxCommandCount);
+
+    for (int i = 0; i < maxCommandCount; i++) {
+        Geometry *geometry = geometries[i];
 
         std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
                 m_bufferManager.buffersForGeometry(geometry);
 
+        //FIXME Handle other passes
+        const uint32 shaderProgramId = m_shaderManager.shaderIdForShaderProgram(materials[i]->renderPasses()[0]->shaderProgram());
+
         const DrawCommand cmd {
-            m_shaderIds[i], m_vaos[i],
+            shaderProgramId, m_vaos[i],
             *geometry, *gpuBuffers.first, gpuBuffers.second
         };
 

@@ -30,6 +30,9 @@ public:
 
     VertexLayout vertexLayout;
 
+    bool isDynamic = false;
+    bool isIndexed = false;
+
     bool isDirty = false;
 };
 

@@ -2,6 +2,8 @@
 
 #include "../material/shaderprogram.h"
 
+#include "glwrapper.h"
+
 
 ShaderManager::ShaderManager() :
     m_shaderProgramToId()
@@ -27,4 +29,11 @@ uint32 ShaderManager::shaderIdForShaderProgram(ShaderProgram *shaderProgram)
     }
 
     return ret;
+}
+
+void ShaderManager::cleanup(GLWrapper &glWrapper)
+{
+    for (auto shaderProgramAndId : m_shaderProgramToId) {
+        glWrapper.destroyShaderProgram(shaderProgramAndId.second);
+    }
 }

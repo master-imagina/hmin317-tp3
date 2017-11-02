@@ -202,7 +202,7 @@ void MainWindow::iterateGameLoop(float dt)
     m_gameWidget->startNewFrame(dt);
 
     //FIXME Avoid file dialogs freezing. Implement threaded rendering instead
-//    qApp->processEvents();
+    qApp->processEvents();
 }
 
 void MainWindow::createActions()
@@ -236,19 +236,12 @@ void MainWindow::initScene()
     m_camera = std::make_unique<Camera>();
     m_camera->setEyePos({8, 20, 8});
 
+    // Create terrain
     m_terrain = std::make_unique<Geometry>();
+    m_terrain->isIndexed = true;
+
     VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
     m_terrain->vertexLayout.addAttribute(standardVertexAttrib);
-
-    m_particleEffect = std::make_unique<ParticleEffect>();
-    m_particleEffect->setWorldPos({0, 400, 0});
-    m_particleEffect->setCount(50);
-    m_particleEffect->setMaxLife(100);
-    m_particleEffect->setDirection({0, -1, 0});
-    m_particleEffect->geometry()->vertexLayout.addAttribute(standardVertexAttrib);
-
-    m_scene->geometries.emplace_back(m_terrain.get());
-    m_scene->geometries.emplace_back(m_particleEffect->geometry());
 
     m_terrainMaterial = std::make_unique<Material>();
     RenderPass *terrainPass = m_terrainMaterial->addRenderPass("base");
@@ -262,10 +255,19 @@ void MainWindow::initScene()
     m_terrainMaxHeightParam = terrainPass->addParam("maxHeight", 1.f);
     m_terrainColorParam = terrainPass->addParam("terrainColor", QColor());
 
+    // Create particle effect
+    m_particleEffect = std::make_unique<ParticleEffect>();
+    m_particleEffect->setWorldPos({0, 400, 0});
+    m_particleEffect->setCount(50);
+    m_particleEffect->setMaxLife(100);
+    m_particleEffect->setDirection({0, -1, 0});
+    m_particleEffect->geometry()->vertexLayout.addAttribute(standardVertexAttrib);
+
     m_particleMaterial = std::make_unique<ParticleMaterial>();
 
-    m_scene->materials.emplace_back(m_terrainMaterial.get());
-    m_scene->materials.emplace_back(m_particleMaterial.get());
+    // Add them all to the scene
+    m_scene->addRenderable(m_terrain.get(), m_terrainMaterial.get());
+    m_scene->addRenderable(m_particleEffect->geometry(), m_particleMaterial.get());
 }
 
 void MainWindow::gatherShadersParams()

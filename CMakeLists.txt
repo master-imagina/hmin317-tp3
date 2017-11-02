@@ -44,6 +44,7 @@ set(HEADERS
 set(SOURCES
     core/gameloop.cpp
     render/camera.cpp
+    render/scene.cpp
     render/geometry/vertexattrib.cpp
     render/geometry/vertexlayout.cpp
     render/renderer/buffermanager.cpp

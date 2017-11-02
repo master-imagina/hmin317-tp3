@@ -4,6 +4,7 @@
 #include "core/aliases_int.h"
 #include "core/aliases_memory.h"
 
+#include "glbuffer.h"
 #include "openglversion.h"
 
 class DrawCommand;
@@ -28,7 +29,7 @@ public:
 
     void initialize(QOpenGLContext *glContext);
 
-    void createBuffer(GLBuffer &buffer);
+    void createBuffer(GLBuffer &buffer, GLBuffer::Type type, GLBuffer::Usage usage);
     void destroyBuffer(GLBuffer &buffer);
     void bindBuffer(const GLBuffer &buffer);
     void releaseBuffer(const GLBuffer &buffer);
@@ -49,7 +50,7 @@ public:
 
     void draw(const std::vector<DrawCommand> &commands);
 
-    void printAnyError();
+    void checkForErrors();
 
 private:
     void compileShader(uint32 programId, uint32 shaderId,

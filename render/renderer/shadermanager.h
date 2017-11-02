@@ -5,6 +5,7 @@
 
 #include "core/aliases_int.h"
 
+class GLWrapper;
 class ShaderProgram;
 
 
@@ -16,6 +17,8 @@ public:
     void addShaderProgram(ShaderProgram *shaderProgram, uint32 shaderId);
 
     uint32 shaderIdForShaderProgram(ShaderProgram *shaderProgram);
+
+    void cleanup(GLWrapper &glWrapper);
 
 private:
     std::map<ShaderProgram *, uint32> m_shaderProgramToId;
