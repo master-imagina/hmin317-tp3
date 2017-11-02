@@ -1,5 +1,7 @@
 #include "vertexlayout.h"
 
+#include <algorithm>
+
 
 VertexLayout::VertexLayout() :
     m_attributes()

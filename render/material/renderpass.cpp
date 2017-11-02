@@ -49,7 +49,7 @@ void RenderPass::setShaderProgram(uptr<ShaderProgram> &&program)
     }
 }
 
-ShaderParam *RenderPass::addParam(const QByteArray &name, const QVariant &value)
+ShaderParam *RenderPass::addParam(const std::string &name, const QVariant &value)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
                                   [name] (const uptr<ShaderParam> &param) {
@@ -57,8 +57,7 @@ ShaderParam *RenderPass::addParam(const QByteArray &name, const QVariant &value)
     });
 
     if (paramFound != m_params.end()) {
-        std::cerr << "RenderPass : param \"" << name.constData()
-                  << "\" already exists"
+        std::cerr << "RenderPass : param \"" << name << "\" already exists"
                   << std::endl;
         return nullptr;
     }

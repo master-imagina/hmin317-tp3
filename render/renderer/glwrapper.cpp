@@ -71,17 +71,17 @@ uint32 GLWrapper::buildShaderProgram(const ShaderProgram *program)
     const uint32 programId = m_gl->glCreateProgram();
     uint32 shaderId = 0;
 
-    if (!program->vertexShaderSource.isEmpty()) {
+    if (!program->vertexShaderSource.empty()) {
         shaderId = m_gl->glCreateShader(GL_VERTEX_SHADER);
         compileShader(programId, shaderId, program->vertexShaderSource);
     }
 
-    if (!program->geometryShaderSource.isEmpty()) {
+    if (!program->geometryShaderSource.empty()) {
         shaderId = m_gl->glCreateShader(GL_GEOMETRY_SHADER);
         compileShader(programId, shaderId, program->geometryShaderSource);
     }
 
-    if (!program->fragmentShaderSource.isEmpty()) {
+    if (!program->fragmentShaderSource.empty()) {
         shaderId = m_gl->glCreateShader(GL_FRAGMENT_SHADER);
         compileShader(programId, shaderId, program->fragmentShaderSource);
     }
@@ -112,7 +112,7 @@ void GLWrapper::sendUniforms(uint32 programId,
     bindShaderProgram(programId);
 
     for (const uptr<ShaderParam> &param : params) {
-        const char *rawName = param->name.constData();
+        const char *rawName = param->name.c_str();
         const QVariant value = param->value;
         const int valueType = value.type();
 
@@ -150,9 +150,9 @@ void GLWrapper::sendUniforms(uint32 programId,
 
 void GLWrapper::compileShader(uint32 programId,
                               uint32 shaderId,
-                              const QByteArray &shaderSource)
+                              const std::string &shaderSource)
 {
-    const char *rawSource = shaderSource.constData();
+    const char *rawSource = shaderSource.c_str();
     int sourceLength = shaderSource.size();
     m_gl->glShaderSource(shaderId, 1, &rawSource, &sourceLength);
     m_gl->glCompileShader(shaderId);
@@ -173,7 +173,7 @@ void GLWrapper::compileShader(uint32 programId,
             std::cerr << "Shader compilation error :" << std::endl
                       << std::string(logBuffer.data()) << "in :" << std::endl
                       << "--------------------------" << std::endl
-                      << shaderSource.constData()
+                      << shaderSource
                       << std::endl;
         }
     }
@@ -251,7 +251,7 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
 
     for (const VertexAttrib &attrib : vertexLayout.attributes()) {
         const int location =
-                m_gl->glGetAttribLocation(programId, attrib.name.toLatin1().constData());
+                m_gl->glGetAttribLocation(programId, attrib.name.c_str());
 
         m_gl->glEnableVertexAttribArray(location);
         m_gl->glVertexAttribPointer(location,

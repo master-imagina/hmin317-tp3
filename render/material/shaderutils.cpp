@@ -7,7 +7,7 @@
 
 namespace {
 
-void readShaderFromFile(const std::string &filePath, QByteArray &sourceCode)
+void readShaderFromFile(const std::string &filePath, std::string &sourceCode)
 {
     if (filePath.empty()) {
         return;
@@ -21,8 +21,7 @@ void readShaderFromFile(const std::string &filePath, QByteArray &sourceCode)
         return;
     }
 
-    sourceCode = file.readAll()/*.constData()*/;
-    sourceCode.append('\0');
+    sourceCode = file.readAll().toStdString();
 }
 
 } // anon namespace

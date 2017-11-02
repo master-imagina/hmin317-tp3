@@ -7,9 +7,9 @@
 struct ShaderParam
 {
     ShaderParam();
-    ShaderParam(const QByteArray &_name, const QVariant &_value);
+    ShaderParam(const std::string &_name, const QVariant &_value);
 
-    QByteArray name;
+    std::string name;
     QVariant value;
 };
 

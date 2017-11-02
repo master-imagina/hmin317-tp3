@@ -3,17 +3,15 @@
 
 #include <string>
 
-#include <QByteArray>
-
 
 struct ShaderProgram
 {
     ShaderProgram();
     ~ShaderProgram();
 
-    QByteArray vertexShaderSource;
-    QByteArray geometryShaderSource;
-    QByteArray fragmentShaderSource;
+    std::string vertexShaderSource;
+    std::string geometryShaderSource;
+    std::string fragmentShaderSource;
 };
 
 #endif // SHADERPROGRAM_H

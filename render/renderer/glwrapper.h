@@ -53,7 +53,7 @@ public:
 
 private:
     void compileShader(uint32 programId, uint32 shaderId,
-                       const QByteArray &shaderSource);
+                       const std::string &shaderSource);
     void linkShaderProgram(uint32 programId);
 
     std::vector<std::string> activeUniforms(uint32 programId) const;

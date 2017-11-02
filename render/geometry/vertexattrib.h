@@ -1,14 +1,13 @@
 #ifndef VERTEXATTRIB_H
 #define VERTEXATTRIB_H
 
-#include <QString>
+#include <string>
 
 #include "core/aliases_int.h"
 
 
 struct VertexAttrib
 {
-public:
     enum class Type : uint32
     {
         Int = 0x1404,       // GL_INT
@@ -19,8 +18,7 @@ public:
     friend bool operator==(const VertexAttrib &lhs, const VertexAttrib &rhs);
     friend bool operator!=(const VertexAttrib &lhs, const VertexAttrib &rhs);
 
-public:
-    QString name;
+    std::string name;
     int size;
     Type type;
     bool normalized = false;
