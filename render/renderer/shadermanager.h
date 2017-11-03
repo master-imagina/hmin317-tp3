@@ -1,7 +1,7 @@
 #ifndef SHADERMANAGER_H
 #define SHADERMANAGER_H
 
-#include <map>
+#include <unordered_map>
 
 #include "core/aliases_int.h"
 
@@ -21,7 +21,7 @@ public:
     void cleanup(GLWrapper &glWrapper);
 
 private:
-    std::map<ShaderProgram *, uint32> m_shaderProgramToId;
+    std::unordered_map<ShaderProgram *, uint32> m_shaderProgramToId;
 };
 
 #endif // SHADERMANAGER_H

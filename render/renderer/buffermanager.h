@@ -1,7 +1,7 @@
 #ifndef BUFFERMANAGER_H
 #define BUFFERMANAGER_H
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "core/aliases_memory.h"
@@ -27,7 +27,7 @@ public:
 
 private:
     uptr_vector<GLBuffer> m_buffers;
-    std::map<Geometry *, std::pair<GLBuffer *, GLBuffer *>> m_geomToBuffers;
+    std::unordered_map<Geometry *, std::pair<GLBuffer *, GLBuffer *>> m_geomToBuffers;
 };
 
 #endif // BUFFERMANAGER_H

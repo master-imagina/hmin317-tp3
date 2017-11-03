@@ -1,5 +1,7 @@
 #include "seasoncontroller.h"
 
+#include <map>
+
 #include <QColor>
 
 
