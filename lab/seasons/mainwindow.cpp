@@ -27,7 +27,6 @@
 
 #include "extras/cameraactions.h"
 #include "extras/cameracontroller.h"
-#include "extras/shaderutils.h"
 
 #include "render/aabb.h"
 #include "render/camera.h"
@@ -37,6 +36,7 @@
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
+#include "render/material/shaderutils.h"
 
 #include "seasoncontroller.h"
 
