@@ -6,7 +6,6 @@
 
 
 Scene::Scene() :
-    terrainBoundingBox(),
     m_geometries(),
     m_materials(),
     m_renderableAddedCallbacks()

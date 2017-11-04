@@ -9,6 +9,7 @@
 
 #include "core/aliases_memory.h"
 
+#include "render/aabb.h"
 
 class Camera;
 class CameraController;
@@ -54,6 +55,7 @@ private:
 
     uptr<Scene> m_scene;
     uptr<Geometry> m_terrain;
+    AABoundingBox m_terrainBoundingBox;
     uptr<ParticleEffect> m_particleEffect;
     uptr<Material> m_terrainMaterial;
     ShaderParam *m_terrainMatWorldMatParam;

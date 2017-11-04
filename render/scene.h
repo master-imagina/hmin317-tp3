@@ -4,8 +4,6 @@
 #include <functional>
 #include <vector>
 
-#include "aabb.h"
-
 class Geometry;
 class Material;
 
@@ -24,9 +22,6 @@ public:
 
     const std::vector<Geometry *> &geometries() const;
     const std::vector<Material *> &materials() const;
-
-public:
-    AABoundingBox terrainBoundingBox;
 
 private:
     std::vector<Geometry *> m_geometries;

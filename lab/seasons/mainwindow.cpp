@@ -28,7 +28,6 @@
 #include "extras/cameraactions.h"
 #include "extras/cameracontroller.h"
 
-#include "render/aabb.h"
 #include "render/camera.h"
 #include "render/scene.h"
 
@@ -45,6 +44,7 @@ MainWindow::MainWindow(GameLoop *gameLoop) :
     m_theGameLoop(gameLoop),
     m_scene(nullptr),
     m_terrain(nullptr),
+    m_terrainBoundingBox(),
     m_particleEffect(nullptr),
     m_terrainMaterial(nullptr),
     m_particleMaterial(nullptr),
@@ -183,9 +183,9 @@ void MainWindow::loadHeightMap(const QString &filePath)
 
 void MainWindow::pointCameraToTerrainCenter()
 {
-    m_scene->terrainBoundingBox.processVertices(m_terrain->vertices);
+    m_terrainBoundingBox.processVertices(m_terrain->vertices);
 
-    centerCameraOnBBox(m_camera.get(), m_scene->terrainBoundingBox);
+    centerCameraOnBBox(m_camera.get(), m_terrainBoundingBox);
 }
 
 void MainWindow::iterateGameLoop(float dt)
@@ -276,8 +276,8 @@ void MainWindow::gatherShadersParams()
     const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
     const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
 
-    const QVector3D terrainAABBCenter = m_scene->terrainBoundingBox.center();
-    const QVector3D terrainAABBRadius = m_scene->terrainBoundingBox.radius();
+    const QVector3D terrainAABBCenter = m_terrainBoundingBox.center();
+    const QVector3D terrainAABBRadius = m_terrainBoundingBox.radius();
 
     const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
     const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
