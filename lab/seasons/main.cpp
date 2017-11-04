@@ -9,9 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
-    app.setApplicationName("Game Engines - PW3");
-
+    // Set OpenGL version
     QSurfaceFormat format;
     format.setVersion(3, 3);
     format.setProfile(QSurfaceFormat::CoreProfile);
@@ -19,11 +17,12 @@ int main(int argc, char *argv[])
 
     QSurfaceFormat::setDefaultFormat(format);
 
-//    EcsManager ecsManager;
+    QApplication app(argc, argv);
+    app.setApplicationName("Game Engines - PW3");
 
     GameLoop gameLoop(60);
 
-    MainWindow mw(/*ecsManager, */&gameLoop);
+    MainWindow mw(&gameLoop);
     mw.setMinimumSize(640, 400);
     mw.show();
 
