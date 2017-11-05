@@ -1,25 +1,28 @@
-#ifndef GAMEWIDGET_H
-#define GAMEWIDGET_H
+#ifndef RENDERWIDGET_H
+#define RENDERWIDGET_H
 
 #include <memory>
 
 #include <QOpenGLWidget>
 
+#include "core/aliases_memory.h"
+
 class Camera;
 class Renderer;
-class Scene;
 
 
-class GameWidget : public QOpenGLWidget
+class RenderWidget : public QOpenGLWidget
 {
     Q_OBJECT
 
 public:
-    explicit GameWidget(Scene *scene, QWidget *parent = 0);
-    ~GameWidget();
+    explicit RenderWidget(QWidget *parent = 0);
+    ~RenderWidget();
 
     Camera *camera() const;
     void setCamera(Camera *camera);
+
+    Renderer *renderer() const;
 
     void startNewFrame(float dt);
 
@@ -29,12 +32,10 @@ protected:
     void paintGL() override;
 
 private:
-    Scene *m_scene;
-    std::unique_ptr<Renderer> m_renderer;
-
     Camera *m_camera;
+    uptr<Renderer> m_renderer;
 
     float m_deltaTime;
 };
 
-#endif // GAMEWIDGET_H
+#endif // RENDERWIDGET_H

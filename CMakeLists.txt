@@ -4,15 +4,18 @@ project(gameengines_pw)
 
 # C++
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_EMIT")
 
 # Files
 set(HEADERS
     core/aliases_int.h
     core/aliases_memory.h
     core/gameloop.h
+    core/scene.h
+    core/systemengine.h
     render/aabb.h
     render/camera.h
-    render/scene.h
+    render/rendersystem.h
     render/geometry/geometry.h
     render/geometry/vertexattrib.h
     render/geometry/vertexlayout.h
@@ -28,23 +31,28 @@ set(HEADERS
     render/renderer/openglversion.h
     render/renderer/renderer.h
     render/renderer/shadermanager.h
+    render/renderer/vaomanager.h
     extras/cameraactions.h
     extras/cameracontroller.h
     extras/heightmap.h
-    extras/particleeffect.h
-    extras/particlematerial.h
-    lab/seasons/mainwindow.h
+    extras/particles/particleeffect.h
+    extras/particles/particlematerial.h
+    extras/particles/particlesystem.h
     lab/seasons/seasoncontroller.h
     editor/cameracontrols.h
     editor/cameracontrollercontrols.h
     editor/dragtoolbutton.h
-    editor/gamewidget.h
-)
+    editor/fpswidgets.h
+    editor/mainwindow.h
+    editor/renderwidget.h
+    )
 
 set(SOURCES
     core/gameloop.cpp
+    core/scene.cpp
+    core/systemengine.cpp
     render/camera.cpp
-    render/scene.cpp
+    render/rendersystem.cpp
     render/geometry/vertexattrib.cpp
     render/geometry/vertexlayout.cpp
     render/renderer/buffermanager.cpp
@@ -56,23 +64,26 @@ set(SOURCES
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp
     render/renderer/shadermanager.cpp
+    render/renderer/vaomanager.cpp
     extras/cameraactions.cpp
     extras/cameracontroller.cpp
     extras/heightmap.cpp
-    extras/particleeffect.cpp
-    extras/particlematerial.cpp
-    lab/seasons/mainwindow.cpp
+    extras/particles/particleeffect.cpp
+    extras/particles/particlematerial.cpp
+    extras/particles/particlesystem.cpp
     lab/seasons/main.cpp
     lab/seasons/seasoncontroller.cpp
     render/aabb.cpp
-    editor/gamewidget.cpp
     editor/cameracontrols.cpp
-    editor/dragtoolbutton.cpp
     editor/cameracontrollercontrols.cpp
+    editor/dragtoolbutton.cpp
+    editor/fpswidgets.cpp
+    editor/mainwindow.cpp
+    editor/renderwidget.cpp
     )
 
 set(QT_RESOURCES
-    extras/extras_shaders.qrc
+    extras/particles/extras_particles_shaders.qrc
     lab/seasons/seasons_shaders.qrc
     editor/editor_resources.qrc)
 
@@ -85,7 +96,10 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 set(CMAKE_AUTOMOC true)
 set(CMAKE_AUTORCC true)
 
+# Subdirs
+add_subdirectory(3rdparty)
+
 # Targets
 add_executable(pw3 ${SOURCES} ${HEADERS} ${QT_RESOURCES})
 target_include_directories(pw3 PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(pw3 Qt5::Widgets)
+target_link_libraries(pw3 Qt5::Widgets entityx)

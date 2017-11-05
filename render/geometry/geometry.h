@@ -32,7 +32,6 @@ public:
 
     bool isDynamic = false;
     bool isIndexed = false;
-
     bool isDirty = false;
 };
 

@@ -35,6 +35,22 @@ void GLWrapper::initialize(QOpenGLContext *glContext)
                 "GLWrapper::initialize()", "OpenGL 3.3 failed to initialize");
 }
 
+uint32 GLWrapper::createVao()
+{
+    uint32 ret = 0;
+
+    m_gl->glGenVertexArrays(1, &ret);
+
+    assert (ret > 0);
+
+    return ret;
+}
+
+uint32 GLWrapper::destroyVao(uint32 &vaoId)
+{
+    m_gl->glDeleteVertexArrays(1, &vaoId);
+}
+
 void GLWrapper::createBuffer(GLBuffer &buffer,
                              GLBuffer::Type type,
                              GLBuffer::Usage usage)
@@ -284,18 +300,18 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
 void GLWrapper::draw(const std::vector<DrawCommand> &commands)
 {
     for (const DrawCommand &cmd : commands) {
-        m_gl->glUseProgram(cmd.shaderId);
+        m_gl->glUseProgram(cmd.shaderProgramId);
         m_gl->glBindVertexArray(cmd.vaoId);
 
         if (cmd.indexGLBuffer) {
-            m_gl->glDrawElements(cmd.geometry.primitiveType,
-                                 cmd.geometry.primitiveCount,
+            m_gl->glDrawElements(cmd.geometry->primitiveType,
+                                 cmd.geometry->primitiveCount,
                                  GL_UNSIGNED_INT,
                                  nullptr);
         }
         else {
-            m_gl->glDrawArrays(cmd.geometry.primitiveType, 0,
-                               cmd.geometry.primitiveCount);
+            m_gl->glDrawArrays(cmd.geometry->primitiveType, 0,
+                               cmd.geometry->primitiveCount);
         }
 
         m_gl->glBindVertexArray(0);

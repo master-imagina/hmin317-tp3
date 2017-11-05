@@ -6,11 +6,15 @@
 #include "glwrapper.h"
 #include "openglversion.h"
 #include "shadermanager.h"
+#include "vaomanager.h"
 
 class Geometry;
 class Material;
 class RenderPass;
-class Scene;
+
+namespace entityx {
+class Entity;
+} // namespace Entity
 
 
 class Renderer
@@ -19,25 +23,29 @@ public:
     Renderer();
     ~Renderer();
 
-    void initialize(Scene *scene);
-    void render(Scene *scene, float dt);
+    void initialize();
+    void startNewFrame();
+    void prepareDrawCommand(entityx::Entity entity);
+    void render(float dt);
 
     void cleanup();
 
 private:
-    void updateDirtyBuffers(const std::vector<Geometry *> &geoms);
-    void updatePassParameters(const std::vector<Material *> &materials);
+    DrawCommand createDrawCommand(Geometry &geometry, Material &material) const;
 
-    std::vector<DrawCommand> prepareDrawCommands(Scene *scene);
+    void createGLResources(Geometry &geom, Material &material, DrawCommand &drawCmd);
+    void updateDirtyBuffers(DrawCommand &drawCmd);
+    void updatePassParameters(const DrawCommand &drawCmd);
 
 private:
     BufferManager m_bufferManager;
     ShaderManager m_shaderManager;
+    VaoManager m_vaoManager;
 
     OpenGLFuncs *m_gl;
     GLWrapper m_glWrapper;
 
-    std::vector<uint32> m_vaos;
+    std::vector<DrawCommand> m_drawCommands;
 };
 
 #endif // RENDERER_H

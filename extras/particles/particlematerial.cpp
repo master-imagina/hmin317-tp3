@@ -11,9 +11,9 @@ ParticleMaterial::ParticleMaterial() :
     m_sizeParam(nullptr)
 {
     uptr<ShaderProgram> particleShader = shaderProgramFromFile(
-        "://res/shaders/particle.vert",
-        "://res/shaders/particle.geom",
-        "://res/shaders/particle.frag"
+        "://shaders/particle.vert",
+        "://shaders/particle.geom",
+        "://shaders/particle.frag"
     );
 
     RenderPass *basePass = addRenderPass("base");

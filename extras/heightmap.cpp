@@ -80,5 +80,8 @@ Geometry heightmapToGeometry(const QImage &heightmap)
     ret.primitiveCount = (width - 1) * (width - 1) * 6;
     ret.primitiveType = Geometry::Triangles;
 
+    ret.isIndexed = true;
+    ret.isDirty = true;
+
     return ret;
 }

@@ -58,6 +58,17 @@ std::pair<GLBuffer *, GLBuffer *> BufferManager::addGeometry(Geometry *geom, GLW
     return ret;
 }
 
+bool BufferManager::isAllocated(Geometry *geom) const
+{
+    const auto geomFound = m_geomToBuffers.find(geom);
+
+    if (geomFound != m_geomToBuffers.end()) {
+        return true;
+    }
+
+    return false;
+}
+
 std::pair<GLBuffer *, GLBuffer *> BufferManager::buffersForGeometry(Geometry *geom) const
 {
     const auto geomFound = m_geomToBuffers.find(geom);

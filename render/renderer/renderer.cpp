@@ -5,6 +5,8 @@
 
 #include <QDebug>
 
+#include "3rdparty/entityx/Entity.h"
+
 #include "../geometry/geometry.h"
 #include "../geometry/vertexattrib.h"
 #include "../geometry/vertexlayout.h"
@@ -15,17 +17,16 @@
 #include "../material/shaderprogram.h"
 #include "../material/shaderutils.h"
 
-#include "../scene.h"
-
 #include "drawcommand.h"
 
 
 Renderer::Renderer() :
     m_bufferManager(),
     m_shaderManager(),
+    m_vaoManager(),
     m_gl(nullptr),
     m_glWrapper(),
-    m_vaos()
+    m_drawCommands()
 {}
 
 Renderer::~Renderer()
@@ -33,7 +34,7 @@ Renderer::~Renderer()
     cleanup();
 }
 
-void Renderer::initialize(Scene *scene)
+void Renderer::initialize()
 {
     QOpenGLContext *currentGLContext = QOpenGLContext::currentContext();
 
@@ -52,156 +53,160 @@ void Renderer::initialize(Scene *scene)
     //    gl->glEnable(GL_BLEND);
     //    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    auto onRenderableAdded = [this] (Geometry *geom, Material *material) {
-        //TODO OMG optimize that
-        // Generate a vao
-        m_vaos.reserve(m_vaos.capacity() + 1);
-
-        uint32 newVaoId = 0;
-        m_gl->glGenVertexArrays(1, &newVaoId);
-        m_vaos.emplace_back(newVaoId);
-
-        // Generate GPU buffers
-        std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
-                m_bufferManager.addGeometry(geom, m_glWrapper);
-        assert (gpuBuffers.first);
-
-        // Generate shader program
-        const uint32 programId =
-                m_glWrapper.buildShaderProgram(material->renderPasses()[0]->shaderProgram());
-
-        m_shaderManager.addShaderProgram(material->renderPasses()[0]->shaderProgram(),
-                programId);
-
-        m_glWrapper.setupVaoForBufferAndShader(programId, m_vaos.back(),
-                                               geom->vertexLayout,
-                                               *gpuBuffers.first,
-                                               gpuBuffers.second);
-    };
-
-    scene->connectRenderableAdded(onRenderableAdded);
-
-    // Allocate the scene in GPU, if exists
-    for (int i = 0; i < scene->geometries().size(); i++) {
-        onRenderableAdded(scene->geometries()[i], scene->materials()[i]);
-    }
-
-
     m_glWrapper.checkForErrors();
 }
 
-void Renderer::render(Scene *scene, float dt)
+void Renderer::startNewFrame()
 {
-    Q_UNUSED (dt);
-
-    updateDirtyBuffers(scene->geometries());
-    updatePassParameters(scene->materials());
-
-    const std::vector<DrawCommand> commands = prepareDrawCommands(scene);
-
     m_gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-    m_glWrapper.draw(commands);
+void Renderer::prepareDrawCommand(entityx::Entity entity)
+{
+    auto geometry = entity.component<Geometry>();
+    auto material = entity.component<Material>();
 
+    assert (geometry && material);
+
+    const DrawCommand cmd = createDrawCommand(*geometry.get(), *material.get());
+
+    m_drawCommands.emplace_back(cmd);
+}
+
+void Renderer::render(float dt)
+{
+    for (DrawCommand &drawCmd : m_drawCommands) {
+        // Allocate resources if necessary
+        if (drawCmd.vaoId == 0) {
+            createGLResources(*drawCmd.geometry, *drawCmd.material, drawCmd);
+        }
+
+        updateDirtyBuffers(drawCmd);
+        updatePassParameters(drawCmd);
+    }
+
+    m_glWrapper.draw(m_drawCommands);
+
+    m_drawCommands.clear();
 
     m_glWrapper.checkForErrors();
 }
 
 void Renderer::cleanup()
 {
-    m_gl->glDeleteVertexArrays(m_vaos.size(), m_vaos.data());
-
     m_bufferManager.cleanup(m_glWrapper);
     m_shaderManager.cleanup(m_glWrapper);
+    m_vaoManager.cleanup(m_glWrapper);
 
 
     m_glWrapper.checkForErrors();
 }
 
-void Renderer::updateDirtyBuffers(const std::vector<Geometry *> &geoms)
+DrawCommand Renderer::createDrawCommand(Geometry &geometry,
+                                        Material &material) const
 {
-    for (Geometry *geom : geoms) {
-        if (geom->isDirty) {
-            std::pair<GLBuffer *, GLBuffer *> buffers =
-                    m_bufferManager.buffersForGeometry(geom);
+    Geometry *geomPtr = &geometry;
+    Material *materialPtr = &material;
 
-            // Upload vertices
-            const GLBuffer &vertexGLBuffer = *buffers.first;
+    std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
+            m_bufferManager.buffersForGeometry(geomPtr);
 
-            const std::vector<QVector3D> &vertices = geom->vertices;
+    //FIXME Handle other passes
+    const uint32 shaderProgramId =
+            m_shaderManager.shaderIdForShaderProgram(material.renderPasses()[0]->shaderProgram());
 
-            m_glWrapper.bindBuffer(vertexGLBuffer);
-            m_glWrapper.allocateBuffer(vertexGLBuffer,
-                                       vertices.size() * Geometry::vertexSize,
-                                       vertices.data());
-            m_glWrapper.releaseBuffer(vertexGLBuffer);
-
-            // Upload indices, if any
-            GLBuffer *indexGLBuffer = buffers.second;
-
-            if (indexGLBuffer) {
-                const std::vector<uint32> &indices = geom->indices;
-
-                m_glWrapper.bindBuffer(*indexGLBuffer);
-                m_glWrapper.allocateBuffer(*indexGLBuffer,
-                                           indices.size() * Geometry::indexSize,
-                                           indices.data());
-                m_glWrapper.releaseBuffer(*indexGLBuffer);
-            }
-
-            geom->isDirty = false;
-        }
-    }
-
-
-    m_glWrapper.checkForErrors();
-}
-
-void Renderer::updatePassParameters(const std::vector<Material *> &materials)
-{
-    for (const Material *mat : materials) {
-        const uptr_vector<RenderPass> &passes = mat->renderPasses();
-
-        for (const uptr<RenderPass> &pass : passes) {
-            assert (pass);
-
-            const uint32 programId =
-                    m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
-
-            m_glWrapper.sendUniforms(programId, pass->params());
-        }
-    }
-
-
-    m_glWrapper.checkForErrors();
-}
-
-std::vector<DrawCommand> Renderer::prepareDrawCommands(Scene *scene)
-{
-    const std::vector<Geometry *> geometries = scene->geometries();
-    const std::vector<Material *> materials = scene->materials();
-
-    const int32 maxCommandCount = geometries.size();
-
-    std::vector<DrawCommand> ret;
-    ret.reserve(maxCommandCount);
-
-    for (int i = 0; i < maxCommandCount; i++) {
-        Geometry *geometry = geometries[i];
-
-        std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
-                m_bufferManager.buffersForGeometry(geometry);
-
-        //FIXME Handle other passes
-        const uint32 shaderProgramId = m_shaderManager.shaderIdForShaderProgram(materials[i]->renderPasses()[0]->shaderProgram());
-
-        const DrawCommand cmd {
-            shaderProgramId, m_vaos[i],
-            *geometry, *gpuBuffers.first, gpuBuffers.second
-        };
-
-        ret.emplace_back(cmd);
-    }
+    // Create draw command
+    const DrawCommand ret {
+        shaderProgramId, m_vaoManager.vaoForGeometry(geomPtr),
+        geomPtr, materialPtr,
+        gpuBuffers.first, gpuBuffers.second
+    };
 
     return ret;
+}
+
+void Renderer::createGLResources(Geometry &geom, Material &material, DrawCommand &drawCmd)
+{
+    //TODO Use clearer way to check if the resources are already allocated ?
+    if (m_vaoManager.isAllocated(&geom)) {
+        return;
+    }
+
+    // Generate a vao
+    const uint32 vaoId = m_vaoManager.addGeometry(&geom, m_glWrapper);
+
+    // Generate GPU buffers
+    std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
+            m_bufferManager.addGeometry(&geom, m_glWrapper);
+    assert (gpuBuffers.first);
+
+    // Generate shader program
+    const uint32 programId =
+            m_glWrapper.buildShaderProgram(material.renderPasses()[0]->shaderProgram());
+
+    m_shaderManager.addShaderProgram(material.renderPasses()[0]->shaderProgram(),
+            programId);
+
+    m_glWrapper.setupVaoForBufferAndShader(programId, vaoId,
+                                           geom.vertexLayout,
+                                           *gpuBuffers.first,
+                                           gpuBuffers.second);
+
+    drawCmd.vaoId = vaoId;
+    drawCmd.shaderProgramId = programId;
+    drawCmd.vertexGLBuffer = gpuBuffers.first;
+    drawCmd.indexGLBuffer = gpuBuffers.second;
+}
+
+void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
+{
+    Geometry *geom = drawCmd.geometry;
+
+    if (geom->isDirty) {
+        // Upload vertices
+        GLBuffer *vertexGLBuffer = drawCmd.vertexGLBuffer;
+
+        const std::vector<QVector3D> &vertices = geom->vertices;
+
+        m_glWrapper.bindBuffer(*vertexGLBuffer);
+        m_glWrapper.allocateBuffer(*vertexGLBuffer,
+                                   vertices.size() * Geometry::vertexSize,
+                                   vertices.data());
+        m_glWrapper.releaseBuffer(*vertexGLBuffer);
+
+        // Upload indices, if any
+        GLBuffer *indexGLBuffer = drawCmd.indexGLBuffer;
+
+        if (indexGLBuffer) {
+            const std::vector<uint32> &indices = geom->indices;
+
+            m_glWrapper.bindBuffer(*indexGLBuffer);
+            m_glWrapper.allocateBuffer(*indexGLBuffer,
+                                       indices.size() * Geometry::indexSize,
+                                       indices.data());
+            m_glWrapper.releaseBuffer(*indexGLBuffer);
+        }
+
+        geom->isDirty = false;
+    }
+
+
+    m_glWrapper.checkForErrors();
+}
+
+void Renderer::updatePassParameters(const DrawCommand &drawCmd)
+{
+    const uptr_vector<RenderPass> &passes = drawCmd.material->renderPasses();
+
+    for (const uptr<RenderPass> &pass : passes) {
+        assert (pass);
+
+        const uint32 programId =
+                m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
+
+        m_glWrapper.sendUniforms(programId, pass->params());
+    }
+
+
+    m_glWrapper.checkForErrors();
 }

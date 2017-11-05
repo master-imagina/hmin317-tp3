@@ -18,7 +18,7 @@ void ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, uint32 shader
     }
 }
 
-uint32 ShaderManager::shaderIdForShaderProgram(ShaderProgram *shaderProgram)
+uint32 ShaderManager::shaderIdForShaderProgram(ShaderProgram *shaderProgram) const
 {
     const auto shaderProgramFound = m_shaderProgramToId.find(shaderProgram);
 

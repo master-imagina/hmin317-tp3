@@ -20,6 +20,7 @@ public:
     BufferManager();
 
     std::pair<GLBuffer *, GLBuffer *> addGeometry(Geometry *geom, GLWrapper &glWrapper);
+    bool isAllocated(Geometry *geom) const;
 
     std::pair<GLBuffer *, GLBuffer *> buffersForGeometry(Geometry *geom) const;
 

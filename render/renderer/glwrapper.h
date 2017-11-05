@@ -29,6 +29,9 @@ public:
 
     void initialize(QOpenGLContext *glContext);
 
+    uint32 createVao();
+    uint32 destroyVao(uint32 &vaoId);
+
     void createBuffer(GLBuffer &buffer, GLBuffer::Type type, GLBuffer::Usage usage);
     void destroyBuffer(GLBuffer &buffer);
     void bindBuffer(const GLBuffer &buffer);
