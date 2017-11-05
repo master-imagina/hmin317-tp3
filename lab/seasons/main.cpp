@@ -15,7 +15,6 @@
 #include "extras/cameracontroller.h"
 #include "extras/heightmap.h"
 #include "extras/particles/particleeffect.h"
-#include "extras/particles/particlematerial.h"
 #include "extras/particles/particlesystem.h"
 
 #include "render/aabb.h"
@@ -33,99 +32,131 @@
 #include "seasoncontroller.h"
 
 
+Scene scene;
 
-Scene m_scene;
-SystemEngine systemEngine(m_scene);
+// System engine
+SystemEngine systemEngine(scene);
+RenderWidget *renderWidget;
 
-RenderWidget *m_renderWidget;
-
-uptr<Camera> m_camera;
+// Scene description
+uptr<Camera> camera;
 
 entityx::Entity terrainEntity;
-entityx::ComponentHandle<Geometry> m_terrainGeom;
-entityx::ComponentHandle<Material> m_terrainMaterial;
+entityx::ComponentHandle<Geometry> terrainGeom;
+entityx::ComponentHandle<Material> terrainMaterial;
 
-ShaderParam *m_terrainMatWorldMatParam;
-ShaderParam *m_terrainMinHeightParam;
-ShaderParam *m_terrainMaxHeightParam;
-ShaderParam *m_terrainColorParam;
-AABoundingBox m_terrainBoundingBox;
+ShaderParam *terrainMatWorldMatParam;
+ShaderParam *terrainMinHeightParam;
+ShaderParam *terrainMaxHeightParam;
+ShaderParam *terrainColorParam;
 
-CameraController m_cameraController;
-SeasonController m_seasonController;
+
+entityx::Entity particleEntity;
+entityx::ComponentHandle<ParticleEffect> particleEffect;
+entityx::ComponentHandle<Geometry> particleGeom;
+entityx::ComponentHandle<Material> particleMaterial;
+
+ShaderParam *particleViewMatrixParam;
+ShaderParam *particleProjMatrixParam;
+ShaderParam *particleColorParam;
+ShaderParam *particleSizeParam;
+
+// Others
+AABoundingBox terrainBoundingBox;
+
+CameraController cameraController;
+SeasonController seasonController;
 
 
 void initScene()
 {
-    m_camera = std::make_unique<Camera>();
-    m_camera->setEyePos({8, 20, 8});
+    camera = std::make_unique<Camera>();
+    camera->setEyePos({8, 20, 8});
 
     // Create terrain
-    terrainEntity = m_scene.createEntity();
-    m_terrainGeom = terrainEntity.assign<Geometry>();
-    *m_terrainGeom.get() = heightmapToGeometry(QImage("images/heightmap-1.png"));
+    terrainEntity = scene.createEntity();
+    terrainGeom = terrainEntity.assign<Geometry>();
+    *terrainGeom.get() = heightmapToGeometry(QImage("images/heightmap-1.png"));
+
+    terrainBoundingBox.processVertices(terrainGeom->vertices);
 
     VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
-    m_terrainGeom->vertexLayout.addAttribute(standardVertexAttrib);
+    terrainGeom->vertexLayout.addAttribute(standardVertexAttrib);
 
-    m_terrainMaterial = terrainEntity.assign<Material>();
-    RenderPass *terrainPass = m_terrainMaterial->addRenderPass("base");
+    terrainMaterial = terrainEntity.assign<Material>();
+    RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
     uptr<ShaderProgram> terrainShader = shaderProgramFromFile("://res/shaders/terrain_heightmap.vert",
                                                               "",
                                                               "://res/shaders/terrain_heightmap.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
-    m_terrainMatWorldMatParam   =   terrainPass->addParam("worldMatrix", QMatrix4x4());
-    m_terrainMinHeightParam     =   terrainPass->addParam("minHeight", 0.f);
-    m_terrainMaxHeightParam     =   terrainPass->addParam("maxHeight", 1.f);
-    m_terrainColorParam         =   terrainPass->addParam("terrainColor", QColor());
+    terrainMatWorldMatParam   =   terrainPass->addParam("worldMatrix", QMatrix4x4());
+    terrainMinHeightParam     =   terrainPass->addParam("minHeight", 0.f);
+    terrainMaxHeightParam     =   terrainPass->addParam("maxHeight", 1.f);
+    terrainColorParam         =   terrainPass->addParam("terrainColor", QColor());
 
     // Create particle effect
-//    entityx::Entity particleEntity = m_scene.createEntity();
-//    auto particleEffect = particleEntity.assign<ParticleEffect>();
-//    *particleEntity.component<Geometry>().get() = particleEffect->geometry();
-//    m_particleEffect->geometry()->vertexLayout.addAttribute(standardVertexAttrib);
+    particleEntity = scene.createEntity();
 
-//    m_particleEffect = particleEntity;
-//    m_particleEffect->setWorldPos({0, 400, 0});
-//    m_particleEffect->setCount(50);
-//    m_particleEffect->setMaxLife(100);
-//    m_particleEffect->setDirection({0, -1, 0});
+    particleEffect = particleEntity.assign<ParticleEffect>();
+    particleEffect->setWorldPos({0, 400, 0});
+    particleEffect->setCount(50);
+    particleEffect->setMaxLife(100);
+    particleEffect->setDirection({0, -1, 0});
+    particleEffect->setRadius(terrainBoundingBox.radius().z());
 
-//    m_particleMaterial = particleEntity.assign<ParticleMaterial>();
+    particleGeom = particleEntity.component<Geometry>();
+    particleGeom->vertexLayout.addAttribute(standardVertexAttrib);
+
+    uptr<ShaderProgram> particleShader = shaderProgramFromFile(
+        "://shaders/particle.vert",
+        "://shaders/particle.geom",
+        "://shaders/particle.frag"
+    );
+
+    entityx::ComponentHandle<Material> particleMaterial = particleEntity.component<Material>();
+    RenderPass *particlePass = particleMaterial->addRenderPass("base");
+    particlePass->setShaderProgram(std::move(particleShader));
+
+    particleViewMatrixParam = particlePass->addParam("viewMatrix", QMatrix4x4());
+    particleProjMatrixParam = particlePass->addParam("projectionMatrix", QMatrix4x4());
+    particleColorParam = particlePass->addParam("particleColor", QColor());
+    particleSizeParam = particlePass->addParam("particlesSize", 4.f);
+
+    particleMaterial = particleEntity.component<Material>();
 }
 
 void gatherShadersParams()
 {
-    const QMatrix4x4 viewMatrix = m_camera->viewMatrix();
-    const QMatrix4x4 projectionMatrix = m_camera->projectionMatrix();
+    const QMatrix4x4 viewMatrix = camera->viewMatrix();
+    const QMatrix4x4 projectionMatrix = camera->projectionMatrix();
     const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
 
-    const QVector3D terrainAABBCenter = m_terrainBoundingBox.center();
-    const QVector3D terrainAABBRadius = m_terrainBoundingBox.radius();
+    const QVector3D terrainAABBCenter = terrainBoundingBox.center();
+    const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
 
     const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
     const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
 
-    const QColor drawColor = m_seasonController.colorFromSeason();
+    const QColor drawColor = seasonController.colorFromSeason();
 
     // Update terrain material parameters
-    m_terrainMatWorldMatParam->value = worldMatrix;
-    m_terrainMinHeightParam->value = minHeight;
-    m_terrainMaxHeightParam->value = maxHeight;
-    m_terrainColorParam->value = drawColor;
+    terrainMatWorldMatParam->value = worldMatrix;
+    terrainMinHeightParam->value = minHeight;
+    terrainMaxHeightParam->value = maxHeight;
+    terrainColorParam->value = drawColor;
 
     // Update particle material parameters
-//    m_particleMaterial->setViewMatrix(viewMatrix);
-//    m_particleMaterial->setProjectionMatrix(projectionMatrix);
-//    m_particleMaterial->setColor(drawColor);
-//    m_particleMaterial->setSize(4.f);
+    particleViewMatrixParam->value = viewMatrix;
+    particleProjMatrixParam->value = projectionMatrix;
+    particleColorParam->value = drawColor;
+    particleSizeParam->value = 4.f;
 }
 
 void iterateGameLoop(float dt)
 {
     // Update camera
-    m_cameraController.updateCamera(m_camera.get(), dt);
+    cameraController.updateCamera(camera.get(), dt);
 
     // Update scene
     gatherShadersParams();
@@ -134,7 +165,6 @@ void iterateGameLoop(float dt)
     systemEngine.update<ParticleSystem>(dt);
     systemEngine.update<RenderSystem>(dt);
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -152,24 +182,25 @@ int main(int argc, char *argv[])
     GameLoop gameLoop(60);
     gameLoop.setCallback([] (float dt) { iterateGameLoop(dt); });
 
-    m_renderWidget = new RenderWidget;
-    m_renderWidget->installEventFilter(&m_cameraController);
-    m_renderWidget->setMinimumSize(640, 400);
+    renderWidget = new RenderWidget;
+    renderWidget->installEventFilter(&cameraController);
+    renderWidget->setMinimumSize(640, 400);
+    createFpsLabel(&gameLoop, renderWidget);
+
+    systemEngine.registerSystem<entityx::deps::Dependency<ParticleEffect, Geometry, Material>>();
+    systemEngine.registerSystem<ParticleSystem>();
+    systemEngine.registerSystem<RenderSystem>(renderWidget);
+    systemEngine.initialize();
 
     initScene();
 
-    systemEngine.registerSystem<RenderSystem>(m_renderWidget);
-    systemEngine.registerSystem<ParticleSystem>();
-    systemEngine.initialize();
+    renderWidget->setCamera(camera.get());
+    renderWidget->show();
 
-    m_renderWidget->setCamera(m_camera.get());
-    m_renderWidget->show();
-
-    m_terrainBoundingBox.processVertices(m_terrainGeom->vertices);
-    centerCameraOnBBox(m_camera.get(), m_terrainBoundingBox);
+    centerCameraOnBBox(camera.get(), terrainBoundingBox);
 
     gameLoop.run();
-    m_seasonController.start();
+    seasonController.start();
 
     return app.exec();
 }

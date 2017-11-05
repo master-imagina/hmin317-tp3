@@ -36,7 +36,6 @@ set(HEADERS
     extras/cameracontroller.h
     extras/heightmap.h
     extras/particles/particleeffect.h
-    extras/particles/particlematerial.h
     extras/particles/particlesystem.h
     lab/seasons/seasoncontroller.h
     editor/cameracontrols.h
@@ -69,7 +68,6 @@ set(SOURCES
     extras/cameracontroller.cpp
     extras/heightmap.cpp
     extras/particles/particleeffect.cpp
-    extras/particles/particlematerial.cpp
     extras/particles/particlesystem.cpp
     lab/seasons/main.cpp
     lab/seasons/seasoncontroller.cpp

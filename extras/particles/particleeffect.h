@@ -1,13 +1,9 @@
 #ifndef PARTICLEEFFECT_H
 #define PARTICLEEFFECT_H
 
-#include <memory>
-#include <random>
 #include <vector>
 
 #include <QVector3D>
-
-class Geometry;
 
 
 class ParticleEffect
@@ -36,20 +32,15 @@ public:
     float particlesSize() const;
     void setParticlesSize(float particlesSize);
 
-    void live(float dt);
-
-    Geometry *geometry() const;
+    bool isDirty() const;
+    void setDirty();
+    void unsetDirty();
 
 private:
     void resetCount();
-    void resetRadiusRandDistribs();
 
 private:
-    std::random_device m_randDevice;
-    std::default_random_engine m_randEngine;
-
-    std::uniform_real_distribution<float> m_radiusXRandDistrib;
-    std::uniform_real_distribution<float> m_radiusZRandDistrib;
+    bool m_isDirty;
 
     int m_count;
     int m_maxLife;
@@ -60,7 +51,8 @@ private:
     float m_speed;
     float m_particlesSize;
 
-    std::unique_ptr<Geometry> m_geometry;
+public:
+    //TODO preallocate
     std::vector<int> m_lifes;
 };
 

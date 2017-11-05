@@ -8,7 +8,6 @@ SystemEngine::SystemEngine(Scene &scene) :
     m_systemManager(scene.entities, scene.events)
 {}
 
-
 void SystemEngine::initialize()
 {
     m_systemManager.configure();
