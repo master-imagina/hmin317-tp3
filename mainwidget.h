@@ -92,6 +92,7 @@ protected:
 
  private:
     void changeSeason(SEASON season);
+    float randMax(int max);
 
 
 private:
@@ -99,7 +100,10 @@ private:
     QOpenGLShaderProgram program;
     GeometryEngine *geometries;
 
-    QOpenGLTexture *texture;
+    QOpenGLTexture *textureSummer;
+    QOpenGLTexture *textureSpring;
+    QOpenGLTexture *textureFall;
+    QOpenGLTexture *textureWinter;
 
     QMatrix4x4 projection;
 
@@ -111,6 +115,8 @@ private:
     int m_fps;
     SEASON m_season;
     QTimer *m_calendar;
+    QVector3D m_particules[10000];
+    int m_nbParticules;
 
 };
 

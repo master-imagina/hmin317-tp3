@@ -57,7 +57,6 @@
 MainWidget::MainWidget(int fps, SEASON season, QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
-    texture(0),
     angularSpeed(0.5),
     rotationAxis(0.0, 0.0, 1),
     m_fps(fps),
@@ -74,7 +73,10 @@ MainWidget::~MainWidget()
     // Make sure the context is current when deleting the texture
     // and the buffers.
     makeCurrent();
-    delete texture;
+    delete textureSummer;
+    delete textureSpring;
+    delete textureFall;
+    delete textureWinter;
     delete geometries;
     doneCurrent();
 }
@@ -157,40 +159,45 @@ void MainWidget::initShaders()
 //! [4]
 void MainWidget::initTextures()
 {
-    // Load cube.png image
-    texture = new QOpenGLTexture(QImage(":/heightmap-1.png"));
+
+    textureSummer = new QOpenGLTexture(QImage(":/summer.jpg"));
+    textureSpring = new QOpenGLTexture(QImage(":/spring.jpg"));
+    textureFall = new QOpenGLTexture(QImage(":/fall.jpg"));
+    textureWinter = new QOpenGLTexture(QImage(":/snow.jpg"));
 
     // Set nearest filtering mode for texture minification
-    texture->setMinificationFilter(QOpenGLTexture::Nearest);
+    textureSummer->setMinificationFilter(QOpenGLTexture::Nearest);
+    textureSpring->setMinificationFilter(QOpenGLTexture::Nearest);
+    textureFall->setMinificationFilter(QOpenGLTexture::Nearest);
+    textureWinter->setMinificationFilter(QOpenGLTexture::Nearest);
 
     // Set bilinear filtering mode for texture magnification
-    texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    textureSummer->setMagnificationFilter(QOpenGLTexture::Linear);
+    textureSpring->setMagnificationFilter(QOpenGLTexture::Linear);
+    textureFall->setMagnificationFilter(QOpenGLTexture::Linear);
+    textureWinter->setMagnificationFilter(QOpenGLTexture::Linear);
 
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
-    texture->setWrapMode(QOpenGLTexture::Repeat);
+    textureSummer->setWrapMode(QOpenGLTexture::Repeat);
+    textureSpring->setWrapMode(QOpenGLTexture::Repeat);
+    textureFall->setWrapMode(QOpenGLTexture::Repeat);
+    textureWinter->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void MainWidget::updateSeason()
 {
     switch (m_season) {
     case summer:
-
         changeSeason(fall);
         break;
-
     case fall:
-
         changeSeason(winter);
         break;
-
     case winter:
-
         changeSeason(spring);
         break;
-
     case spring:
-
         changeSeason(summer);
         break;
     }
@@ -200,14 +207,35 @@ void MainWidget::changeSeason(SEASON season)
 {
     switch (season) {
     case summer:
+        m_season = summer;
         qDebug() << "summer";
-        glClearColor(1, 0.41, 0.7, 1);
-        glClearAccum(1, 0.41, 0.7, 1);
         break;
     case fall:
+        m_season = fall;
         qDebug() << "fall";
-        glClearColor(1, 0.41, 0.7, 1);
-        glClearAccum(1, 0.41, 0.7, 1);
+
+
+        m_nbParticules = 10000;
+        for(int i = 0; i < m_nbParticules; ++i)
+        {
+            m_particules[i] = QVector3D(randMax(256), randMax(256), randMax(256));
+        }
+        break;
+    case spring:
+        m_season = spring;
+        qDebug() << "spring";
+        break;
+    case winter:
+        m_season = winter;
+        qDebug() << "winter";
+
+        m_nbParticules = 1000;
+        for(int i = 0; i < m_nbParticules; ++i)
+        {
+            m_particules[i] = QVector3D(randMax(20), randMax(20), randMax(256));
+        }
+        break;
+
     }
 
 }
@@ -233,7 +261,7 @@ void MainWidget::paintGL()
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    texture->bind();
+    //texture->bind();
 
 //! [6]
     // Calculate model view transformation
@@ -258,8 +286,51 @@ void MainWidget::paintGL()
     program.setUniformValue("mvp_matrix", projection * matrix);
 
     // Use texture unit 0 which contains cube.png
-    program.setUniformValue("texture", 0);
+    //program.setUniformValue("texture", 0);
+    switch (m_season) {
+    case summer:
+        textureSummer->bind(0);
+        program.setUniformValue("textureSummer", 0);
+        break;
+    case fall:
+        textureFall->bind(0);
+        program.setUniformValue("textureFall", 0);
+        break;
+    case spring:
+        textureSpring->bind(0);
+        program.setUniformValue("textureSpring", 0);
+        break;
+    case winter:
+        textureWinter->bind(0);
+        program.setUniformValue("textureWinter", 0);
+        break;
+    default:
+        break;
+    }
+
+
 
     // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
+
+    glBegin(GL_POINT);
+    glColor3f(1,1,1);
+
+    for(int i= 0; i < m_nbParticules; ++i)
+    {
+        m_particules[i].setY(m_particules[i].y() - 1);
+
+        if (m_particules[i].y() < 0)
+        {
+            m_particules[i] = QVector3D(randMax(5), randMax(5), randMax(5));
+        }
+        glVertex3f(m_particules[i].x(), m_particules[i].y(), m_particules[i].z());
+    }
+    glEnd();
+
+}
+
+float MainWidget::randMax(int max)
+{
+    return static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / max));
 }
