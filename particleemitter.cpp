@@ -1,10 +1,11 @@
 #include "particleemitter.h"
 
 #include <iostream>
-ParticleEmitter::ParticleEmitter()
+ParticleEmitter::ParticleEmitter(float pwr)
     : indexBuf(QOpenGLBuffer::IndexBuffer)
 {
     initializeOpenGLFunctions();
+    power = pwr;
     // Generate 2 VBOs
     arrayBuf.create();
     indexBuf.create();
@@ -36,10 +37,10 @@ void ParticleEmitter::Update(float DT)
     currentTime += DT;
     for (int i=0;i<30;i++)
     {
-        float x = qrand()%(int)((1024*0.3)/2)-20;
-        float y = qrand()%(int)((1024*0.3)/2)-20;
+        float x = qrand()%(int)((1224*0.3)/2)-10;
+        float y = qrand()%(int)((1224*0.3)/2)-10;
         float z = 25.0;
-        Particle * p = new Particle(x,y,z, 0.02f,0.02f,-0.01f ,0.1f ,1.0 ,1.0,0.05,1.0);
+        Particle * p = new Particle(x,y,z, 0.02f,0.02f,-0.01f*power ,0.1f ,1.0 ,1.0,0.05,1.0);
 
         if (currentTime > 0.1)
         {

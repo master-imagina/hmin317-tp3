@@ -69,7 +69,8 @@ private:
     float g = 0;
     float b = 0;
     QTimer * stimer;
-    ParticleEmitter* pe;
+    ParticleEmitter* snow;
+    ParticleEmitter* rain;
 };
 
 #endif // MAINWIDGET_H

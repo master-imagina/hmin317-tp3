@@ -10,7 +10,7 @@
 class ParticleEmitter : protected QOpenGLFunctions
 {
 public:
-    ParticleEmitter();
+    ParticleEmitter(float power);
     virtual ~ParticleEmitter();
     void Update(float DT);
     void Render(QOpenGLShaderProgram *);
@@ -20,6 +20,7 @@ private:
     float currentTime;
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
+    float power;
 };
 
 #endif // PARTICLEEMITTER_H

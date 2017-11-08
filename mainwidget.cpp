@@ -12,7 +12,8 @@
 MainWidget::MainWidget(QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
-    pe(0),
+    snow(0),
+    rain(0),
     texture(0),
     angularSpeed(0)
 {
@@ -36,7 +37,8 @@ MainWidget::~MainWidget()
     makeCurrent();
     delete texture;
     delete geometries;
-    delete pe;
+    delete snow;
+    delete rain;
     doneCurrent();
 }
 
@@ -170,7 +172,8 @@ void MainWidget::timerEvent(QTimerEvent *)
     if (bKeys[3]) fPositionX -= 0.05*(int)(1000.0f/(float)FPS);
     if (bKeys[4]) fPositionZ += 0.05*(int)(1000.0f/(float)FPS);
     if (bKeys[5]) fPositionZ -= 0.05*(int)(1000.0f/(float)FPS);
-    pe->Update(1000.0f/(float)FPS);
+    snow->Update(1000.0f/(float)FPS);
+    rain->Update(1000.0f/(float)FPS);
     update();
 }
 
@@ -192,12 +195,10 @@ void MainWidget::initializeGL()
     // glEnable(GL_CULL_FACE);
 
 
-
-
-
-
     geometries = new GeometryEngine;
-    pe = new ParticleEmitter();
+    snow = new ParticleEmitter(1.f);
+    rain = new ParticleEmitter(20.0f);
+
 
     // Use QBasicTimer because its faster than QTimer
     timer.start((int)(1000.0f/(float)FPS), this);
@@ -286,22 +287,42 @@ void MainWidget::paintGL()
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 
+    switch(season)
+    {
+    case 0: r=0.6;g=0.6;b=0.6; break; // Winter
+    case 1: r = 0.4;g = 0.8; b = 0.4; break; // Spring
+    case 2: r = 0.8; g = 0.8; b = 0.3; break; // Summer
+    case 3: r = 0.8; g = 0.5; b = 0.2; break; // Fall
+    }
 
-    // Use texture unit 0 which contains cube.png
+    // Draws the terrain
     program.setUniformValue("texture", 0);
     program.setUniformValue("r", r);
     program.setUniformValue("g", g);
     program.setUniformValue("b", b);
-
-    // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
-    program.setUniformValue("texture", 0);
-    program.setUniformValue("r", 1.0f);
-    program.setUniformValue("g", 1.0f);
-    program.setUniformValue("b", 1.0f);
+
+    // Draws the particles
+    if (season == 3) // Renders rain
+    {
+        program.setUniformValue("texture", 0);
+        program.setUniformValue("r", 0.3f);
+        program.setUniformValue("g", 0.1f);
+        program.setUniformValue("b", 1.0f);
+        rain->Render(&program);
+    }
+
+    if (season == 0)
+    {
+        program.setUniformValue("texture", 0);
+        program.setUniformValue("r", 0.8f);
+        program.setUniformValue("g", 0.8f);
+        program.setUniformValue("b", 0.8f);
+        snow->Render(&program);
+    }
 
 
 
-    pe->Render(&program);
+
 
 }

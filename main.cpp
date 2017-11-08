@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
     QTimer timer;
 
     timer.setInterval(4000);
-    int season = 0;
 
     //QSignalMapper * signalMapper = new QSignalMapper(&timer);
 
