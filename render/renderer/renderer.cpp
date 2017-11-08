@@ -89,6 +89,7 @@ void Renderer::render(float dt)
 
     m_drawCommands.clear();
 
+
     m_glWrapper.checkForErrors();
 }
 
@@ -141,11 +142,11 @@ void Renderer::createGLResources(Geometry &geom, Material &material, DrawCommand
     assert (gpuBuffers.first);
 
     // Generate shader program
-    const uint32 programId =
-            m_glWrapper.buildShaderProgram(material.renderPasses()[0]->shaderProgram());
+    ShaderProgram *shaderProgram = material.renderPasses()[0]->shaderProgram();
 
-    m_shaderManager.addShaderProgram(material.renderPasses()[0]->shaderProgram(),
-            programId);
+    const uint32 programId = m_glWrapper.buildShaderProgram(shaderProgram);
+
+    m_shaderManager.addShaderProgram(shaderProgram, programId);
 
     m_glWrapper.setupVaoForBufferAndShader(programId, vaoId,
                                            geom.vertexLayout,
@@ -204,6 +205,7 @@ void Renderer::updatePassParameters(const DrawCommand &drawCmd)
         const uint32 programId =
                 m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
 
+        //TODO material params must override eventual pass params
         m_glWrapper.sendUniforms(programId, pass->params());
     }
 

@@ -14,8 +14,10 @@
 #include "extras/cameraactions.h"
 #include "extras/cameracontroller.h"
 #include "extras/heightmap.h"
+
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/particlesystem.h"
+#include "extras/particles/quick.h"
 
 #include "render/aabb.h"
 #include "render/camera.h"
@@ -95,34 +97,13 @@ void initScene()
     terrainMaxHeightParam     =   terrainPass->addParam("maxHeight", 1.f);
     terrainColorParam         =   terrainPass->addParam("terrainColor", QColor());
 
+
+
     // Create particle effect
-    particleEntity = scene.createEntity();
-
-    particleEffect = particleEntity.assign<ParticleEffect>();
-    particleEffect->setWorldPos({0, 400, 0});
-    particleEffect->setCount(50);
-    particleEffect->setMaxLife(100);
-    particleEffect->setDirection({0, -1, 0});
-    particleEffect->setRadius(terrainBoundingBox.radius().z());
-
-    particleGeom = particleEntity.component<Geometry>();
-    particleGeom->vertexLayout.addAttribute(standardVertexAttrib);
-
-    uptr<ShaderProgram> particleShader = shaderProgramFromFile(
-        "://shaders/particle.vert",
-        "://shaders/particle.geom",
-        "://shaders/particle.frag"
-    );
-
-    entityx::ComponentHandle<Material> particleMaterial = particleEntity.component<Material>();
-    RenderPass *particlePass = particleMaterial->addRenderPass("base");
-    particlePass->setShaderProgram(std::move(particleShader));
-
-    particleViewMatrixParam = particlePass->addParam("viewMatrix", QMatrix4x4());
-    particleProjMatrixParam = particlePass->addParam("projectionMatrix", QMatrix4x4());
-    particleColorParam = particlePass->addParam("particleColor", QColor());
-    particleSizeParam = particlePass->addParam("particlesSize", 4.f);
-
+    particleEntity = createParticleEffect(scene, {0, 400, 0}, {0, -1, 0},
+                                          50, 100, terrainBoundingBox.radius().z(),
+                                          0.4f, 4.f);
+    particleEffect = particleEntity.component<ParticleEffect>();
     particleMaterial = particleEntity.component<Material>();
 }
 
@@ -147,10 +128,11 @@ void gatherShadersParams()
     terrainColorParam->value = drawColor;
 
     // Update particle material parameters
-    particleViewMatrixParam->value = viewMatrix;
-    particleProjMatrixParam->value = projectionMatrix;
-    particleColorParam->value = drawColor;
-    particleSizeParam->value = 4.f;
+    RenderPass *particleBasePass = particleMaterial->renderPasses()[0].get();
+    particleBasePass->setParam("viewMatrix", viewMatrix);
+    particleBasePass->setParam("projectionMatrix", projectionMatrix);
+    particleBasePass->setParam("particleColor", drawColor);
+    particleBasePass->setParam("particleSize", particleEffect->particleSize());
 }
 
 void iterateGameLoop(float dt)

@@ -71,6 +71,37 @@ ShaderParam *RenderPass::addParam(const std::string &name, const QVariant &value
     return ret;
 }
 
+ShaderParam *RenderPass::param(const std::string &name)
+{
+    auto paramFound = std::find_if(m_params.begin(), m_params.end(),
+                                  [name] (const uptr<ShaderParam> &param) {
+        return param->name == name;
+    });
+
+    if (paramFound != m_params.end()) {
+        std::cerr << "RenderPass : param \"" << name << "\" not found"
+                  << std::endl;
+        return nullptr;
+    }
+
+    return paramFound->get();
+}
+
+void RenderPass::setParam(const std::string &name, const QVariant &value)
+{
+    auto paramFound = std::find_if(m_params.begin(), m_params.end(),
+                                  [name] (const uptr<ShaderParam> &param) {
+        return param->name == name;
+    });
+
+    if (paramFound == m_params.end()) {
+        addParam(name, value);
+    }
+    else {
+        (*paramFound)->value = value;
+    }
+}
+
 void RenderPass::removeParam(ShaderParam *param)
 {
     m_params.erase(std::remove_if(m_params.begin(), m_params.end(),

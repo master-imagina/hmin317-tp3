@@ -9,7 +9,7 @@ ParticleEffect::ParticleEffect() :
     m_radius(50.f),
     m_direction({0.f, 1.f, 0.f}),
     m_speed(0.4f),
-    m_particlesSize(4.f),
+    m_particleSize(4.f),
     m_lifes()
 {
     resetCount();
@@ -93,15 +93,15 @@ void ParticleEffect::setSpeed(float speed)
     }
 }
 
-float ParticleEffect::particlesSize() const
+float ParticleEffect::particleSize() const
 {
-    return m_particlesSize;
+    return m_particleSize;
 }
 
-void ParticleEffect::setParticlesSize(float particlesSize)
+void ParticleEffect::setParticleSize(float particleSize)
 {
-    if (m_particlesSize != particlesSize) {
-        m_particlesSize = particlesSize;
+    if (m_particleSize != particleSize) {
+        m_particleSize = particleSize;
     }
 }
 

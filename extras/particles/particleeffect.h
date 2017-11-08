@@ -29,8 +29,8 @@ public:
     float speed() const;
     void setSpeed(float speed);
 
-    float particlesSize() const;
-    void setParticlesSize(float particlesSize);
+    float particleSize() const;
+    void setParticleSize(float particleSize);
 
     bool isDirty() const;
     void setDirty();
@@ -49,7 +49,7 @@ private:
     float m_radius;
     QVector3D m_direction;
     float m_speed;
-    float m_particlesSize;
+    float m_particleSize;
 
 public:
     //TODO preallocate

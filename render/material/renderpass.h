@@ -27,6 +27,8 @@ public:
     void setShaderProgram(uptr<ShaderProgram> &&program);
 
     ShaderParam *addParam(const std::string &name, const QVariant &value);
+    ShaderParam *param(const std::string &name);
+    void setParam(const std::string &name, const QVariant &value);
     void removeParam(ShaderParam *param);
 
     const uptr_vector<ShaderParam> &params() const;
