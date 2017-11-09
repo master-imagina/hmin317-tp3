@@ -31,8 +31,6 @@ uptr<Camera> camera;
 
 AABoundingBox terrainBoundingBox;
 
-ShaderParam *terrainMinHeightParam;
-ShaderParam *terrainMaxHeightParam;
 ShaderParam *terrainColorParam;
 
 entityx::ComponentHandle<ParticleEffect> particleEffect;
@@ -46,6 +44,8 @@ void initScene(Scene &scene)
 
     // Create terrain
     entityx::Entity terrainEntity = scene.createEntity();
+
+    //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
     *terrainGeom.get() = heightmapToGeometry(QImage("images/heightmap-1.png"));
 
@@ -54,6 +54,7 @@ void initScene(Scene &scene)
     VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
     terrainGeom->vertexLayout.addAttribute(standardVertexAttrib);
 
+    //  Terrain material
     auto terrainMaterial = terrainEntity.assign<Material>();
     RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
     uptr<ShaderProgram> terrainShader = shaderProgramFromFile("://res/shaders/terrain_heightmap.vert",
@@ -61,10 +62,15 @@ void initScene(Scene &scene)
                                                               "://res/shaders/terrain_heightmap.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
-    terrainMinHeightParam     =   terrainPass->addParam("minHeight", 0.f);
-    terrainMaxHeightParam     =   terrainPass->addParam("maxHeight", 1.f);
-    terrainColorParam         =   terrainPass->addParam("terrainColor", QColor());
+    const QVector3D terrainAABBCenter = terrainBoundingBox.center();
+    const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
 
+    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
+    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
+
+    terrainPass->setParam("minHeight", minHeight);
+    terrainPass->setParam("maxHeight", maxHeight);
+    terrainColorParam = terrainPass->addParam("terrainColor", QColor());
 
 
     // Create particle effect
@@ -83,15 +89,7 @@ void initScene(Scene &scene)
 
 void onSeasonChanged(const QColor &seasonColor)
 {
-    const QVector3D terrainAABBCenter = terrainBoundingBox.center();
-    const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
-
-    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
-    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
-
     // Update terrain material parameters
-    terrainMinHeightParam->value = minHeight;
-    terrainMaxHeightParam->value = maxHeight;
     terrainColorParam->value = seasonColor;
 
     // Update particle material parameters
