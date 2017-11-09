@@ -47,7 +47,6 @@ entityx::Entity terrainEntity;
 entityx::ComponentHandle<Geometry> terrainGeom;
 entityx::ComponentHandle<Material> terrainMaterial;
 
-ShaderParam *terrainMatWorldMatParam;
 ShaderParam *terrainMinHeightParam;
 ShaderParam *terrainMaxHeightParam;
 ShaderParam *terrainColorParam;
