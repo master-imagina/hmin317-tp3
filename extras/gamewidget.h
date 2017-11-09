@@ -8,7 +8,7 @@
 #include "core/gameloop.h"
 #include "core/systemengine.h"
 
-#include "editor/renderwidget.h"
+#include "render/renderwidget.h"
 
 class CameraController;
 class Scene;

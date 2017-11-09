@@ -17,6 +17,7 @@ set(HEADERS
     render/camera.h
     render/rendersystem.h
     render/transform.h
+    render/renderwidget.h
     render/geometry/geometry.h
     render/geometry/vertexattrib.h
     render/geometry/vertexlayout.h
@@ -46,7 +47,6 @@ set(HEADERS
     editor/dragtoolbutton.h
     editor/fpswidgets.h
     editor/mainwindow.h
-    editor/renderwidget.h
     )
 
 set(SOURCES
@@ -56,6 +56,7 @@ set(SOURCES
     render/camera.cpp
     render/rendersystem.cpp
     render/transform.cpp
+    render/renderwidget.cpp
     render/geometry/vertexattrib.cpp
     render/geometry/vertexlayout.cpp
     render/renderer/buffermanager.cpp
@@ -83,7 +84,6 @@ set(SOURCES
     editor/dragtoolbutton.cpp
     editor/fpswidgets.cpp
     editor/mainwindow.cpp
-    editor/renderwidget.cpp
     )
 
 set(QT_RESOURCES

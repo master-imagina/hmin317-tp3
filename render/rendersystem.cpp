@@ -4,9 +4,9 @@
 #include "material/material.h"
 #include "renderer/renderer.h"
 
+#include "renderwidget.h"
 #include "transform.h"
 
-#include "editor/renderwidget.h" //FIXME
 
 
 RenderSystem::RenderSystem(RenderWidget *surface) :

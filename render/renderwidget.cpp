@@ -2,10 +2,10 @@
 
 #include "3rdparty/entityx/System.h"
 
-#include "render/camera.h"
-#include "render/rendersystem.h"
+#include "camera.h"
+#include "rendersystem.h"
 
-#include "render/renderer/renderer.h"
+#include "renderer/renderer.h"
 
 
 RenderWidget::RenderWidget(QWidget *parent) :
