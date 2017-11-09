@@ -53,6 +53,7 @@
 #include <QMouseEvent>
 #include <math.h>
 #include <iostream>
+#include "utils.h"
 
 MainWidget::MainWidget(int fps, Seasons s, QWidget *parent) :
     QOpenGLWidget(parent),
@@ -64,14 +65,15 @@ MainWidget::MainWidget(int fps, Seasons s, QWidget *parent) :
     camera(),
     orbit(false),
     fps(fps),
-    particleEngine(0),
+    particleEngineSnow(nullptr),
+    particleEngineRain(nullptr),
     lightPos(4.0f, 10.0f, -4.0f)
 {
     setMouseTracking(true);
     seasonTimer = new QTimer();
     seasonM = new SeasonManager(s);
     seasonTimer->connect(seasonTimer, SIGNAL(timeout()), seasonM, SLOT(changeSeason()));
-    seasonTimer->start(15000);
+    seasonTimer->start(CALENDAR_TIME);
 }
 
 MainWidget::~MainWidget()
@@ -85,7 +87,8 @@ MainWidget::~MainWidget()
     delete snow_rock;
     delete snow_sand;
     delete geometries;
-    delete particleEngine;
+    delete particleEngineSnow;
+    delete particleEngineRain;
     doneCurrent();
 }
 
@@ -178,7 +181,7 @@ void MainWidget::initializeGL()
     initializeOpenGLFunctions();
 
     glClearColor(0, 0, 0, 1);
-
+    //glClearColor(seasonM->getCurrentSeasonColor().redF(), seasonM->getCurrentSeasonColor().greenF(), seasonM->getCurrentSeasonColor().blueF(), 1);
     initTextures();
     initShaders();
 
@@ -192,7 +195,8 @@ void MainWidget::initializeGL()
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //! [2]
     geometries = new GeometryEngine;
-    particleEngine = new ParticleEngine;
+    particleEngineRain = new ParticleEngine(ParticleType::Rain);
+    particleEngineSnow = new ParticleEngine(ParticleType::Snow);
 
     // Use QBasicTimer because its faster than QTimer
     timer.start(1000/fps, this);
@@ -267,8 +271,7 @@ void MainWidget::resizeGL(int w, int h)
     // Calculate aspect ratio
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
-    // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 0.3, zFar = 100.0, fov = 45.0;
+    const qreal zNear = 0.3, zFar = 500.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -298,7 +301,6 @@ void MainWidget::paintGL()
         camera.lookAt(matrix);
     }*/
     camera.lookAt(matrix);
-
     matrix.rotate(rotation);
 
     // Set modelview-projection matrix
@@ -306,6 +308,7 @@ void MainWidget::paintGL()
 //! [6]
     program.setUniformValue("lightColor", QVector3D(1.0f, 1.0f, 1.0f));
     program.setUniformValue("height_map", 0);
+    program.setUniformValue("sizeV", (float) PLANE_SIZE);
     // Use texture unit 1 which contains cube.png
     if(seasonM->getSeason() != Seasons::Winter) {
         program.setUniformValue("sand", 1);
@@ -321,12 +324,31 @@ void MainWidget::paintGL()
     geometries->drawPlaneGeometry(&program);
     // draw particles
     particlesProgram.bind();
+    height->bind(0);
+    particlesProgram.setUniformValue("height_map", 0);
     particlesProgram.setUniformValue("mvp_matrix", projection * matrix);
     particlesProgram.setUniformValue("lightColor", QVector3D(1.0f, 1.0f, 1.0f));
+    particlesProgram.setUniformValue("map_size", MAP_SIZE);
     if(seasonM->getSeason() == Seasons::Winter) {
-        particleEngine->generateParticles();
-        particleEngine->updateParticles();
-        particleEngine->drawParticles(&particlesProgram);
+        ParticleEngine &pe = *particleEngineSnow;
+        pe.generateParticles(400.0f);
+        pe.updateParticles();
+        pe.drawParticles(&particlesProgram);
+    } else if(seasonM->getSeason() == Seasons::Spring) {
+        ParticleEngine &pe = *particleEngineRain;
+        pe.generateParticles(2000.0f);
+        pe.updateParticles();
+        pe.drawParticles(&particlesProgram);
     }
-
+    auto lerp = [] (QColor &a, QColor &b, float step) {
+        float h = a.redF() * (1.0 - step) + b.redF() * step;
+        float s = a.greenF() * (1.0 - step) + b.greenF() * step;
+        float v = a.blueF() * (1.0 - step) + b.blueF() * step;
+        return QColor::fromRgbF(h, s, v);
+    };
+    //QColor color = LerpHSV(seasonM->getCurrentSeasonColor().toHsv(), seasonM->getNextSeasonColor().toHsv(), 1.0 - (seasonTimer->remainingTime() /(float) CALENDAR_TIME));
+    //QColor color = lerp(seasonM->getCurrentSeasonColor(), seasonM->getNextSeasonColor(),1.0 - (seasonTimer->remainingTime() / (float) CALENDAR_TIME));
+    //glClearColor(color.redF(), color.greenF(), color.blueF(), 1);
 }
+
+

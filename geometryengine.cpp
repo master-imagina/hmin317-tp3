@@ -54,8 +54,6 @@
 #include <QVector3D>
 #include <stdlib.h>
 
-#define PLANE_SIZE 150
-
 struct VertexData
 {
     QVector3D position;
@@ -209,14 +207,18 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program) {
 
 void GeometryEngine::initPlaneGeometry() {
     const int size = PLANE_SIZE;
+    const float sizeF = size;
     VertexData vert[size*size];
     GLushort indices[(size - 1) * (size - 1) * 6];
     // creation des vertices
     int i = 0;
-    float map_size = 20.f;
+    float map_size = MAP_SIZE;
     for(int y= 0; y < size; ++y) {
         for(int x = 0; x < size; ++x) {
-            vert[i++] = {QVector3D(x * (map_size / size), 0.0f, y * (map_size / size)), QVector2D((x / (size - 1.0f)), (y / (size - 1.0f)))};
+            vert[i++] = {
+                QVector3D((x / sizeF) * map_size, 0.0f, (y / sizeF) * map_size), //pos
+                QVector2D(x / sizeF, y / sizeF) //tex
+            };
         }
     }
     //init tableau indices
@@ -239,3 +241,4 @@ void GeometryEngine::initPlaneGeometry() {
     indexBuf.bind();
     indexBuf.allocate(indices, ((size - 1) * (size- 1) * 6) * sizeof(GLushort));
 }
+

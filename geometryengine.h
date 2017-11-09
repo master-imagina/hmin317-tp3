@@ -55,6 +55,11 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
+//nb vertex de largeur
+#define PLANE_SIZE 150
+//taille de la carte
+#define MAP_SIZE 50
+
 class GeometryEngine : protected QOpenGLFunctions
 {
 public:

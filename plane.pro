@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     camera.cpp \
     seasonmanager.cpp \
     particle.cpp \
-    particleengine.cpp
+    particleengine.cpp \
+    utils.cpp
 
 SOURCES += \
     mainwidget.cpp \
@@ -19,7 +20,8 @@ HEADERS += \
     camera.h \
     seasonmanager.h \
     particle.h \
-    particleengine.h
+    particleengine.h \
+    utils.h
 
 RESOURCES += \
     shaders.qrc \

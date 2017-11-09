@@ -5,6 +5,12 @@
 #include <QVector4D>
 #include <QtMath>
 #include <QTime>
+#include <random>
+
+typedef enum class ParticleType {
+    Snow,
+    Rain
+} ParticleType;
 
 class Particle
 {
@@ -16,6 +22,8 @@ public:
     QVector4D getPosSize();
     QVector4D getColor();
     bool isAlive();
+    static Particle generateNewParticle(ParticleType type);
+
 private:
     // _position: position of particle
     // _color : color of particle
@@ -24,6 +32,9 @@ private:
     QVector4D _color;
     float _life, _size, _originalLife, _originalSize;
     double lastTime;
+
+    static Particle generateSnowParticle();
+    static Particle generateRainParticle();
 };
 
 #endif // PARTICLE_H

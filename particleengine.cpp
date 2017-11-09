@@ -1,15 +1,14 @@
 #include "particleengine.h"
 #include <iostream>
 
-ParticleEngine::ParticleEngine()
+ParticleEngine::ParticleEngine(ParticleType t)
     : particlesData()
     , lastUsedParticles(0)
-    , gen(rd())
     , lastTime(0)
+    , type(t)
 {
     initializeOpenGLFunctions();
     arrayBuffer.create();
-
     initParticles();
 }
 
@@ -45,7 +44,7 @@ void ParticleEngine::drawParticles(QOpenGLShaderProgram *program) {
     glDrawArrays(GL_POINTS, 0, particlesData.size());
 }
 
-void ParticleEngine::generateParticles() {
+void ParticleEngine::generateParticles(float maxPerSeconde) {
     double delta = 0.01;
     if(lastTime == 0) {
         lastTime = QTime::currentTime().msecsSinceStartOfDay();
@@ -53,14 +52,13 @@ void ParticleEngine::generateParticles() {
         delta = QTime::currentTime().msecsSinceStartOfDay() - lastTime ;
         lastTime = QTime::currentTime().msecsSinceStartOfDay();
     }
-    float seuilGeneration = 200.0f;
-    int newParticles = (int) (delta * seuilGeneration);
-    if(newParticles > (int) (0.016f * seuilGeneration)) {
-        newParticles = (int) (0.016f * seuilGeneration);
+    int newParticles = (int) (delta * maxPerSeconde);
+    if(newParticles > (int) (0.016f * maxPerSeconde)) {
+        newParticles = (int) (0.016f * maxPerSeconde);
     }
     for(int i = 0; i < newParticles; ++i) {
         int index = findUnusedParticles();
-        particleContainer[index] = ParticleEngine::generateSnowParticle();
+        particleContainer[index] = Particle::generateNewParticle(type);
         particlesData.emplace_back(particleContainer[index].getPosSize(), particleContainer[index].getColor());
     }
 }
@@ -81,17 +79,6 @@ int ParticleEngine::findUnusedParticles() {
     return 0;
 }
 
-Particle ParticleEngine::generateSnowParticle() {
-    std::uniform_real_distribution<> disXZ(0.0, 20.0);
-    std::uniform_real_distribution<> disY(4.0, 5.0);
-    std::uniform_real_distribution<> disSp(0.5, 1.0);
-    std::uniform_int_distribution<> disPhi(160, 170);
-    std::uniform_real_distribution<> disSi(3.0f, 4.0f);
-    return Particle(QVector3D(disXZ(gen), disY(gen), disXZ(gen))
-                    , QVector4D(1.0f, 1.0f, 1.0f, 1.0f)
-                    , 0.0f
-                    , disPhi(gen)
-                    , disSp(gen)
-                    , 5000
-                    , disSi(gen));
+void ParticleEngine::setParticleType(ParticleType t) {
+    type = t;
 }

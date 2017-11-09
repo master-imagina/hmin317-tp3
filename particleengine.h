@@ -21,26 +21,24 @@ struct ParticleData {
 class ParticleEngine : QOpenGLFunctions
 {
 public:
-    ParticleEngine();
+    ParticleEngine(ParticleType t);
     ~ParticleEngine();
 
     void drawParticles(QOpenGLShaderProgram *program);
     void updateParticles();
-    void generateParticles();
+    void generateParticles(float seuilGeneration);
     int findUnusedParticles();
-    Particle generateSnowParticle();
+    void setParticleType(ParticleType t);
 
 private:
     Particle particleContainer[MAX_PARTICULES];
     QOpenGLBuffer arrayBuffer;
-    //std::vector<QVector4D> particlePosSizeData;
     std::vector<ParticleData> particlesData;
     int lastUsedParticles;
     double lastTime;
-    std::random_device rd;
-    std::mt19937 gen;
-    void initParticles();
+    ParticleType type;
 
+    void initParticles();
 };
 
 #endif // PARTICLEENGINE_H

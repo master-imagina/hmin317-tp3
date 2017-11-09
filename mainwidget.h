@@ -67,6 +67,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
+#define CALENDAR_TIME 10000
 
 class GeometryEngine;
 
@@ -112,7 +113,7 @@ private:
     QQuaternion rotation;
     int fov, fps;
     SeasonManager *seasonM;
-    ParticleEngine *particleEngine;
+    ParticleEngine *particleEngineSnow, *particleEngineRain;
     QVector3D lightPos;
 };
 
