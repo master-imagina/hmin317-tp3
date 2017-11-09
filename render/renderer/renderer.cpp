@@ -17,6 +17,8 @@
 #include "../material/shaderprogram.h"
 #include "../material/shaderutils.h"
 
+#include "../camera.h"
+
 #include "drawcommand.h"
 
 
@@ -73,7 +75,7 @@ void Renderer::prepareDrawCommand(entityx::Entity entity)
     m_drawCommands.emplace_back(cmd);
 }
 
-void Renderer::render(float dt)
+void Renderer::render(Camera &camera, float dt)
 {
     for (DrawCommand &drawCmd : m_drawCommands) {
         // Allocate resources if necessary
@@ -82,7 +84,7 @@ void Renderer::render(float dt)
         }
 
         updateDirtyBuffers(drawCmd);
-        updatePassParameters(drawCmd);
+        updatePassParameters(camera, drawCmd);
     }
 
     m_glWrapper.draw(m_drawCommands);
@@ -195,7 +197,7 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
     m_glWrapper.checkForErrors();
 }
 
-void Renderer::updatePassParameters(const DrawCommand &drawCmd)
+void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
 {
     const uptr_vector<RenderPass> &passes = drawCmd.material->renderPasses();
 
@@ -205,8 +207,17 @@ void Renderer::updatePassParameters(const DrawCommand &drawCmd)
         const uint32 programId =
                 m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
 
+        m_glWrapper.bindShaderProgram(programId);
+
+        m_glWrapper.sendActiveCameraUniforms(programId,
+                                             camera.worldMatrix(),
+                                             camera.viewMatrix(),
+                                             camera.projectionMatrix());
+
         //TODO material params must override eventual pass params
         m_glWrapper.sendUniforms(programId, pass->params());
+
+        m_glWrapper.releaseShaderProgram(programId);
     }
 
 

@@ -29,21 +29,27 @@ public:
 
     void initialize(QOpenGLContext *glContext);
 
+    // VAOs
     uint32 createVao();
     uint32 destroyVao(uint32 &vaoId);
 
+    // Buffers
     void createBuffer(GLBuffer &buffer, GLBuffer::Type type, GLBuffer::Usage usage);
     void destroyBuffer(GLBuffer &buffer);
     void bindBuffer(const GLBuffer &buffer);
     void releaseBuffer(const GLBuffer &buffer);
     void allocateBuffer(const GLBuffer &buffer, uint32 size, const void *data);
 
+    // Shaders and shader programs
     uint32 buildShaderProgram(const ShaderProgram *program);
     void bindShaderProgram(uint32 programId);
     void releaseShaderProgram(uint32 programId);
     void destroyShaderProgram(uint32 programId);
-    void sendUniforms(uint32 programId,
-                      const uptr_vector<ShaderParam> &params);
+    void sendUniforms(uint32 programId, const uptr_vector<ShaderParam> &params);
+    void sendActiveCameraUniforms(uint32 programId,
+                                  const QMatrix4x4 &worldMatrix,
+                                  const QMatrix4x4 &viewMatrix,
+                                  const QMatrix4x4 &projectionMatrix);
 
     void setupVaoForBufferAndShader(GLuint programId,
                                     GLuint vaoId,
@@ -51,6 +57,11 @@ public:
                                     GLBuffer &vertexBuffer,
                                     GLBuffer *indexBuffer = nullptr);
 
+    // UBO
+    uint32 uniformBlockIndex(uint32 programId, const char *name);
+    void setUniformBlockForUBO(uint32 programId, uint32 blockIndex, uint32 bindingPoint);
+
+    // Drawing
     void draw(const std::vector<DrawCommand> &commands);
 
     void checkForErrors();

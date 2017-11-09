@@ -58,8 +58,6 @@ entityx::ComponentHandle<ParticleEffect> particleEffect;
 entityx::ComponentHandle<Geometry> particleGeom;
 entityx::ComponentHandle<Material> particleMaterial;
 
-ShaderParam *particleViewMatrixParam;
-ShaderParam *particleProjMatrixParam;
 ShaderParam *particleColorParam;
 ShaderParam *particleSizeParam;
 
@@ -92,7 +90,6 @@ void initScene()
                                                               "://res/shaders/terrain_heightmap.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
-    terrainMatWorldMatParam   =   terrainPass->addParam("worldMatrix", QMatrix4x4());
     terrainMinHeightParam     =   terrainPass->addParam("minHeight", 0.f);
     terrainMaxHeightParam     =   terrainPass->addParam("maxHeight", 1.f);
     terrainColorParam         =   terrainPass->addParam("terrainColor", QColor());
@@ -109,10 +106,6 @@ void initScene()
 
 void gatherShadersParams()
 {
-    const QMatrix4x4 viewMatrix = camera->viewMatrix();
-    const QMatrix4x4 projectionMatrix = camera->projectionMatrix();
-    const QMatrix4x4 worldMatrix = projectionMatrix * viewMatrix;
-
     const QVector3D terrainAABBCenter = terrainBoundingBox.center();
     const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
 
@@ -122,15 +115,13 @@ void gatherShadersParams()
     const QColor drawColor = seasonController.colorFromSeason();
 
     // Update terrain material parameters
-    terrainMatWorldMatParam->value = worldMatrix;
     terrainMinHeightParam->value = minHeight;
     terrainMaxHeightParam->value = maxHeight;
     terrainColorParam->value = drawColor;
 
     // Update particle material parameters
     RenderPass *particleBasePass = particleMaterial->renderPasses()[0].get();
-    particleBasePass->setParam("viewMatrix", viewMatrix);
-    particleBasePass->setParam("projectionMatrix", projectionMatrix);
+
     particleBasePass->setParam("particleColor", drawColor);
     particleBasePass->setParam("particleSize", particleEffect->particleSize());
 }

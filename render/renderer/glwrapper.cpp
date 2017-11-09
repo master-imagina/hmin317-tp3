@@ -129,8 +129,7 @@ void GLWrapper::destroyShaderProgram(uint32 programId)
 void GLWrapper::sendUniforms(uint32 programId,
                              const uptr_vector<ShaderParam> &params)
 {
-    bindShaderProgram(programId);
-
+    // /!\ Assume a shader program is bound to the current context
     for (const uptr<ShaderParam> &param : params) {
         const char *rawName = param->name.c_str();
         const QVariant value = param->value;
@@ -164,8 +163,33 @@ void GLWrapper::sendUniforms(uint32 programId,
             break;
         }
     }
+}
 
-    releaseShaderProgram(programId);
+void GLWrapper::sendActiveCameraUniforms(uint32 programId,
+                                         const QMatrix4x4 &worldMatrix,
+                                         const QMatrix4x4 &viewMatrix,
+                                         const QMatrix4x4 &projectionMatrix)
+{
+    // Send world matrix
+    int location = m_gl->glGetUniformLocation(programId, "worldMatrix");
+
+    if (location != -1) {
+        m_gl->glUniformMatrix4fv(location, 1, false, worldMatrix.constData());
+    }
+
+    // Send view matrix
+    location = m_gl->glGetUniformLocation(programId, "viewMatrix");
+
+    if (location != -1) {
+        m_gl->glUniformMatrix4fv(location, 1, false, viewMatrix.constData());
+    }
+
+    // Send projection matrix
+    location = m_gl->glGetUniformLocation(programId, "projectionMatrix");
+
+    if (location != -1) {
+        m_gl->glUniformMatrix4fv(location, 1, false, projectionMatrix.constData());
+    }
 }
 
 void GLWrapper::compileShader(uint32 programId,
@@ -295,6 +319,18 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
     }
 
     checkForErrors();
+}
+
+uint32 GLWrapper::uniformBlockIndex(uint32 programId, const char *name)
+{
+    return m_gl->glGetUniformBlockIndex(programId, name);
+}
+
+void GLWrapper::setUniformBlockForUBO(uint32 programId,
+                                      uint32 blockIndex,
+                                      uint32 bindingPoint)
+{
+    m_gl->glUniformBlockBinding(programId, blockIndex, bindingPoint);
 }
 
 void GLWrapper::draw(const std::vector<DrawCommand> &commands)

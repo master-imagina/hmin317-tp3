@@ -8,6 +8,7 @@
 #include "shadermanager.h"
 #include "vaomanager.h"
 
+class Camera;
 class Geometry;
 class Material;
 class RenderPass;
@@ -26,7 +27,7 @@ public:
     void initialize();
     void startNewFrame();
     void prepareDrawCommand(entityx::Entity entity);
-    void render(float dt);
+    void render(Camera &camera, float dt);
 
     void cleanup();
 
@@ -35,7 +36,7 @@ private:
 
     void createGLResources(Geometry &geom, Material &material, DrawCommand &drawCmd);
     void updateDirtyBuffers(DrawCommand &drawCmd);
-    void updatePassParameters(const DrawCommand &drawCmd);
+    void updatePassParameters(Camera &camera, const DrawCommand &drawCmd);
 
 private:
     BufferManager m_bufferManager;

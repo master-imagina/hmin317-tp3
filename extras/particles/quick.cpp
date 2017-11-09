@@ -1,7 +1,6 @@
 #include "quick.h"
 
 #include <QColor>
-#include <QMatrix4x4>
 #include <QVector3D>
 
 #include "core/scene.h"
@@ -54,8 +53,6 @@ entityx::Entity createParticleEffect(Scene &scene,
     RenderPass *basePass = material->addRenderPass("base");
     basePass->setShaderProgram(std::move(shaderProgram));
 
-    basePass->setParam("viewMatrix", QMatrix4x4());
-    basePass->setParam("projectionMatrix", QMatrix4x4());
     basePass->setParam("particleColor", QColor(Qt::red));
     basePass->setParam("particleSize", size);
 

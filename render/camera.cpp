@@ -10,8 +10,10 @@ Camera::Camera() :
     m_aspectRatio(1.f),
     m_isViewMatrixDirty(true),
     m_isProjectionMatrixDirty(true),
+    m_isWorldMatrixDirty(true),
     m_viewMatrix(),
-    m_projectionMatrix()
+    m_projectionMatrix(),
+    m_worldMatrix()
 {}
 
 QVector3D Camera::eyePos() const
@@ -24,7 +26,7 @@ void Camera::setEyePos(const QVector3D &eyePos)
     if (m_eyePos != eyePos) {
         m_eyePos = eyePos;
 
-        m_isViewMatrixDirty = true;
+        setViewMatrixDirty();
     }
 }
 
@@ -38,7 +40,7 @@ void Camera::setUpVector(const QVector3D &upVec)
     if (m_upVec != upVec) {
         m_upVec = upVec;
 
-        m_isViewMatrixDirty = true;
+        setViewMatrixDirty();
     }
 }
 
@@ -52,7 +54,7 @@ void Camera::setTargetPos(const QVector3D &targetPos)
     if (m_targetPos != targetPos) {
         m_targetPos = targetPos;
 
-        m_isViewMatrixDirty = true;
+        setViewMatrixDirty();
     }
 }
 
@@ -78,7 +80,7 @@ void Camera::setAspectRatio(float aspectRatio)
     if (m_aspectRatio != aspectRatio) {
         m_aspectRatio = aspectRatio;
 
-        m_isProjectionMatrixDirty = true;
+        setProjectionMatrixDirty();
     }
 }
 
@@ -104,4 +106,27 @@ QMatrix4x4 Camera::projectionMatrix()
     }
 
     return m_projectionMatrix;
+}
+
+QMatrix4x4 Camera::worldMatrix()
+{
+    if (m_isWorldMatrixDirty) {
+        m_worldMatrix = projectionMatrix() * viewMatrix();
+
+        m_isWorldMatrixDirty = false;
+    }
+
+    return m_worldMatrix;
+}
+
+void Camera::setViewMatrixDirty()
+{
+    m_isViewMatrixDirty = true;
+    m_isWorldMatrixDirty = true;
+}
+
+void Camera::setProjectionMatrixDirty()
+{
+    m_isProjectionMatrixDirty = true;
+    m_isWorldMatrixDirty = true;
 }

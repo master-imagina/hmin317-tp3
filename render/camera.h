@@ -28,6 +28,11 @@ public:
 
     QMatrix4x4 viewMatrix();
     QMatrix4x4 projectionMatrix();
+    QMatrix4x4 worldMatrix();
+
+private:
+    void setViewMatrixDirty();
+    void setProjectionMatrixDirty();
 
 private:
     QVector3D m_eyePos;
@@ -38,9 +43,11 @@ private:
 
     bool m_isViewMatrixDirty;
     bool m_isProjectionMatrixDirty;
+    bool m_isWorldMatrixDirty;
 
     QMatrix4x4 m_viewMatrix;
     QMatrix4x4 m_projectionMatrix;
+    QMatrix4x4 m_worldMatrix;
 };
 
 #endif // CAMERA_H

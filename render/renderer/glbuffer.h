@@ -9,7 +9,8 @@ struct GLBuffer
     enum Type : uint32
     {
         ArrayBuffer = 0x8892,       // GL_ARRAY_BUFFER
-        IndexBuffer = 0x8893        // GL_ELEMENT_ARRAY_BUFFER
+        IndexBuffer = 0x8893,       // GL_ELEMENT_ARRAY_BUFFER
+        UniformBuffer = 0x8A11      // GL_UNIFORM_BUFFER
     };
 
     enum Usage : uint32

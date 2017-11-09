@@ -60,5 +60,5 @@ void RenderWidget::resizeGL(int w, int h)
 
 void RenderWidget::paintGL()
 {
-    m_renderer->render(m_deltaTime);
+    m_renderer->render(*m_camera, m_deltaTime);
 }
