@@ -22,6 +22,7 @@
 #include "render/aabb.h"
 #include "render/camera.h"
 #include "render/rendersystem.h"
+#include "render/transform.h"
 
 #include "render/renderer/renderer.h"
 
@@ -159,7 +160,11 @@ int main(int argc, char *argv[])
     renderWidget->setMinimumSize(640, 400);
     createFpsLabel(&gameLoop, renderWidget);
 
+    // Add system dependencies
+    systemEngine.registerSystem<entityx::deps::Dependency<Geometry, Transform>>();
     systemEngine.registerSystem<entityx::deps::Dependency<ParticleEffect, Geometry, Material>>();
+
+    // Add systems
     systemEngine.registerSystem<ParticleSystem>();
     systemEngine.registerSystem<RenderSystem>(renderWidget);
     systemEngine.initialize();

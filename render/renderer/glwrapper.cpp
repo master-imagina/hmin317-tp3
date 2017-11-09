@@ -192,6 +192,16 @@ void GLWrapper::sendActiveCameraUniforms(uint32 programId,
     }
 }
 
+void GLWrapper::sendTransformUniform(uint32 programId,
+                                     const QMatrix4x4 &modelMatrix)
+{
+    const int location = m_gl->glGetUniformLocation(programId, "modelMatrix");
+
+    if (location != -1) {
+        m_gl->glUniformMatrix4fv(location, 1, false, modelMatrix.constData());
+    }
+}
+
 void GLWrapper::compileShader(uint32 programId,
                               uint32 shaderId,
                               const std::string &shaderSource)

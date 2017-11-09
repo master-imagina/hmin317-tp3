@@ -16,6 +16,7 @@ set(HEADERS
     render/aabb.h
     render/camera.h
     render/rendersystem.h
+    render/transform.h
     render/geometry/geometry.h
     render/geometry/vertexattrib.h
     render/geometry/vertexlayout.h
@@ -53,6 +54,7 @@ set(SOURCES
     core/systemengine.cpp
     render/camera.cpp
     render/rendersystem.cpp
+    render/transform.cpp
     render/geometry/vertexattrib.cpp
     render/geometry/vertexlayout.cpp
     render/renderer/buffermanager.cpp

@@ -6,6 +6,8 @@
 #include "../geometry/geometry.h"
 #include "../material/material.h"
 
+#include "../transform.h"
+
 #include "glbuffer.h"
 
 
@@ -16,6 +18,7 @@ struct DrawCommand
 
     Geometry *geometry;
     Material *material;
+    Transform &transform;
 
     GLBuffer *vertexGLBuffer;
     GLBuffer *indexGLBuffer;

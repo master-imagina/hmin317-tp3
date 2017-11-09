@@ -12,6 +12,7 @@ class Camera;
 class Geometry;
 class Material;
 class RenderPass;
+class Transform;
 
 namespace entityx {
 class Entity;
@@ -32,9 +33,14 @@ public:
     void cleanup();
 
 private:
-    DrawCommand createDrawCommand(Geometry &geometry, Material &material) const;
+    DrawCommand createDrawCommand(Geometry &geometry,
+                                  Material &material,
+                                  Transform &transform) const;
 
-    void createGLResources(Geometry &geom, Material &material, DrawCommand &drawCmd);
+    void createGLResources(Geometry &geom,
+                           Material &material,
+                           DrawCommand &drawCmd);
+
     void updateDirtyBuffers(DrawCommand &drawCmd);
     void updatePassParameters(Camera &camera, const DrawCommand &drawCmd);
 

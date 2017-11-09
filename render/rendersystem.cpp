@@ -4,6 +4,8 @@
 #include "material/material.h"
 #include "renderer/renderer.h"
 
+#include "transform.h"
+
 #include "editor/renderwidget.h" //FIXME
 
 
@@ -18,8 +20,9 @@ void RenderSystem::update(entityx::EntityManager &entities,
 {
 //    m_surface->makeCurrent();
 
-    entities.each<Geometry, Material>(
-                [this] (entityx::Entity entity, Geometry &geom, Material &mat) {
+    entities.each<Geometry, Material, Transform>(
+                [this] (entityx::Entity entity,
+                        Geometry &geom, Material &mat, Transform &tranform) {
         m_renderer->prepareDrawCommand(entity);
     });
 

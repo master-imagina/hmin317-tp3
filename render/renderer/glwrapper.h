@@ -50,6 +50,7 @@ public:
                                   const QMatrix4x4 &worldMatrix,
                                   const QMatrix4x4 &viewMatrix,
                                   const QMatrix4x4 &projectionMatrix);
+    void sendTransformUniform(uint32 programId, const QMatrix4x4 &modelMatrix);
 
     void setupVaoForBufferAndShader(GLuint programId,
                                     GLuint vaoId,

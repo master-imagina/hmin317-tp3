@@ -18,6 +18,7 @@
 #include "../material/shaderutils.h"
 
 #include "../camera.h"
+#include "../transform.h"
 
 #include "drawcommand.h"
 
@@ -65,12 +66,16 @@ void Renderer::startNewFrame()
 
 void Renderer::prepareDrawCommand(entityx::Entity entity)
 {
+    // Get required components
     auto geometry = entity.component<Geometry>();
     auto material = entity.component<Material>();
+    auto transform = entity.component<Transform>();
 
-    assert (geometry && material);
+    assert (geometry && material && transform);
 
-    const DrawCommand cmd = createDrawCommand(*geometry.get(), *material.get());
+    const DrawCommand cmd = createDrawCommand(*geometry.get(),
+                                              *material.get(),
+                                              *transform.get());
 
     m_drawCommands.emplace_back(cmd);
 }
@@ -106,7 +111,8 @@ void Renderer::cleanup()
 }
 
 DrawCommand Renderer::createDrawCommand(Geometry &geometry,
-                                        Material &material) const
+                                        Material &material,
+                                        Transform &transform) const
 {
     Geometry *geomPtr = &geometry;
     Material *materialPtr = &material;
@@ -121,7 +127,7 @@ DrawCommand Renderer::createDrawCommand(Geometry &geometry,
     // Create draw command
     const DrawCommand ret {
         shaderProgramId, m_vaoManager.vaoForGeometry(geomPtr),
-        geomPtr, materialPtr,
+        geomPtr, materialPtr, transform,
         gpuBuffers.first, gpuBuffers.second
     };
 
@@ -213,6 +219,8 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
                                              camera.worldMatrix(),
                                              camera.viewMatrix(),
                                              camera.projectionMatrix());
+
+        m_glWrapper.sendTransformUniform(programId, drawCmd.transform.matrix());
 
         //TODO material params must override eventual pass params
         m_glWrapper.sendUniforms(programId, pass->params());
