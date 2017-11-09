@@ -61,7 +61,8 @@ MainWidget::MainWidget(int fps, SEASON season, QWidget *parent) :
     rotationAxis(0.0, 0.0, 1),
     m_fps(fps),
     m_season(season),
-    m_calendar(new QTimer(this))
+    m_calendar(new QTimer(this)),
+    m_nbParticules(0)
 {
     this->grabKeyboard();
     connect(m_calendar, SIGNAL(timeout()), this, SLOT(updateSeason()));
@@ -135,7 +136,6 @@ void MainWidget::initializeGL()
     timer.start(1000/m_fps, this);
 }
 
-//! [3]
 void MainWidget::initShaders()
 {
     // Compile vertex shader
@@ -154,9 +154,7 @@ void MainWidget::initShaders()
     if (!program.bind())
         close();
 }
-//! [3]
 
-//! [4]
 void MainWidget::initTextures()
 {
 
@@ -207,33 +205,49 @@ void MainWidget::changeSeason(SEASON season)
 {
     switch (season) {
     case summer:
+
         m_season = summer;
+        m_nbParticules = 0;
         qDebug() << "summer";
         break;
+
     case fall:
+
         m_season = fall;
         qDebug() << "fall";
 
-
-        m_nbParticules = 10000;
-        for(int i = 0; i < m_nbParticules; ++i)
+        if (m_nbParticules == 0)
         {
-            m_particules[i] = QVector3D(randMax(256), randMax(256), randMax(256));
+            m_nbParticules = 10000;
+            for(int i = 0; i < m_nbParticules; ++i)
+            {
+                m_particules[i] = QVector3D(randMax(-1, 1), randMax(-1, 1), randMax(0, 1));
+            }
         }
+
         break;
+
     case spring:
+
         m_season = spring;
+        m_nbParticules = 0;
         qDebug() << "spring";
         break;
+
     case winter:
+
         m_season = winter;
         qDebug() << "winter";
 
-        m_nbParticules = 1000;
-        for(int i = 0; i < m_nbParticules; ++i)
+        if (m_nbParticules == 0)
         {
-            m_particules[i] = QVector3D(randMax(20), randMax(20), randMax(256));
+            m_nbParticules = 10000;
+            for(int i = 0; i < m_nbParticules; ++i)
+            {
+                m_particules[i] = QVector3D(randMax(-1, 1), randMax(-1, 1), randMax(0, 1));
+            }
         }
+
         break;
 
     }
@@ -246,7 +260,8 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 1.0, far plane to 10.0, field of view 45 degrees
-    const qreal zNear = 1.0, zFar = 10.0, fov = 35.0;
+    //const qreal zNear = 1.0, zFar = 10.0, fov = 35.0;
+    const qreal zNear = 0.1, zFar = 100.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -272,7 +287,7 @@ void MainWidget::paintGL()
     QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),-45.0);
     matrix.rotate(framing);
 
-    matrix.translate(0.0, 0.0, 0.0);
+//    matrix.translate(0.0, 0.0, 0.0);
 
     // QVector3D eye = QVector3D(0.0,0.5,-5.0);
     // QVector3D center = QVector3D(0.0,0.0,2.0);
@@ -285,7 +300,6 @@ void MainWidget::paintGL()
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 
-    // Use texture unit 0 which contains cube.png
     //program.setUniformValue("texture", 0);
     switch (m_season) {
     case summer:
@@ -308,29 +322,29 @@ void MainWidget::paintGL()
         break;
     }
 
-
-
-    // Draw cube geometry
     geometries->drawPlaneGeometry(&program);
 
-    glBegin(GL_POINT);
-    glColor3f(1,1,1);
-
-    for(int i= 0; i < m_nbParticules; ++i)
+    if (m_nbParticules > 0)
     {
-        m_particules[i].setY(m_particules[i].y() - 1);
+        glBegin(GL_POINTS);
 
-        if (m_particules[i].y() < 0)
+        for(int i= 0; i < m_nbParticules; ++i)
         {
-            m_particules[i] = QVector3D(randMax(5), randMax(5), randMax(5));
+            m_particules[i].setZ(m_particules[i].z() - 0.01f);
+
+            if (m_particules[i].z() < 0)
+            {
+                m_particules[i] = QVector3D(randMax(-1, 1), randMax(-1, 1), randMax(0, 1));
+            }
+            glVertex3f(m_particules[i].x(), m_particules[i].y(), m_particules[i].z());
         }
-        glVertex3f(m_particules[i].x(), m_particules[i].y(), m_particules[i].z());
+
+        glEnd();
     }
-    glEnd();
 
 }
 
-float MainWidget::randMax(int max)
+float MainWidget::randMax(int min, int max)
 {
-    return static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / max));
+    return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
 }

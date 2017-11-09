@@ -92,7 +92,7 @@ protected:
 
  private:
     void changeSeason(SEASON season);
-    float randMax(int max);
+    float randMax(int min, int max);
 
 
 private:

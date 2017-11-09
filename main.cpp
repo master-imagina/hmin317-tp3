@@ -69,14 +69,14 @@ int main(int argc, char *argv[])
 #ifndef QT_NO_OPENGL
 
     MainWidget widget1(60, summer);
-//    MainWidget widget2(60, winter);
-//    MainWidget widget3(60, fall);
-//    MainWidget widget4(60, spring);
+    MainWidget widget2(60, winter);
+    MainWidget widget3(60, fall);
+    MainWidget widget4(60, spring);
 
     widget1.show();
-//    widget2.show();
-//    widget3.show();
-//    widget4.show();
+    widget2.show();
+    widget3.show();
+    widget4.show();
 
 #else
     QLabel note("OpenGL Support required");
