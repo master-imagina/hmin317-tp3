@@ -115,10 +115,10 @@ void CameraController::updateCamera(Camera *camera, float dt)
     if (m_isRotateAroundTargetPressed) {
         const float angle = 2.f * dtFactor * m_linearSpeed;
 
-        rotateCameraAroundTarget(camera, angle);
+        rotateCameraAroundTarget(*camera, angle);
     }
     else if (m_isTruckBtnPressed) {
-        truckCamera(camera,
+        truckCamera(*camera,
                     -m_lastMouseDelta.x() * dtFactor * m_linearSpeed,
                     m_lastMouseDelta.y() * dtFactor * m_linearSpeed);
     }

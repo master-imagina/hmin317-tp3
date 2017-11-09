@@ -27,7 +27,7 @@
 
 
 // Global attributes
-uptr<Camera> camera;
+Camera camera;
 
 AABoundingBox terrainBoundingBox;
 
@@ -39,8 +39,7 @@ entityx::ComponentHandle<Material> particleMaterial;
 
 void initScene(Scene &scene)
 {
-    camera = std::make_unique<Camera>();
-    camera->setEyePos({8, 20, 8});
+    camera.setEyePos({8, 20, 8});
 
     // Create terrain
     entityx::Entity terrainEntity = scene.createEntity();
@@ -84,7 +83,7 @@ void initScene(Scene &scene)
 
 
     // Center camera above terrain
-    centerCameraOnBBox(camera.get(), terrainBoundingBox);
+    centerCameraOnBBox(camera, terrainBoundingBox);
 }
 
 void onSeasonChanged(const QColor &seasonColor)
@@ -125,7 +124,7 @@ int main(int argc, char *argv[])
     initScene(scene);
 
     // Show game widget
-    gameWidget->setCamera(camera.get());
+    gameWidget->setCamera(&camera);
     gameWidget->show();
 
     // Glue the seasons logic
