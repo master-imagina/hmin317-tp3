@@ -85,7 +85,7 @@ void Renderer::render(Camera &camera, float dt)
     for (DrawCommand &drawCmd : m_drawCommands) {
         // Allocate resources if necessary
         if (drawCmd.vaoId == 0) {
-            createGLResources(*drawCmd.geometry, *drawCmd.material, drawCmd);
+            createGLResources(drawCmd.geometry, drawCmd.material, drawCmd);
         }
 
         updateDirtyBuffers(drawCmd);
@@ -115,7 +115,6 @@ DrawCommand Renderer::createDrawCommand(Geometry &geometry,
                                         Transform &transform) const
 {
     Geometry *geomPtr = &geometry;
-    Material *materialPtr = &material;
 
     std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
             m_bufferManager.buffersForGeometry(geomPtr);
@@ -127,7 +126,7 @@ DrawCommand Renderer::createDrawCommand(Geometry &geometry,
     // Create draw command
     const DrawCommand ret {
         shaderProgramId, m_vaoManager.vaoForGeometry(geomPtr),
-        geomPtr, materialPtr, transform,
+        geometry, material, transform,
         gpuBuffers.first, gpuBuffers.second
     };
 
@@ -169,13 +168,13 @@ void Renderer::createGLResources(Geometry &geom, Material &material, DrawCommand
 
 void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
 {
-    Geometry *geom = drawCmd.geometry;
+    Geometry &geom = drawCmd.geometry;
 
-    if (geom->isDirty) {
+    if (geom.isDirty) {
         // Upload vertices
         GLBuffer *vertexGLBuffer = drawCmd.vertexGLBuffer;
 
-        const std::vector<QVector3D> &vertices = geom->vertices;
+        const std::vector<QVector3D> &vertices = geom.vertices;
 
         m_glWrapper.bindBuffer(*vertexGLBuffer);
         m_glWrapper.allocateBuffer(*vertexGLBuffer,
@@ -187,7 +186,7 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
         GLBuffer *indexGLBuffer = drawCmd.indexGLBuffer;
 
         if (indexGLBuffer) {
-            const std::vector<uint32> &indices = geom->indices;
+            const std::vector<uint32> &indices = geom.indices;
 
             m_glWrapper.bindBuffer(*indexGLBuffer);
             m_glWrapper.allocateBuffer(*indexGLBuffer,
@@ -196,7 +195,7 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
             m_glWrapper.releaseBuffer(*indexGLBuffer);
         }
 
-        geom->isDirty = false;
+        geom.isDirty = false;
     }
 
 
@@ -205,7 +204,7 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
 
 void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
 {
-    const uptr_vector<RenderPass> &passes = drawCmd.material->renderPasses();
+    const uptr_vector<RenderPass> &passes = drawCmd.material.renderPasses();
 
     for (const uptr<RenderPass> &pass : passes) {
         assert (pass);

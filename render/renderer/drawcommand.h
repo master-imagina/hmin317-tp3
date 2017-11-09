@@ -16,8 +16,8 @@ struct DrawCommand
     uint32 shaderProgramId;
     uint32 vaoId;
 
-    Geometry *geometry;
-    Material *material;
+    Geometry &geometry;
+    Material &material;
     Transform &transform;
 
     GLBuffer *vertexGLBuffer;

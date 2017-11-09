@@ -350,14 +350,14 @@ void GLWrapper::draw(const std::vector<DrawCommand> &commands)
         m_gl->glBindVertexArray(cmd.vaoId);
 
         if (cmd.indexGLBuffer) {
-            m_gl->glDrawElements(cmd.geometry->primitiveType,
-                                 cmd.geometry->primitiveCount,
+            m_gl->glDrawElements(cmd.geometry.primitiveType,
+                                 cmd.geometry.primitiveCount,
                                  GL_UNSIGNED_INT,
                                  nullptr);
         }
         else {
-            m_gl->glDrawArrays(cmd.geometry->primitiveType, 0,
-                               cmd.geometry->primitiveCount);
+            m_gl->glDrawArrays(cmd.geometry.primitiveType, 0,
+                               cmd.geometry.primitiveCount);
         }
 
         m_gl->glBindVertexArray(0);
