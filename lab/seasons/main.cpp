@@ -81,7 +81,7 @@ void initScene(Scene &scene)
     centerCameraOnBBox(camera.get(), terrainBoundingBox);
 }
 
-void updateScene(const QColor &seasonColor)
+void onSeasonChanged(const QColor &seasonColor)
 {
     const QVector3D terrainAABBCenter = terrainBoundingBox.center();
     const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
     SeasonController seasonController;
 
     QObject::connect(&seasonController, &SeasonController::seasonChanged,
-                     &updateScene);
+                     &onSeasonChanged);
 
     seasonController.start();
 
