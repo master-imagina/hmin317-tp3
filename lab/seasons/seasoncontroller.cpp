@@ -55,6 +55,8 @@ void SeasonController::initSeasons()
             const Season newSeason = seasonChangedIt->second;
 
             m_currentSeason = newSeason;
+
+            Q_EMIT seasonChanged(colorFromSeason());
         }
     });
 }

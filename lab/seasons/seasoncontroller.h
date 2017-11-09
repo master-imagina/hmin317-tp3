@@ -19,12 +19,17 @@ enum class Season
 
 class SeasonController : public QObject
 {
+    Q_OBJECT
+
 public:
     SeasonController(QObject *parent = nullptr);
 
     void start();
 
     QColor colorFromSeason() const;
+
+Q_SIGNALS:
+    void seasonChanged(const QColor &color);
 
 private:
     void initSeasons();

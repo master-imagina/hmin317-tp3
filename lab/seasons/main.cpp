@@ -2,29 +2,20 @@
 #include <QDebug>
 #include <QSurfaceFormat>
 
-#include "3rdparty/entityx/deps/Dependencies.h"
-
-#include "core/gameloop.h"
 #include "core/scene.h"
-#include "core/systemengine.h"
 
 #include "editor/fpswidgets.h"
-#include "editor/renderwidget.h"
 
 #include "extras/cameraactions.h"
-#include "extras/cameracontroller.h"
+#include "extras/gamewidget.h"
 #include "extras/heightmap.h"
 
 #include "extras/particles/particleeffect.h"
-#include "extras/particles/particlesystem.h"
 #include "extras/particles/quick.h"
 
 #include "render/aabb.h"
 #include "render/camera.h"
-#include "render/rendersystem.h"
 #include "render/transform.h"
-
-#include "render/renderer/renderer.h"
 
 #include "render/geometry/geometry.h"
 
@@ -35,47 +26,27 @@
 #include "seasoncontroller.h"
 
 
-Scene scene;
-
-// System engine
-SystemEngine systemEngine(scene);
-RenderWidget *renderWidget;
-
-// Scene description
+// Global attributes
 uptr<Camera> camera;
 
-entityx::Entity terrainEntity;
-entityx::ComponentHandle<Geometry> terrainGeom;
-entityx::ComponentHandle<Material> terrainMaterial;
+AABoundingBox terrainBoundingBox;
 
 ShaderParam *terrainMinHeightParam;
 ShaderParam *terrainMaxHeightParam;
 ShaderParam *terrainColorParam;
 
-
-entityx::Entity particleEntity;
 entityx::ComponentHandle<ParticleEffect> particleEffect;
-entityx::ComponentHandle<Geometry> particleGeom;
 entityx::ComponentHandle<Material> particleMaterial;
 
-ShaderParam *particleColorParam;
-ShaderParam *particleSizeParam;
 
-// Others
-AABoundingBox terrainBoundingBox;
-
-CameraController cameraController;
-SeasonController seasonController;
-
-
-void initScene()
+void initScene(Scene &scene)
 {
     camera = std::make_unique<Camera>();
     camera->setEyePos({8, 20, 8});
 
     // Create terrain
-    terrainEntity = scene.createEntity();
-    terrainGeom = terrainEntity.assign<Geometry>();
+    entityx::Entity terrainEntity = scene.createEntity();
+    auto terrainGeom = terrainEntity.assign<Geometry>();
     *terrainGeom.get() = heightmapToGeometry(QImage("images/heightmap-1.png"));
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
@@ -83,7 +54,7 @@ void initScene()
     VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
     terrainGeom->vertexLayout.addAttribute(standardVertexAttrib);
 
-    terrainMaterial = terrainEntity.assign<Material>();
+    auto terrainMaterial = terrainEntity.assign<Material>();
     RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
     uptr<ShaderProgram> terrainShader = shaderProgramFromFile("://res/shaders/terrain_heightmap.vert",
                                                               "",
@@ -97,14 +68,20 @@ void initScene()
 
 
     // Create particle effect
-    particleEntity = createParticleEffect(scene, {0, 400, 0}, {0, -1, 0},
-                                          50, 100, terrainBoundingBox.radius().z(),
-                                          0.4f, 4.f);
+    entityx::Entity particleEntity =
+            createParticleEffect(scene, {0, 400, 0}, {0, -1, 0},
+                                 50, 100, terrainBoundingBox.radius().z(),
+                                 0.4f, 4.f);
+
     particleEffect = particleEntity.component<ParticleEffect>();
     particleMaterial = particleEntity.component<Material>();
+
+
+    // Center camera above terrain
+    centerCameraOnBBox(camera.get(), terrainBoundingBox);
 }
 
-void gatherShadersParams()
+void updateScene(const QColor &seasonColor)
 {
     const QVector3D terrainAABBCenter = terrainBoundingBox.center();
     const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
@@ -112,31 +89,16 @@ void gatherShadersParams()
     const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
     const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
 
-    const QColor drawColor = seasonController.colorFromSeason();
-
     // Update terrain material parameters
     terrainMinHeightParam->value = minHeight;
     terrainMaxHeightParam->value = maxHeight;
-    terrainColorParam->value = drawColor;
+    terrainColorParam->value = seasonColor;
 
     // Update particle material parameters
     RenderPass *particleBasePass = particleMaterial->renderPasses()[0].get();
 
-    particleBasePass->setParam("particleColor", drawColor);
+    particleBasePass->setParam("particleColor", seasonColor);
     particleBasePass->setParam("particleSize", particleEffect->particleSize());
-}
-
-void iterateGameLoop(float dt)
-{
-    // Update camera
-    cameraController.updateCamera(camera.get(), dt);
-
-    // Update scene
-    gatherShadersParams();
-
-    // Render
-    systemEngine.update<ParticleSystem>(dt);
-    systemEngine.update<RenderSystem>(dt);
 }
 
 int main(int argc, char *argv[])
@@ -149,34 +111,31 @@ int main(int argc, char *argv[])
 
     QSurfaceFormat::setDefaultFormat(format);
 
+    // Create app
     QApplication app(argc, argv);
     app.setApplicationName("Game Engines - PW3");
 
-    GameLoop gameLoop(60);
-    gameLoop.setCallback([] (float dt) { iterateGameLoop(dt); });
+    // Create scene
+    Scene scene;
 
-    renderWidget = new RenderWidget;
-    renderWidget->installEventFilter(&cameraController);
-    renderWidget->setMinimumSize(640, 400);
-    createFpsLabel(&gameLoop, renderWidget);
+    // Create game widget
+    auto *gameWidget = new GameWidget(scene);
+    gameWidget->setMinimumSize(640, 400);
+    createFpsLabel(gameWidget->gameLoop(), gameWidget);
 
-    // Add system dependencies
-    systemEngine.registerSystem<entityx::deps::Dependency<Geometry, Transform>>();
-    systemEngine.registerSystem<entityx::deps::Dependency<ParticleEffect, Geometry, Material>>();
+    // Populate scene
+    initScene(scene);
 
-    // Add systems
-    systemEngine.registerSystem<ParticleSystem>();
-    systemEngine.registerSystem<RenderSystem>(renderWidget);
-    systemEngine.initialize();
+    // Show game widget
+    gameWidget->setCamera(camera.get());
+    gameWidget->show();
 
-    initScene();
+    // Glue the seasons logic
+    SeasonController seasonController;
 
-    renderWidget->setCamera(camera.get());
-    renderWidget->show();
+    QObject::connect(&seasonController, &SeasonController::seasonChanged,
+                     &updateScene);
 
-    centerCameraOnBBox(camera.get(), terrainBoundingBox);
-
-    gameLoop.run();
     seasonController.start();
 
     return app.exec();
