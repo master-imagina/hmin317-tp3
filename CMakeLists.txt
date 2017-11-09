@@ -35,6 +35,7 @@ set(HEADERS
     render/renderer/vaomanager.h
     extras/cameraactions.h
     extras/cameracontroller.h
+    extras/gamewidget.h
     extras/heightmap.h
     extras/particles/particleeffect.h
     extras/particles/particlesystem.h
@@ -69,6 +70,7 @@ set(SOURCES
     render/renderer/vaomanager.cpp
     extras/cameraactions.cpp
     extras/cameracontroller.cpp
+    extras/gamewidget.cpp
     extras/heightmap.cpp
     extras/particles/particleeffect.cpp
     extras/particles/particlesystem.cpp
