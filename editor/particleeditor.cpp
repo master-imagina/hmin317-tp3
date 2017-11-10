@@ -26,6 +26,7 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
     m_particleMaterial()
 {
     m_gameWidget = new GameWidget(m_scene, this);
+    m_gameWidget->setFocusPolicy(Qt::StrongFocus);
     m_gameWidget->setCamera(&m_camera);
 
     auto mainLayout = new QVBoxLayout(this);
@@ -46,14 +47,14 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
     //  Terrain material
     auto gridMaterial = gridEntity.assign<Material>();
     RenderPass *terrainPass = gridMaterial->addRenderPass("base");
-    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("://res/shaders/terrain_heightmap.vert",
+    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("shaders/terrain_heightmap.vert",
                                                               "",
-                                                              "://res/shaders/terrain_wireframe.frag");
+                                                              "shaders/terrain_wireframe.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
     // Create particle effect
     entityx::Entity particleEntity =
-            createParticleEffect(m_scene, {0, 400, 0}, {0, 1, 0},
+            createParticleEffect(m_scene, {0, 0, 0}, {0, 1, 0},
                                  50, 100, gridBBox.radius().z(),
                                  0.4f, 4.f);
 

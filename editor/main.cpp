@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     app.setApplicationName("Game Engines - Editor");
 
     ParticleEditor particleEditor;
+    particleEditor.setMinimumSize(640, 400);
     particleEditor.show();
 
     return app.exec();

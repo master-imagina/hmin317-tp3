@@ -44,9 +44,9 @@ entityx::Entity createParticleEffect(Scene &scene,
     geom->vertexLayout.addAttribute(standardVertexAttrib);
 
     uptr<ShaderProgram> shaderProgram = shaderProgramFromFile(
-        "://shaders/particle.vert",
-        "://shaders/particle.geom",
-        "://shaders/particle.frag"
+        "shaders/particle.vert",
+        "shaders/particle.geom",
+        "shaders/particle.frag"
     );
 
     entityx::ComponentHandle<Material> material = ret.component<Material>();

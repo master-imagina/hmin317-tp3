@@ -56,9 +56,9 @@ void initScene(Scene &scene)
     //  Terrain material
     auto terrainMaterial = terrainEntity.assign<Material>();
     RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
-    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("://res/shaders/terrain_heightmap.vert",
+    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("shaders/terrain_heightmap.vert",
                                                               "",
-                                                              "://res/shaders/terrain_heightmap.frag");
+                                                              "shaders/terrain_heightmap.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
     const QVector3D terrainAABBCenter = terrainBoundingBox.center();
@@ -116,16 +116,16 @@ int main(int argc, char *argv[])
     Scene scene;
 
     // Create game widget
-    auto *gameWidget = new GameWidget(scene);
-    gameWidget->setMinimumSize(640, 400);
-    createFpsLabel(gameWidget->gameLoop(), gameWidget);
+    GameWidget gameWidget(scene);
+    gameWidget.setMinimumSize(640, 400);
+    createFpsLabel(gameWidget.gameLoop(), &gameWidget);
 
     // Populate scene
     initScene(scene);
 
     // Show game widget
-    gameWidget->setCamera(&camera);
-    gameWidget->show();
+    gameWidget.setCamera(&camera);
+    gameWidget.show();
 
     // Glue the seasons logic
     SeasonController seasonController;

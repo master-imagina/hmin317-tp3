@@ -124,6 +124,9 @@ set(EXTRAS_RESOURCES
     extras/particles/extras_particles_shaders.qrc
     )
 
+file(COPY extras/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_DIR})
+
 add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES})
 target_include_directories(engineextras PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(engineextras PRIVATE EXTRAS_LIBRARY=1)
@@ -164,7 +167,6 @@ set(SEASONS_SOURCES
     lab/seasons/seasoncontroller.cpp
     )
 set(SEASONS_RESOURCES
-    lab/seasons/seasons_shaders.qrc
     )
 
 file(COPY lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR})
