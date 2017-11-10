@@ -4,12 +4,6 @@
 // License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
 
 
-uniform float minHeight;            // Terrain minimum height
-uniform float maxHeight;            // Terrain maximum height
-
-uniform vec4 terrainColor;          // Terrain color
-
-in float vertexHeight;
 in vec3 outVertexPos;
 
 out vec4 fragColor;

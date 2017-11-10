@@ -2,7 +2,7 @@
 
 #include <QHBoxLayout>
 
-#include "editor/dragtoolbutton.h"
+#include "gui/dragtoolbutton.h"
 
 #include "extras/cameraactions.h"
 

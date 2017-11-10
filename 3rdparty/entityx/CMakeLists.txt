@@ -32,3 +32,4 @@ set(SOURCES
 add_library(entityx SHARED ${SOURCES} ${HEADERS})
 target_include_directories(entityx PUBLIC ${PROJECT_SOURCE_DIR}/..)
 target_compile_definitions(entityx PRIVATE)
+install(TARGETS entityx LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})

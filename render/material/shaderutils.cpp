@@ -17,7 +17,8 @@ void readShaderFromFile(const std::string &filePath, std::string &sourceCode)
 
     if (!file.open(QFile::ReadOnly)) {
         std::cerr << "shaderProgramFromFile() : "
-                  << "can't open " << filePath;
+                  << "can't open " << filePath
+                  << std::endl;
         return;
     }
 

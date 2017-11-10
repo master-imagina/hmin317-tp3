@@ -2,17 +2,56 @@ cmake_minimum_required(VERSION 3.5)
 
 project(gameengines_pw)
 
+# Project constants
+set (ENGINESPW_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+set (ENGINESPW_BUILD_DIR ${CMAKE_BINARY_DIR})
+
+# Install directories
+set(ENGINESPW_INSTALL_DIR ${ENGINESPW_BUILD_DIR}/install)
+set(CMAKE_INSTALL_PREFIX ${ENGINESPW_INSTALL_DIR})
+
+set(ENGINESPW_BIN_DIR ${ENGINESPW_INSTALL_DIR})
+set(ENGINESPW_LIBRARY_DIR ${ENGINESPW_INSTALL_DIR}/lib)
+
+
 # C++
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_EMIT")
 
-# Files
-set(HEADERS
+
+# Packages
+#  Qt5
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+set(CMAKE_AUTOMOC true)
+set(CMAKE_AUTORCC true)
+
+# Subdirs
+add_subdirectory(3rdparty)
+
+# Targets
+#  core
+set(CORE_HEADERS
     core/aliases_int.h
     core/aliases_memory.h
     core/gameloop.h
     core/scene.h
     core/systemengine.h
+    )
+set(CORE_SOURCES
+    core/gameloop.cpp
+    core/scene.cpp
+    core/systemengine.cpp
+    )
+
+add_library(enginecore SHARED ${CORE_SOURCES} ${CORE_HEADERS})
+target_include_directories(enginecore PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_definitions(enginecore PRIVATE CORE_LIBRARY=1)
+target_link_libraries(enginecore Qt5::Core entityx)
+
+install(TARGETS enginecore LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+
+#  render
+set(RENDER_HEADERS
     render/aabb.h
     render/camera.h
     render/rendersystem.h
@@ -34,25 +73,9 @@ set(HEADERS
     render/renderer/renderer.h
     render/renderer/shadermanager.h
     render/renderer/vaomanager.h
-    extras/cameraactions.h
-    extras/cameracontroller.h
-    extras/gamewidget.h
-    extras/heightmap.h
-    extras/particles/particleeffect.h
-    extras/particles/particlesystem.h
-    extras/particles/quick.h
-    lab/seasons/seasoncontroller.h
-    editor/cameracontrols.h
-    editor/cameracontrollercontrols.h
-    editor/dragtoolbutton.h
-    editor/fpswidgets.h
-    editor/mainwindow.h
     )
-
-set(SOURCES
-    core/gameloop.cpp
-    core/scene.cpp
-    core/systemengine.cpp
+set(RENDER_SOURCES
+    render/aabb.cpp
     render/camera.cpp
     render/rendersystem.cpp
     render/transform.cpp
@@ -69,6 +92,26 @@ set(SOURCES
     render/renderer/renderer.cpp
     render/renderer/shadermanager.cpp
     render/renderer/vaomanager.cpp
+    )
+
+add_library(enginerender SHARED ${RENDER_SOURCES} ${RENDER_HEADERS})
+target_include_directories(enginerender PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_definitions(enginerender PRIVATE RENDER_LIBRARY=1)
+target_link_libraries(enginerender enginecore Qt5::Gui Qt5::Widgets entityx)
+
+install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+
+#  extras
+set(EXTRAS_HEADERS
+    extras/cameraactions.h
+    extras/cameracontroller.h
+    extras/gamewidget.h
+    extras/heightmap.h
+    extras/particles/particleeffect.h
+    extras/particles/particlesystem.h
+    extras/particles/quick.h
+    )
+set(EXTRAS_SOURCES
     extras/cameraactions.cpp
     extras/cameracontroller.cpp
     extras/gamewidget.cpp
@@ -76,34 +119,85 @@ set(SOURCES
     extras/particles/particleeffect.cpp
     extras/particles/particlesystem.cpp
     extras/particles/quick.cpp
-    lab/seasons/main.cpp
-    lab/seasons/seasoncontroller.cpp
-    render/aabb.cpp
-    editor/cameracontrols.cpp
-    editor/cameracontrollercontrols.cpp
-    editor/dragtoolbutton.cpp
-    editor/fpswidgets.cpp
-    editor/mainwindow.cpp
+    )
+set(EXTRAS_RESOURCES
+    extras/particles/extras_particles_shaders.qrc
     )
 
-set(QT_RESOURCES
-    extras/particles/extras_particles_shaders.qrc
+add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES})
+target_include_directories(engineextras PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_definitions(engineextras PRIVATE EXTRAS_LIBRARY=1)
+target_link_libraries(engineextras enginecore enginerender Qt5::Core Qt5::Gui entityx)
+
+install(TARGETS engineextras LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+
+#  editor.gui
+set(EDITORGUI_HEADERS
+    editor/gui/dragtoolbutton.h
+    editor/gui/fpswidgets.h
+    )
+set(EDITORGUI_SOURCES
+    editor/gui/dragtoolbutton.cpp
+    editor/gui/fpswidgets.cpp
+    )
+set(EDITORGUI_RESOURCES
+    editor/gui/gui_resources.qrc
+    )
+
+add_library(editorgui SHARED ${EDITORGUI_SOURCES} ${EDITORGUI_HEADERS} ${EDITORGUI_RESOURCES})
+target_include_directories(editorgui PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_definitions(editorgui PRIVATE EDITORGUI_LIBRARY=1)
+target_link_libraries(editorgui enginecore Qt5::Widgets)
+
+install(TARGETS editorgui LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+
+# RPath
+set(CMAKE_INSTALL_RPATH "lib")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+#  seasons
+set(SEASONS_HEADERS
+    lab/seasons/seasoncontroller.h
+    )
+set(SEASONS_SOURCES
+    lab/seasons/main.cpp
+    lab/seasons/seasoncontroller.cpp
+    )
+set(SEASONS_RESOURCES
     lab/seasons/seasons_shaders.qrc
-    editor/editor_resources.qrc)
+    )
 
-# Copy <source>/res/images to <build>/
-file(INSTALL lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR})
+file(INSTALL lab/seasons/res/images DESTINATION ${ENGINESPW_INSTALL_DIR})
 
-# Packages
-#  Qt5
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-set(CMAKE_AUTOMOC true)
-set(CMAKE_AUTORCC true)
+add_executable(season ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_RESOURCES})
+target_include_directories(season PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(season editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
-# Subdirs
-add_subdirectory(3rdparty)
+install(TARGETS season RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})
 
-# Targets
-add_executable(pw3 ${SOURCES} ${HEADERS} ${QT_RESOURCES})
-target_include_directories(pw3 PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(pw3 Qt5::Widgets entityx)
+#  editor
+set(EDITOR_HEADERS
+    editor/cameracontrols.h
+    editor/cameracontrollercontrols.h
+    editor/mainwindow.h
+    editor/particleeditor.h
+    )
+set(EDITOR_SOURCES
+    editor/cameracontrols.cpp
+    editor/cameracontrollercontrols.cpp
+    editor/main.cpp
+    editor/mainwindow.cpp
+    editor/particleeditor.cpp
+    )
+set(EDITOR_RESOURCES
+    )
+
+file(COPY editor/res/images DESTINATION ${CMAKE_BINARY_DIR})
+file(INSTALL editor/res/images DESTINATION ${ENGINESPW_INSTALL_DIR})
+
+add_executable(editor ${EDITOR_SOURCES} ${EDITOR_HEADERS} ${EDITOR_RESOURCES})
+target_include_directories(editor PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(editor editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
+
+install(TARGETS editor RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})

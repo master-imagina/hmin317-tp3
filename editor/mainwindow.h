@@ -13,8 +13,6 @@ public:
     ~MainWindow();
 
 private:
-    void initScene();
-    void gatherShadersParams();
 };
 
 #endif // MAINWINDOW_H

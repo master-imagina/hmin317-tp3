@@ -4,7 +4,7 @@
 
 #include "core/scene.h"
 
-#include "editor/fpswidgets.h"
+#include "editor/gui/fpswidgets.h"
 
 #include "extras/cameraactions.h"
 #include "extras/gamewidget.h"

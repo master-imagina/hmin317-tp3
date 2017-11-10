@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/editor">
-        <file>res/icons/lookup_icon_32.png</file>
-        <file>res/icons/move_forward_icon_32.png</file>
-        <file>res/icons/pan_icon_32.png</file>
-    </qresource>
-</RCC>
