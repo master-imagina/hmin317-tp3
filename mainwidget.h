@@ -71,7 +71,7 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit MainWidget(int fps, QWidget *parent = 0);
+    explicit MainWidget(int fps, Season s, int seasonTime, QWidget *parent = 0);
     ~MainWidget();
 
 protected:

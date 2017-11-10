@@ -1,6 +1,6 @@
 #include "particle.h"
 
-particle::particle()
+Particle::Particle()
 {
 
 }

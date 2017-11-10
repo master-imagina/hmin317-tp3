@@ -205,15 +205,19 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program, int size) 
     glDrawElements(GL_TRIANGLES, ((size - 1) * (size -1) * 6), GL_UNSIGNED_SHORT, 0);
 }
 
-void GeometryEngine::initPlaneGeometry(int size) {
+void GeometryEngine::initPlaneGeometry(int map_size) {
+    float size = PLAN_SIZE;
     VertexData vert[size*size];
     GLushort indices[(size - 1) * (size - 1) * 6];
     // creation des vertices
     int i = 0;
-    float size_half = (size / 2.0f);
+    float size_f = size;
     for(int y= 0; y < size; ++y) {
         for(int x = 0; x < size; ++x) {
-            vert[i++] = {QVector3D((x / size_half) * 4, 0.0f, (y / size_half) * 4), QVector2D((x / (size - 1.0f)), (y / (size - 1.0f)))};
+            //en premier la position, puis la texture dans le QVector2D
+            vert[i++] = {QVector3D( (x / size_f) * map_size, 0.0f, (y / size_f) * map_size),
+                         QVector2D( (x / size_f), (y / size_f) )
+                        };
         }
     }
     //init tableau indices

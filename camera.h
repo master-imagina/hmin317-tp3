@@ -32,6 +32,8 @@ public:
     void lookAt(QMatrix4x4 &matrix);
 
     QVector3D getFront();
+    QVector3D getWorldUp();
+    QVector3D getRight();
 
 private:
     float pitch, yaw;

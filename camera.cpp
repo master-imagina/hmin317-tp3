@@ -48,6 +48,14 @@ QVector3D Camera::getFront() {
     return cameraFront;
 }
 
+QVector3D Camera::getWorldUp() {
+    return worldUp;
+}
+
+QVector3D Camera::getRight() {
+    return cameraRight;
+}
+
 void Camera::orbitAround() {
     cameraPos += QVector3D::crossProduct(cameraFront,cameraUp).normalized() * 0.1f;
     processMouseMovement(-5.0f, 0.0f);

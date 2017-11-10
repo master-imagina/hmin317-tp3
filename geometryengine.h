@@ -55,6 +55,8 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
+#define PLAN_SIZE 150;
+
 class GeometryEngine : protected QOpenGLFunctions
 {
 public:
