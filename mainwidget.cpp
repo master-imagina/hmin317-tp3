@@ -157,24 +157,7 @@ void MainWidget::initializeGL()
 //! [2]
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.99, 0.90, 0.94, 1);
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glEnable(GL_NORMALIZE);
-    glEnable(GL_COLOR_MATERIAL);
-
-    GLfloat matSpec[] = {0.5, 0.5, 0.5, 1.0};
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, matSpec);
-    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 80);
-    //Brouillard
-    /**
-    GLfloat fogColor[4] = {0.99, 0.90, 0.94, 1};
-    glFogf(GL_FOG_MODE, GL_EXP2);
-    glFogfv(GL_FOG_COLOR, fogColor);
-    //glFogf(GL_FOG_DENSITY, camera.yaw / 15000);
-    glEnable(GL_FOG);
-    **/
     // Enable back face culling
     //glEnable(GL_CULL_FACE);
 //! [2]
@@ -194,14 +177,6 @@ void MainWidget::initShaders()
 
     // Compile fragment shader
     if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/fshader.glsl"))
-        close();
-
-    // Compile particule vertex shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/pariclevshader.glsl"))
-        close();
-
-    // Compile particule fragment shader
-    if (!program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/particlefshader.glsl"))
         close();
 
     // Link shader pipeline

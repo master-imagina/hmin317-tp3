@@ -17,11 +17,11 @@ void main()
     float sandH = 0.20f;
     // Set fragment color from texture
     if(h > rockH) {
-        gl_FragColor = texture2D(rock, v_texcoord * 5);
+        gl_FragColor = texture2D(rock, v_texcoord * 5.0);
     } else if (h > sandH && h < rockH ){
-        gl_FragColor = mix(texture2D(sand, v_texcoord * 5),texture2D(rock, v_texcoord * 5), (h - sandH) / (rockH - sandH));
+        gl_FragColor = mix(texture2D(sand, v_texcoord * 5.0),texture2D(rock, v_texcoord * 5.0), (h - sandH) / (rockH - sandH));
     } else {
-        gl_FragColor = texture2D(sand, v_texcoord * 5);
+        gl_FragColor = texture2D(sand, v_texcoord * 5.0);
     }
 }
 //! [0]

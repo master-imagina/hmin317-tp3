@@ -7,15 +7,9 @@
 class particulesEngine
 {
 public:
-    /*const*/ int maxParticle = 1000000;
+    int maxParticle = 10000;
 
     QVector3D pos, speed;
-    float r, g, b, a;
-    float size, angle, weight;
-    float life;
-    float cameraDistance;
-
-    bool operator<(particulesEngine const &p) const;
 
     particulesEngine();
     int findUnusedParticle(std::vector<particulesEngine> &particleContainer, int lastUsedParticle = 0);
