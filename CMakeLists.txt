@@ -121,7 +121,6 @@ set(EXTRAS_SOURCES
     extras/particles/quick.cpp
     )
 set(EXTRAS_RESOURCES
-    extras/particles/extras_particles_shaders.qrc
     )
 
 file(COPY extras/shaders DESTINATION ${CMAKE_BINARY_DIR})
