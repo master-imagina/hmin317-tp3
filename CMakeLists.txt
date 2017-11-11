@@ -122,11 +122,15 @@ set(EXTRAS_SOURCES
     )
 set(EXTRAS_RESOURCES
     )
+file(GLOB EXTRAS_SHADERS
+    extras/shaders/*.vert
+    extras/shaders/*.geom
+    extras/shaders/*.frag)
 
 file(COPY extras/shaders DESTINATION ${CMAKE_BINARY_DIR})
 file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_DIR})
 
-add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES})
+add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES} ${EXTRAS_SHADERS})
 target_include_directories(engineextras PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(engineextras PRIVATE EXTRAS_LIBRARY=1)
 target_link_libraries(engineextras enginecore enginerender Qt5::Core Qt5::Gui entityx)
