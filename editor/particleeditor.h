@@ -22,6 +22,10 @@ public:
     ParticleEditor(QWidget *parent = nullptr);
 
 private:
+    void initEditorScene();
+    void initGui();
+
+private:
     Scene m_scene;
     Camera m_camera;
     GameWidget *m_gameWidget;

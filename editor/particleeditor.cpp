@@ -1,5 +1,8 @@
 #include "particleeditor.h"
 
+#include <QFormLayout>
+#include <QScrollArea>
+#include <QSlider>
 #include <QVBoxLayout>
 
 #include "extras/cameraactions.h"
@@ -7,6 +10,9 @@
 #include "extras/heightmap.h"
 
 #include "extras/particles/quick.h"
+
+#include "gui/fpswidgets.h"
+#include "gui/vec3edit.h"
 
 #include "render/aabb.h"
 
@@ -25,12 +31,13 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
     m_particleEffect(),
     m_particleMaterial()
 {
-    m_gameWidget = new GameWidget(m_scene, this);
-    m_gameWidget->setFocusPolicy(Qt::StrongFocus);
-    m_gameWidget->setCamera(&m_camera);
+    initEditorScene();
+    initGui();
+}
 
-    auto mainLayout = new QVBoxLayout(this);
-    mainLayout->addWidget(m_gameWidget);
+void ParticleEditor::initEditorScene()
+{
+    m_gameWidget = new GameWidget(m_scene, this);
 
     // Create particle scene
     entityx::Entity gridEntity = m_scene.createEntity();
@@ -63,4 +70,79 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
 
     // Center camera above terrain
     centerCameraOnBBox(m_camera, gridBBox);
+}
+
+void ParticleEditor::initGui()
+{
+    m_gameWidget->setFocusPolicy(Qt::StrongFocus);
+    m_gameWidget->setCamera(&m_camera);
+
+    createFpsLabel(m_gameWidget->gameLoop(), m_gameWidget);
+
+    auto *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+
+    // Placeholder for properties
+    auto *propertiesWidget = new QWidget(scrollArea);
+    auto *propertiesLayout = new QFormLayout(propertiesWidget);
+
+    auto *countSlider = new QSlider(Qt::Horizontal, propertiesWidget);
+    countSlider->setValue(m_particleEffect->count());
+    auto *maxLifeSlider = new QSlider(Qt::Horizontal, propertiesWidget);
+    maxLifeSlider->setValue(m_particleEffect->maxLife());
+    auto *worldPosEditor = new Vec3DEdit(propertiesWidget);
+    auto *radiusSlider = new QSlider(Qt::Horizontal, propertiesWidget);
+    radiusSlider->setValue(m_particleEffect->radius());
+    auto *directionEditor = new Vec3DEdit(propertiesWidget);
+    auto *speedSlider = new QSlider(Qt::Horizontal, propertiesWidget);
+    speedSlider->setValue(m_particleEffect->speed());
+    auto *particleSizeSlider = new QSlider(Qt::Horizontal, propertiesWidget);
+    particleSizeSlider->setValue(m_particleEffect->particleSize());
+
+    connect(countSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setCount(value);
+    });
+    connect(maxLifeSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setMaxLife(value);
+    });
+    connect(worldPosEditor, &Vec3DEdit::valueChanged,
+            [this] (const QVector3D &value) {
+        m_particleEffect->setWorldPos(value);
+    });
+    connect(radiusSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setRadius(value);
+    });
+    connect(directionEditor, &Vec3DEdit::valueChanged,
+            [this] (const QVector3D &value) {
+        m_particleEffect->setDirection(value);
+    });
+    connect(speedSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setSpeed(value);
+    });
+    connect(particleSizeSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setParticleSize(value);
+        m_particleMaterial->renderPasses()[0]->setParam("particleSize", (float)value);
+    });
+
+    propertiesLayout->addRow("Count", countSlider);
+    propertiesLayout->addRow("Max Life", maxLifeSlider);
+    propertiesLayout->addRow("World Position", worldPosEditor);
+    propertiesLayout->addRow("Radius", radiusSlider);
+    propertiesLayout->addRow("Direction", directionEditor);
+    propertiesLayout->addRow("Speed", speedSlider);
+    propertiesLayout->addRow("Particle Size", particleSizeSlider);
+
+    scrollArea->setWidget(propertiesWidget);
+
+    // Assemble
+    auto *mainLayout = new QHBoxLayout(this);
+    mainLayout->addWidget(m_gameWidget, 1);
+    mainLayout->addWidget(scrollArea);
+
+
 }
