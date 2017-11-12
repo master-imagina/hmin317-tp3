@@ -68,9 +68,9 @@ void initScene(Scene &scene)
     const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
     const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
 
-    terrainPass->setParam("minHeight", minHeight);
-    terrainPass->setParam("maxHeight", maxHeight);
-    terrainColorParam = terrainPass->addParam("terrainColor", QColor());
+    terrainMaterial->setParam("minHeight", minHeight);
+    terrainMaterial->setParam("maxHeight", maxHeight);
+    terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
 
 
     // Create particle effect
