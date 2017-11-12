@@ -92,9 +92,7 @@ ShaderParam *Material::param(const std::string &name)
         return param->name == name;
     });
 
-    if (paramFound != m_params.end()) {
-        std::cerr << "Material: param \"" << name << "\" not found"
-                  << std::endl;
+    if (paramFound == m_params.end()) {
         return nullptr;
     }
 

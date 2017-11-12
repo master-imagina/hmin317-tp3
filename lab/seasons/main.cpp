@@ -93,10 +93,8 @@ void onSeasonChanged(const QColor &seasonColor)
     terrainColorParam->value = seasonColor;
 
     // Update particle material parameters
-    RenderPass *particleBasePass = particleMaterial->renderPasses()[0].get();
-
-    particleBasePass->setParam("particleColor", seasonColor);
-    particleBasePass->setParam("particleSize", particleEffect->particleSize());
+    particleMaterial->setParam("particleColor", seasonColor);
+    particleMaterial->setParam("particleSize", particleEffect->particleSize());
 }
 
 int main(int argc, char *argv[])

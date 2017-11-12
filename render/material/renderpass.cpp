@@ -78,8 +78,8 @@ ShaderParam *RenderPass::param(const std::string &name)
         return param->name == name;
     });
 
-    if (paramFound != m_params.end()) {
-        std::cerr << "RenderPass : param \"" << name << "\" not found"
+    if (paramFound == m_params.end()) {
+        std::cerr << "RenderPass: param \"" << name << "\" not found"
                   << std::endl;
         return nullptr;
     }
