@@ -53,8 +53,8 @@ entityx::Entity createParticleEffect(Scene &scene,
     RenderPass *basePass = material->addRenderPass("base");
     basePass->setShaderProgram(std::move(shaderProgram));
 
-    basePass->setParam("particleColor", QColor(Qt::red));
-    basePass->setParam("particleSize", size);
+    material->setParam("particleColor", QColor(Qt::red));
+    material->setParam("particleSize", size);
 
     return ret;
 }

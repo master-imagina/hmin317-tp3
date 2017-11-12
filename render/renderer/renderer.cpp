@@ -29,7 +29,8 @@ Renderer::Renderer() :
     m_vaoManager(),
     m_gl(nullptr),
     m_glWrapper(),
-    m_drawCommands()
+    m_drawCommands(),
+    m_currentShaderParams()
 {}
 
 Renderer::~Renderer()
@@ -204,13 +205,30 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
 
 void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
 {
-    const uptr_vector<RenderPass> &passes = drawCmd.material.renderPasses();
+    m_currentShaderParams.clear();
+
+    // Note that material parameters override pass parameters
+    Material &material = drawCmd.material;
+
+    for (const uptr<ShaderParam> &materialParam : material.params()) {
+        m_currentShaderParams.push_back(materialParam.get());
+    }
+
+    const uptr_vector<RenderPass> &passes = material.renderPasses();
 
     for (const uptr<RenderPass> &pass : passes) {
         assert (pass);
 
         const uint32 programId =
                 m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
+
+        for (const uptr<ShaderParam> &passParam : pass->params()) {
+            ShaderParam *overridingParam = material.param(passParam->name);
+
+            if (!overridingParam) {
+                m_currentShaderParams.push_back(passParam.get());
+            }
+        }
 
         m_glWrapper.bindShaderProgram(programId);
 
@@ -222,7 +240,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
         m_glWrapper.sendTransformUniform(programId, drawCmd.transform.matrix());
 
         //TODO material params must override eventual pass params
-        m_glWrapper.sendUniforms(programId, pass->params());
+        m_glWrapper.sendUniforms(programId, m_currentShaderParams);
 
         m_glWrapper.releaseShaderProgram(programId);
     }

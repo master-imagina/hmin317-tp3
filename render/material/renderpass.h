@@ -4,10 +4,11 @@
 #include <string>
 #include <vector>
 
+#include <QVariant>
+
 #include "core/aliases_memory.h"
 
-#include "shaderparam.h"
-
+class ShaderParam;
 class ShaderProgram;
 
 

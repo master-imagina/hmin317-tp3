@@ -127,10 +127,10 @@ void GLWrapper::destroyShaderProgram(uint32 programId)
 }
 
 void GLWrapper::sendUniforms(uint32 programId,
-                             const uptr_vector<ShaderParam> &params)
+                             const std::vector<ShaderParam*> &params)
 {
     // /!\ Assume a shader program is bound to the current context
-    for (const uptr<ShaderParam> &param : params) {
+    for (const ShaderParam *param : params) {
         const char *rawName = param->name.c_str();
         const QVariant value = param->value;
         const int valueType = value.type();
@@ -158,8 +158,9 @@ void GLWrapper::sendUniforms(uint32 programId,
             setUniform(programId, rawName, value.value<QMatrix4x4>());
             break;
         default:
-            std::cerr << "Renderer: unsupported uniform type :"
-                      << QMetaType::typeName(valueType);
+            std::cerr << "GLWrapper: unsupported uniform type :"
+                      << QMetaType::typeName(valueType)
+                      << std::endl;
             break;
         }
     }

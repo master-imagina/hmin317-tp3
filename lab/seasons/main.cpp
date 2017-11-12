@@ -21,6 +21,7 @@
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
+#include "render/material/shaderparam.h"
 #include "render/material/shaderutils.h"
 
 #include "seasoncontroller.h"

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
+#include "shaderparam.h"
 #include "shaderprogram.h"
 
 
@@ -19,7 +20,6 @@ RenderPass::RenderPass(const std::string &name) :
     }
 
     m_params.reserve(RESERVE_PARAM_COUNT);
-
 }
 
 RenderPass::~RenderPass()
@@ -57,7 +57,7 @@ ShaderParam *RenderPass::addParam(const std::string &name, const QVariant &value
     });
 
     if (paramFound != m_params.end()) {
-        std::cerr << "RenderPass : param \"" << name << "\" already exists"
+        std::cerr << "RenderPass: param \"" << name << "\" already exists"
                   << std::endl;
         return nullptr;
     }

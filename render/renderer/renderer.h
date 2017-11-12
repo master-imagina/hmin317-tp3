@@ -12,6 +12,7 @@ class Camera;
 class Geometry;
 class Material;
 class RenderPass;
+class ShaderParam;
 class Transform;
 
 namespace entityx {
@@ -53,6 +54,7 @@ private:
     GLWrapper m_glWrapper;
 
     std::vector<DrawCommand> m_drawCommands;
+    std::vector<ShaderParam *> m_currentShaderParams;
 };
 
 #endif // RENDERER_H

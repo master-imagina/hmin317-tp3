@@ -8,6 +8,7 @@ struct ShaderParam
 {
     ShaderParam();
     ShaderParam(const std::string &_name, const QVariant &_value);
+    ~ShaderParam() = default;
 
     std::string name;
     QVariant value;

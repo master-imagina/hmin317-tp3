@@ -45,7 +45,7 @@ public:
     void bindShaderProgram(uint32 programId);
     void releaseShaderProgram(uint32 programId);
     void destroyShaderProgram(uint32 programId);
-    void sendUniforms(uint32 programId, const uptr_vector<ShaderParam> &params);
+    void sendUniforms(uint32 programId, const std::vector<ShaderParam *> &params);
     void sendActiveCameraUniforms(uint32 programId,
                                   const QMatrix4x4 &worldMatrix,
                                   const QMatrix4x4 &viewMatrix,

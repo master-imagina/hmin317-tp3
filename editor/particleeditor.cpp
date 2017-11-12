@@ -20,6 +20,7 @@
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
+#include "render/material/shaderparam.h"
 #include "render/material/shaderutils.h"
 
 
@@ -126,7 +127,7 @@ void ParticleEditor::initGui()
     connect(particleSizeSlider, &QSlider::valueChanged,
             [this] (int value) {
         m_particleEffect->setParticleSize(value);
-        m_particleMaterial->renderPasses()[0]->setParam("particleSize", (float)value);
+        m_particleMaterial->setParam("particleSize", (float)value);
     });
 
     propertiesLayout->addRow("Count", countSlider);
@@ -143,6 +144,4 @@ void ParticleEditor::initGui()
     auto *mainLayout = new QHBoxLayout(this);
     mainLayout->addWidget(m_gameWidget, 1);
     mainLayout->addWidget(scrollArea);
-
-
 }
