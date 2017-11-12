@@ -140,12 +140,22 @@ install(TARGETS engineextras LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
 
 #  editor.gui
 set(EDITORGUI_HEADERS
+    editor/gui/advancedslider.h
+    editor/gui/coloreditor/coloreditor.h
+    editor/gui/coloreditor/hueslider.h
+    editor/gui/coloreditor/saturationslider.h
+    editor/gui/coloreditor/valueslider.h
     editor/gui/dragtoolbutton.h
     editor/gui/fpswidgets.h
     editor/gui/vec3edit.h
     editor/gui/vecdimindicator.h
     )
 set(EDITORGUI_SOURCES
+    editor/gui/advancedslider.cpp
+    editor/gui/coloreditor/coloreditor.cpp
+    editor/gui/coloreditor/hueslider.cpp
+    editor/gui/coloreditor/saturationslider.cpp
+    editor/gui/coloreditor/valueslider.cpp
     editor/gui/dragtoolbutton.cpp
     editor/gui/fpswidgets.cpp
     editor/gui/vec3edit.cpp
