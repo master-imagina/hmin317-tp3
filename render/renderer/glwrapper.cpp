@@ -12,6 +12,8 @@
 #include <QVector3D>
 #include <QVector4D>
 
+#include "core/log.h"
+
 #include "../geometry/vertexlayout.h"
 
 #include "../material/shaderparam.h"
@@ -19,6 +21,23 @@
 
 #include "drawcommand.h"
 
+
+using namespace std::literals;
+
+
+////////////////////// Helpers //////////////////////
+
+namespace {
+
+void assertUniformFound(uint32 location, const char *name)
+{
+    C_ASSERT (location != -1, "Required Uniform "s + name + " not found in shader");
+}
+
+} // anon namespace
+
+
+////////////////////// GLWrapper //////////////////////
 
 GLWrapper::GLWrapper()
 {}
@@ -369,7 +388,7 @@ void GLWrapper::draw(const std::vector<DrawCommand> &commands)
 void GLWrapper::setUniform(uint32 programId, const char *name, int value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assert (location != -1);
+    assertUniformFound(location, name);
 
     m_gl->glUniform1i(location, value);
 }
@@ -377,7 +396,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, int value)
 void GLWrapper::setUniform(uint32 programId, const char *name, float value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assert (location != -1);
+    assertUniformFound(location, name);
 
     m_gl->glUniform1fv(location, 1, &value);
 }
@@ -385,7 +404,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, float value)
 void GLWrapper::setUniform(uint32 programId, const char *name, const QVector2D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assert (location != -1);
+    assertUniformFound(location, name);
 
     m_gl->glUniform2fv(location, 1, reinterpret_cast<const float *>(&value));
 }
@@ -393,7 +412,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QVector2D &
 void GLWrapper::setUniform(uint32 programId, const char *name, const QVector3D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assert (location != -1);
+    assertUniformFound(location, name);
 
     m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&value));
 }
@@ -401,7 +420,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QVector3D &
 void GLWrapper::setUniform(uint32 programId, const char *name, const QVector4D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assert (location != -1);
+    assertUniformFound(location, name);
 
     m_gl->glUniform4fv(location, 1, reinterpret_cast<const float *>(&value));
 }
@@ -409,7 +428,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QVector4D &
 void GLWrapper::setUniform(uint32 programId, const char *name, const QColor &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assert (location != -1);
+    assertUniformFound(location, name);
 
     const float rawValue[4] {
         static_cast<float>(value.redF()),
@@ -424,7 +443,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QColor &val
 void GLWrapper::setUniform(uint32 programId, const char *name, const QMatrix4x4 &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assert (location != -1);
+    assertUniformFound(location, name);
 
     m_gl->glUniformMatrix4fv(location, 1, false, value.constData());
 }

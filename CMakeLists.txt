@@ -34,6 +34,7 @@ set(CORE_HEADERS
     core/aliases_int.h
     core/aliases_memory.h
     core/gameloop.h
+    core/log.h
     core/scene.h
     core/systemengine.h
     )
