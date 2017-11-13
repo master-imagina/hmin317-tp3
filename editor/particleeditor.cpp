@@ -1,5 +1,7 @@
 #include "particleeditor.h"
 
+#include <QCheckBox>
+#include <QFile>
 #include <QFormLayout>
 #include <QScrollArea>
 #include <QVBoxLayout>
@@ -14,6 +16,7 @@
 
 #include "gui/advancedslider.h"
 #include "gui/fpswidgets.h"
+#include "gui/urledit.h"
 #include "gui/vec3edit.h"
 
 #include "render/aabb.h"
@@ -24,6 +27,8 @@
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
 #include "render/material/shaderutils.h"
+#include "render/material/texture.h"
+
 
 
 ParticleEditor::ParticleEditor(QWidget *parent) :
@@ -32,10 +37,21 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
     m_camera(),
     m_gameWidget(nullptr),
     m_particleEffect(),
-    m_particleMaterial()
+    m_particleMaterial(),
+    m_textureSelectorWidget(nullptr)
 {
     initEditorScene();
     initGui();
+}
+
+void ParticleEditor::setTextureEnabled(bool enable)
+{
+    m_textureSelectorWidget->setEnabled(enable);
+
+    // Update the shader flag
+    const float textureFlag = (enable) ? 1.f : 0.f;
+
+    m_particleMaterial->setParam("textureFlag", textureFlag);
 }
 
 void ParticleEditor::initEditorScene()
@@ -104,6 +120,19 @@ void ParticleEditor::initGui()
     auto *particleColorEditor = new ColorEditor(propertiesWidget);
     particleColorEditor->setValue(m_particleMaterial->param("particleColor")->value.value<QColor>());
 
+    auto *fullTextureSelectorWidget = new QWidget(propertiesWidget);
+    auto *textureSelectorLayout = new QHBoxLayout(fullTextureSelectorWidget);
+    m_textureSelectorWidget = new UrlEdit(fullTextureSelectorWidget);
+    m_textureSelectorWidget->setNameFilters({"Image files (*.png *.jpg)"});
+    m_textureSelectorWidget->setUrl(QString::fromStdString(m_particleMaterial->param("particleTexture")->value.value<Texture2D>().path));
+    auto *enableTextureCheckBox = new QCheckBox(fullTextureSelectorWidget);
+    enableTextureCheckBox->setChecked(true);
+    connect(enableTextureCheckBox, &QCheckBox::toggled,
+            this, &ParticleEditor::setTextureEnabled);
+
+    textureSelectorLayout->addWidget(m_textureSelectorWidget);
+    textureSelectorLayout->addWidget(enableTextureCheckBox);
+
     connect(countSlider, &QSlider::valueChanged,
             [this] (int value) {
         m_particleEffect->setCount(value);
@@ -137,6 +166,19 @@ void ParticleEditor::initGui()
             [this] (const QColor &value) {
         m_particleMaterial->setParam("particleColor", value);
     });
+    connect(m_textureSelectorWidget, &UrlEdit::urlChanged,
+            [this] (const QUrl &url) {
+        const QString path = url.toString(QUrl::PreferLocalFile);
+
+        const float textureFlag = (QFile::exists(path)) ? 1.f : 0.f;
+
+        if (textureFlag) {
+            Texture2D texture { path.toStdString() };
+            m_particleMaterial->setParam("particleTexture", QVariant::fromValue(texture));
+        }
+
+        m_particleMaterial->setParam("textureFlag", textureFlag);
+    });
 
     propertiesLayout->addRow("Count", countSlider);
     propertiesLayout->addRow("Max Life", maxLifeSlider);
@@ -144,8 +186,9 @@ void ParticleEditor::initGui()
     propertiesLayout->addRow("Radius", radiusSlider);
     propertiesLayout->addRow("Direction", directionEditor);
     propertiesLayout->addRow("Speed", speedSlider);
-    propertiesLayout->addRow("Particle Size", particleSizeSlider);
+    propertiesLayout->addRow("ParticleSize", particleSizeSlider);
     propertiesLayout->addRow("Particle Color", particleColorEditor);
+    propertiesLayout->addRow("Particle Texture", fullTextureSelectorWidget);
 
     scrollArea->setWidget(propertiesWidget);
 

@@ -14,12 +14,16 @@
 #include "extras/particles/particleeffect.h"
 
 class GameWidget;
+class UrlEdit;
 
 
 class ParticleEditor : public QWidget
 {
 public:
     ParticleEditor(QWidget *parent = nullptr);
+
+private Q_SLOTS:
+    void setTextureEnabled(bool enable);
 
 private:
     void initEditorScene();
@@ -32,6 +36,8 @@ private:
 
     entityx::ComponentHandle<ParticleEffect> m_particleEffect;
     entityx::ComponentHandle<Material> m_particleMaterial;
+
+    UrlEdit *m_textureSelectorWidget;
 };
 
 #endif // PARTICLEEDITOR_H

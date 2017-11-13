@@ -151,6 +151,7 @@ set(EDITORGUI_HEADERS
     editor/gui/coloreditor/valueslider.h
     editor/gui/dragtoolbutton.h
     editor/gui/fpswidgets.h
+    editor/gui/urledit.h
     editor/gui/vec3edit.h
     editor/gui/vecdimindicator.h
     )
@@ -162,6 +163,7 @@ set(EDITORGUI_SOURCES
     editor/gui/coloreditor/valueslider.cpp
     editor/gui/dragtoolbutton.cpp
     editor/gui/fpswidgets.cpp
+    editor/gui/urledit.cpp
     editor/gui/vec3edit.cpp
     editor/gui/vecdimindicator.cpp
     )

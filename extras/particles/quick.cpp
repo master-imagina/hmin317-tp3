@@ -12,6 +12,7 @@
 #include "render/material/shaderparam.h"
 #include "render/material/shaderprogram.h"
 #include "render/material/shaderutils.h"
+#include "render/material/texture.h"
 
 #include "particleeffect.h"
 
@@ -55,6 +56,7 @@ entityx::Entity createParticleEffect(Scene &scene,
 
     material->setParam("particleColor", QColor(Qt::red));
     material->setParam("particleSize", size);
+    material->setParam("particleTexture", QVariant::fromValue(Texture2D()));
 
     return ret;
 }
