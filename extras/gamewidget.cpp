@@ -27,7 +27,7 @@
 GameWidget::GameWidget(Scene &scene, QWidget *parent) :
     RenderWidget(parent),
     m_systemEngine(scene),
-    m_gameLoop(new GameLoop(60)),
+    m_gameLoop(new GameLoop(60, this)),
     m_cameraController(new CameraController(this))
 {
     installEventFilter(m_cameraController);
