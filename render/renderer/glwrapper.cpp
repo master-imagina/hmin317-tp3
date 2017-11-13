@@ -110,9 +110,13 @@ void GLWrapper::releaseBuffer(const GLBuffer &buffer)
 void GLWrapper::allocateBuffer(const GLBuffer &buffer,
                                uint32 size, const void *data)
 {
+    bindBuffer(buffer);
+
     // Orphan allocation
     m_gl->glBufferData(buffer.type, size, nullptr, buffer.usage);
     m_gl->glBufferData(buffer.type, size, data, buffer.usage);
+
+    releaseBuffer(buffer);
 }
 
 uint32 GLWrapper::buildShaderProgram(const ShaderProgram *program)
@@ -158,6 +162,8 @@ void GLWrapper::destroyShaderProgram(uint32 programId)
 void GLWrapper::sendUniforms(uint32 programId,
                              const std::vector<ShaderParam*> &params)
 {
+    bindShaderProgram(programId);
+
     // /!\ Assume a shader program is bound to the current context
     for (const ShaderParam *param : params) {
         const char *rawName = param->name.c_str();
@@ -199,6 +205,8 @@ void GLWrapper::sendUniforms(uint32 programId,
             break;
         }
     }
+
+    releaseShaderProgram(programId);
 }
 
 void GLWrapper::sendActiveCameraUniforms(uint32 programId,
@@ -206,6 +214,8 @@ void GLWrapper::sendActiveCameraUniforms(uint32 programId,
                                          const QMatrix4x4 &viewMatrix,
                                          const QMatrix4x4 &projectionMatrix)
 {
+    bindShaderProgram(programId);
+
     // Send world matrix
     int location = m_gl->glGetUniformLocation(programId, "worldMatrix");
 
@@ -226,22 +236,30 @@ void GLWrapper::sendActiveCameraUniforms(uint32 programId,
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, projectionMatrix.constData());
     }
+
+    releaseShaderProgram(programId);
 }
 
 void GLWrapper::sendTransformUniform(uint32 programId,
                                      const QMatrix4x4 &modelMatrix)
 {
+    bindShaderProgram(programId);
+
     const int location = m_gl->glGetUniformLocation(programId, "modelMatrix");
 
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, modelMatrix.constData());
     }
+
+    releaseShaderProgram(programId);
 }
 
 void GLWrapper::sendTextureUniforms(uint32 programId,
                                     const std::vector<ShaderParam *> &textureParams,
                                     TextureManager &textureManager)
 {
+    bindShaderProgram(programId);
+
     for (int texUnit = 0; texUnit < textureParams.size(); texUnit++) {
         ShaderParam *param = textureParams[texUnit];
         auto texture = param->value.value<Texture2D>();
@@ -259,6 +277,8 @@ void GLWrapper::sendTextureUniforms(uint32 programId,
 
         setUniform(programId, param->name.c_str(), texUnit);
     }
+
+    releaseShaderProgram(programId);
 }
 
 void GLWrapper::compileShader(uint32 programId,
@@ -357,7 +377,7 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
                                            GLBuffer &arrayBuffer,
                                            GLBuffer *indexBuffer)
 {
-    m_gl->glUseProgram(programId);
+    bindShaderProgram(programId);
     m_gl->glBindVertexArray(vaoId);
 
     bindBuffer(arrayBuffer);
@@ -381,7 +401,7 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
     releaseBuffer(arrayBuffer);
 
     m_gl->glBindVertexArray(0);
-    m_gl->glUseProgram(0);
+    releaseShaderProgram(programId);
 
     if (indexBuffer) {
         releaseBuffer(*indexBuffer);
@@ -471,7 +491,7 @@ void GLWrapper::setUniformBlockForUBO(uint32 programId,
 void GLWrapper::draw(const std::vector<DrawCommand> &commands)
 {
     for (const DrawCommand &cmd : commands) {
-        m_gl->glUseProgram(cmd.shaderProgramId);
+        bindShaderProgram(cmd.shaderProgramId);
         m_gl->glBindVertexArray(cmd.vaoId);
 
         if (cmd.indexGLBuffer) {
@@ -486,7 +506,7 @@ void GLWrapper::draw(const std::vector<DrawCommand> &commands)
         }
 
         m_gl->glBindVertexArray(0);
-        m_gl->glUseProgram(0);
+        releaseShaderProgram(cmd.shaderProgramId);
     }
 }
 

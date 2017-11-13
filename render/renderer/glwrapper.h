@@ -38,15 +38,12 @@ public:
     // Buffers
     void createBuffer(GLBuffer &buffer, GLBuffer::Type type, GLBuffer::Usage usage);
     void destroyBuffer(GLBuffer &buffer);
-    void bindBuffer(const GLBuffer &buffer);
-    void releaseBuffer(const GLBuffer &buffer);
     void allocateBuffer(const GLBuffer &buffer, uint32 size, const void *data);
 
     // Shaders and shader programs
     uint32 buildShaderProgram(const ShaderProgram *program);
-    void bindShaderProgram(uint32 programId);
-    void releaseShaderProgram(uint32 programId);
     void destroyShaderProgram(uint32 programId);
+
     void sendUniforms(uint32 programId, const std::vector<ShaderParam *> &params);
     void sendActiveCameraUniforms(uint32 programId,
                                   const QMatrix4x4 &worldMatrix,
@@ -69,9 +66,6 @@ public:
     void allocateTexture2D(const GLTexture &texture,
                            const GLTexture::Params &params,
                            const ubyte *data);
-    void bindTexture2D(const GLTexture &texture);
-    void activeTexture2D(const GLTexture &texture, int i);
-    void releaseTexture2D();
 
     int maxTextureUnits();
 
@@ -83,6 +77,17 @@ public:
     void draw(const std::vector<DrawCommand> &commands);
 
     void checkForErrors();
+
+private:
+    void bindBuffer(const GLBuffer &buffer);
+    void releaseBuffer(const GLBuffer &buffer);
+
+    void bindShaderProgram(uint32 programId);
+    void releaseShaderProgram(uint32 programId);
+
+    void bindTexture2D(const GLTexture &texture);
+    void activeTexture2D(const GLTexture &texture, int i);
+    void releaseTexture2D();
 
 private:
     void compileShader(uint32 programId, uint32 shaderId,

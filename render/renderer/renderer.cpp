@@ -183,11 +183,9 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
 
         const std::vector<QVector3D> &vertices = geom.vertices;
 
-        m_glWrapper.bindBuffer(*vertexGLBuffer);
         m_glWrapper.allocateBuffer(*vertexGLBuffer,
                                    vertices.size() * Geometry::vertexSize,
                                    vertices.data());
-        m_glWrapper.releaseBuffer(*vertexGLBuffer);
 
         // Upload indices, if any
         GLBuffer *indexGLBuffer = drawCmd.indexGLBuffer;
@@ -195,11 +193,9 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
         if (indexGLBuffer) {
             const std::vector<uint32> &indices = geom.indices;
 
-            m_glWrapper.bindBuffer(*indexGLBuffer);
             m_glWrapper.allocateBuffer(*indexGLBuffer,
                                        indices.size() * Geometry::indexSize,
                                        indices.data());
-            m_glWrapper.releaseBuffer(*indexGLBuffer);
         }
 
         geom.isDirty = false;
@@ -249,8 +245,6 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
             }
         }
 
-        m_glWrapper.bindShaderProgram(programId);
-
         m_glWrapper.sendTextureUniforms(programId, m_activeTextures, m_textureManager);
 
         m_glWrapper.sendActiveCameraUniforms(programId,
@@ -260,10 +254,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
 
         m_glWrapper.sendTransformUniform(programId, drawCmd.transform.matrix());
 
-        //TODO material params must override eventual pass params
         m_glWrapper.sendUniforms(programId, m_currentPassParams);
-
-        m_glWrapper.releaseShaderProgram(programId);
     }
 
 
