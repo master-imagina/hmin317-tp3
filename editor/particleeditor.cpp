@@ -122,6 +122,7 @@ void ParticleEditor::initGui()
 
     auto *fullTextureSelectorWidget = new QWidget(propertiesWidget);
     auto *textureSelectorLayout = new QHBoxLayout(fullTextureSelectorWidget);
+    textureSelectorLayout->setMargin(0);
     m_textureSelectorWidget = new UrlEdit(fullTextureSelectorWidget);
     m_textureSelectorWidget->setNameFilters({"Image files (*.png *.jpg)"});
     m_textureSelectorWidget->setUrl(QString::fromStdString(m_particleMaterial->param("particleTexture")->value.value<Texture2D>().path));
@@ -186,7 +187,7 @@ void ParticleEditor::initGui()
     propertiesLayout->addRow("Radius", radiusSlider);
     propertiesLayout->addRow("Direction", directionEditor);
     propertiesLayout->addRow("Speed", speedSlider);
-    propertiesLayout->addRow("ParticleSize", particleSizeSlider);
+    propertiesLayout->addRow("Particle Size", particleSizeSlider);
     propertiesLayout->addRow("Particle Color", particleColorEditor);
     propertiesLayout->addRow("Particle Texture", fullTextureSelectorWidget);
 
