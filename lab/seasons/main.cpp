@@ -23,6 +23,7 @@
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
 #include "render/material/shaderutils.h"
+#include "render/material/texture.h"
 
 #include "seasoncontroller.h"
 
@@ -72,12 +73,11 @@ void initScene(Scene &scene)
     terrainMaterial->setParam("maxHeight", maxHeight);
     terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
 
-
     // Create particle effect
     entityx::Entity particleEntity =
             createParticleEffect(scene, {0, 400, 0}, {0, -1, 0},
-                                 50, 100, terrainBoundingBox.radius().z(),
-                                 0.4f, 4.f);
+                                 50, 300, terrainBoundingBox.radius().z(),
+                                 0.1f, 4.f);
 
     particleEffect = particleEntity.component<ParticleEffect>();
     particleMaterial = particleEntity.component<Material>();
@@ -87,15 +87,62 @@ void initScene(Scene &scene)
     centerCameraOnBBox(camera, terrainBoundingBox);
 }
 
-void onSeasonChanged(const QColor &seasonColor)
+void onSeasonChanged(Season season)
 {
-    // Update terrain material parameters
+    // Set season color
+    QColor seasonColor;
+
+    switch (season) {
+    case Season::Autumn:
+        seasonColor = QColor(244, 183, 51);
+        break;
+    case Season::Winter:
+        seasonColor = Qt::white;
+        break;
+    case Season::Spring:
+        seasonColor = Qt::green;
+        break;
+    case Season::Summer:
+        seasonColor = Qt::yellow;
+        break;
+    default:
+        break;
+    }
+
     terrainColorParam->value = seasonColor;
 
-    // Update particle material parameters
     particleMaterial->setParam("particleColor", seasonColor);
-    particleMaterial->setParam("particleSize", particleEffect->particleSize());
+
+    // Set season texture
+    Texture2D particleTexture;
+    float textureFlag = 1.f;
+    float particleSize = 1.f;
+
+    switch (season) {
+    case Season::Autumn:
+        particleTexture.path = "images/autumn_leaf.png";
+        particleSize = 15.f;
+        break;
+    case Season::Winter:
+        particleTexture.path = "images/winter_flake.png";
+        particleSize = 10.f;
+        break;
+    case Season::Spring:
+        particleTexture.path = "images/spring_leaf.png";
+        particleSize = 8.f;
+        break;
+    case Season::Summer:
+        textureFlag = 0.f;
+        break;
+    default:
+        break;
+    }
+
+    particleMaterial->setParam("particleTexture", QVariant::fromValue(particleTexture));
+    particleMaterial->setParam("textureFlag", textureFlag);
+    particleMaterial->setParam("particleSize", particleSize);
 }
+
 
 int main(int argc, char *argv[])
 {

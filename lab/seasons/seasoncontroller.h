@@ -1,8 +1,6 @@
 #ifndef SEASONCONTROLLER_H
 #define SEASONCONTROLLER_H
 
-#include <array>
-
 #include <QTimer>
 #include <QDate>
 
@@ -26,15 +24,11 @@ public:
 
     void start();
 
-    QColor colorFromSeason() const;
-
 Q_SIGNALS:
-    void seasonChanged(const QColor &color);
+    void seasonChanged(Season season);
 
 private:
     void initSeasons();
-
-    QColor colorFromSeason(Season season) const;
 
 private:
     Season m_currentSeason;

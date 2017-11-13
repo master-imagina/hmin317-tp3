@@ -2,8 +2,6 @@
 
 #include <map>
 
-#include <QColor>
-
 
 SeasonController::SeasonController(QObject *parent) :
     QObject(parent),
@@ -19,11 +17,6 @@ void SeasonController::start()
     m_seasonTimer->start();
 }
 
-QColor SeasonController::colorFromSeason() const
-{
-    return colorFromSeason(m_currentSeason);
-}
-
 void SeasonController::initSeasons()
 {
     static const std::map<std::pair<int, int>, Season> DATE_TO_SEASON {
@@ -35,8 +28,6 @@ void SeasonController::initSeasons()
 
     // Init seasons
     for (auto it = DATE_TO_SEASON.begin(); it != DATE_TO_SEASON.end(); it++) {
-        const int i = DATE_TO_SEASON.size() - std::distance(it, DATE_TO_SEASON.end());
-
         m_currentDate = QDate(2017, it->first.first, it->first.second - 1);
         m_currentSeason = it->second;
     }
@@ -56,32 +47,7 @@ void SeasonController::initSeasons()
 
             m_currentSeason = newSeason;
 
-            Q_EMIT seasonChanged(colorFromSeason());
+            Q_EMIT seasonChanged(newSeason);
         }
     });
 }
-
-QColor SeasonController::colorFromSeason(Season season) const
-{
-    QColor ret;
-
-    switch (season) {
-    case Season::Autumn:
-        ret = QColor(244, 183, 51);
-        break;
-    case Season::Winter:
-        ret = Qt::white;
-        break;
-    case Season::Spring:
-        ret = Qt::green;
-        break;
-    case Season::Summer:
-        ret = Qt::yellow;
-        break;
-    default:
-        break;
-    }
-
-    return ret;
-}
-

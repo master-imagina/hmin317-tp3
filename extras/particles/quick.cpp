@@ -57,6 +57,7 @@ entityx::Entity createParticleEffect(Scene &scene,
     material->setParam("particleColor", QColor(Qt::red));
     material->setParam("particleSize", size);
     material->setParam("particleTexture", QVariant::fromValue(Texture2D()));
+    material->setParam("textureFlag", 0.f);
 
     return ret;
 }
