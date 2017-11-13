@@ -90,7 +90,7 @@ void Renderer::render(Camera &camera, float dt)
 {
     for (DrawCommand &drawCmd : m_drawCommands) {
         // Allocate resources if necessary
-        if (drawCmd.vaoId == 0) {
+        if (drawCmd.glVao == 0) {
             createGLResources(drawCmd.geometry, drawCmd.material, drawCmd);
         }
 
@@ -127,12 +127,12 @@ DrawCommand Renderer::createDrawCommand(Geometry &geometry,
             m_bufferManager.buffersForGeometry(geomPtr);
 
     //FIXME Handle other passes
-    const uint32 shaderProgramId =
-            m_shaderManager.shaderIdForShaderProgram(material.renderPasses()[0]->shaderProgram());
+    GLShaderProgram *glProgram =
+            m_shaderManager.get(material.renderPasses()[0]->shaderProgram());
 
     // Create draw command
     const DrawCommand ret {
-        shaderProgramId, m_vaoManager.vaoForGeometry(geomPtr),
+        glProgram, m_vaoManager.get(geomPtr),
         geometry, material, transform,
         gpuBuffers.first, gpuBuffers.second
     };
@@ -148,7 +148,7 @@ void Renderer::createGLResources(Geometry &geom, Material &material, DrawCommand
     }
 
     // Generate a vao
-    const uint32 vaoId = m_vaoManager.addGeometry(&geom, m_glWrapper);
+    GLVao *glVao = m_vaoManager.addGeometry(&geom, m_glWrapper);
 
     // Generate GPU buffers
     std::pair<GLBuffer *, GLBuffer *> gpuBuffers =
@@ -157,20 +157,21 @@ void Renderer::createGLResources(Geometry &geom, Material &material, DrawCommand
 
     // Generate shader program
     ShaderProgram *shaderProgram = material.renderPasses()[0]->shaderProgram();
+    GLShaderProgram *glProgram =
+            m_shaderManager.addShaderProgram(shaderProgram, m_glWrapper);
 
-    const uint32 programId = m_glWrapper.buildShaderProgram(shaderProgram);
+    m_glWrapper.createShaderProgram(*glProgram, *shaderProgram);
 
-    m_shaderManager.addShaderProgram(shaderProgram, programId);
 
-    m_glWrapper.setupVaoForBufferAndShader(programId, vaoId,
+    m_glWrapper.setupVaoForBufferAndShader(*glProgram, *glVao,
                                            geom.vertexLayout,
                                            *gpuBuffers.first,
                                            gpuBuffers.second);
 
-    drawCmd.vaoId = vaoId;
-    drawCmd.shaderProgramId = programId;
-    drawCmd.vertexGLBuffer = gpuBuffers.first;
-    drawCmd.indexGLBuffer = gpuBuffers.second;
+    drawCmd.glVao = glVao;
+    drawCmd.glProgram = glProgram;
+    drawCmd.glVertexBuffer = gpuBuffers.first;
+    drawCmd.glIndexBuffer = gpuBuffers.second;
 }
 
 void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
@@ -179,7 +180,7 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
 
     if (geom.isDirty) {
         // Upload vertices
-        GLBuffer *vertexGLBuffer = drawCmd.vertexGLBuffer;
+        GLBuffer *vertexGLBuffer = drawCmd.glVertexBuffer;
 
         const std::vector<QVector3D> &vertices = geom.vertices;
 
@@ -188,7 +189,7 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
                                    vertices.data());
 
         // Upload indices, if any
-        GLBuffer *indexGLBuffer = drawCmd.indexGLBuffer;
+        GLBuffer *indexGLBuffer = drawCmd.glIndexBuffer;
 
         if (indexGLBuffer) {
             const std::vector<uint32> &indices = geom.indices;
@@ -222,8 +223,8 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
     for (const uptr<RenderPass> &pass : passes) {
         assert (pass);
 
-        const uint32 programId =
-                m_shaderManager.shaderIdForShaderProgram(pass->shaderProgram());
+        GLShaderProgram *glProgram =
+                m_shaderManager.get(pass->shaderProgram());
 
         for (const uptr<ShaderParam> &passParam : pass->params()) {
             ShaderParam *overridingParam = material.param(passParam->name);
@@ -245,16 +246,16 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
             }
         }
 
-        m_glWrapper.sendTextureUniforms(programId, m_activeTextures, m_textureManager);
+        m_glWrapper.sendTextureUniforms(*glProgram, m_activeTextures, m_textureManager);
 
-        m_glWrapper.sendActiveCameraUniforms(programId,
+        m_glWrapper.sendActiveCameraUniforms(*glProgram,
                                              camera.worldMatrix(),
                                              camera.viewMatrix(),
                                              camera.projectionMatrix());
 
-        m_glWrapper.sendTransformUniform(programId, drawCmd.transform.matrix());
+        m_glWrapper.sendTransformUniform(*glProgram, drawCmd.transform.matrix());
 
-        m_glWrapper.sendUniforms(programId, m_currentPassParams);
+        m_glWrapper.sendUniforms(*glProgram, m_currentPassParams);
     }
 
 

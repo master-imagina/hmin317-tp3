@@ -1,31 +1,38 @@
 #include "vaomanager.h"
 
-#include <assert.h>
 #include <iostream>
 
 #include "../../geometry/geometry.h"
 
+#include "../glvao.h"
 #include "../glwrapper.h"
 
 
 int VaoManager::RESERVE_VAO_COUNT = 64;
 
 VaoManager::VaoManager() :
+    m_vaos(),
     m_geomToVao()
 {
     m_geomToVao.reserve(RESERVE_VAO_COUNT);
 }
 
-uint32 VaoManager::addGeometry(Geometry *geom, GLWrapper &glWrapper)
+GLVao *VaoManager::addGeometry(Geometry *geom, GLWrapper &glWrapper)
 {
     const auto isHandled = m_geomToVao.find(geom);
 
     if (isHandled != m_geomToVao.cend()) {
         std::cerr << "VaoManager::addGeometry(): vao already exists" << std::endl;
-        return 0;
+        return nullptr;
     }
 
-    uint32 ret = glWrapper.createVao();
+    auto glVao = std::make_unique<GLVao>();
+    GLVao *ret = glVao.get();
+
+    // Create GL VAO
+    glWrapper.createVao(*ret);
+
+    m_vaos.emplace_back(std::move(glVao));
 
     m_geomToVao.insert({geom, ret});
 
@@ -34,16 +41,16 @@ uint32 VaoManager::addGeometry(Geometry *geom, GLWrapper &glWrapper)
 
 bool VaoManager::isAllocated(Geometry *geom) const
 {
-    const uint32 vaoId = vaoForGeometry(geom);
+    const GLVao *glVao = get(geom);
 
-    return vaoId > 0;
+    return glVao != nullptr;
 }
 
-uint32 VaoManager::vaoForGeometry(Geometry *geom) const
+GLVao *VaoManager::get(Geometry *geom) const
 {
     const auto geomFound = m_geomToVao.find(geom);
 
-    uint32 ret = 0;
+    GLVao *ret = nullptr;
 
     if (geomFound != m_geomToVao.end()) {
         ret = geomFound->second;
@@ -54,7 +61,7 @@ uint32 VaoManager::vaoForGeometry(Geometry *geom) const
 
 void VaoManager::cleanup(GLWrapper &glWrapper)
 {
-    for (auto &geomAndVao : m_geomToVao) {
-        glWrapper.destroyVao(geomAndVao.second);
+    for (auto &vao : m_vaos) {
+        glWrapper.destroyVao(*vao.get());
     }
 }

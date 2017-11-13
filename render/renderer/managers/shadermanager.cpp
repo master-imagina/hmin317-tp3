@@ -1,28 +1,51 @@
 #include "shadermanager.h"
 
+#include <iostream>
+
 #include "../../material/shaderprogram.h"
 
 #include "../glwrapper.h"
 
 
 ShaderManager::ShaderManager() :
-    m_shaderProgramToId()
+    m_shaderProgramToId(),
+    m_shaderPrograms()
 {}
 
-void ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, uint32 shaderId)
+GLShaderProgram *ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, GLWrapper &glWrapper)
 {
     const auto isHandled = m_shaderProgramToId.find(shaderProgram);
 
-    if (isHandled == m_shaderProgramToId.cend()) {
-        m_shaderProgramToId.insert({shaderProgram, shaderId});
+    if (isHandled != m_shaderProgramToId.cend()) {
+        std::cerr << "ShaderManager::addShaderProgram(): shader program already exists"
+                  << std::endl;
     }
+
+    auto glProgram = std::make_unique<GLShaderProgram>();
+    GLShaderProgram *ret = glProgram.get();
+
+    // Create GL shader program
+    glWrapper.createShaderProgram(*ret, *shaderProgram);
+
+    m_shaderPrograms.emplace_back(std::move(glProgram));
+
+    m_shaderProgramToId.insert({shaderProgram, ret});
+
+    return ret;
 }
 
-uint32 ShaderManager::shaderIdForShaderProgram(ShaderProgram *shaderProgram) const
+bool ShaderManager::isAllocated(ShaderProgram *shaderProgram) const
+{
+    const GLShaderProgram *glProgram = get(shaderProgram);
+
+    return glProgram != nullptr;
+}
+
+GLShaderProgram *ShaderManager::get(ShaderProgram *shaderProgram) const
 {
     const auto shaderProgramFound = m_shaderProgramToId.find(shaderProgram);
 
-    uint32 ret = 0;
+    GLShaderProgram *ret = nullptr;
 
     if (shaderProgramFound != m_shaderProgramToId.end()) {
         ret = shaderProgramFound->second;
@@ -33,7 +56,7 @@ uint32 ShaderManager::shaderIdForShaderProgram(ShaderProgram *shaderProgram) con
 
 void ShaderManager::cleanup(GLWrapper &glWrapper)
 {
-    for (auto shaderProgramAndId : m_shaderProgramToId) {
-        glWrapper.destroyShaderProgram(shaderProgramAndId.second);
+    for (auto &program : m_shaderPrograms) {
+        glWrapper.destroyShaderProgram(*program.get());
     }
 }

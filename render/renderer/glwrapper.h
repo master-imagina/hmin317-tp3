@@ -6,6 +6,8 @@
 
 #include "glbuffer.h"
 #include "gltexture.h"
+#include "glshaderprogram.h"
+#include "glvao.h"
 #include "openglversion.h"
 
 class DrawCommand;
@@ -32,8 +34,8 @@ public:
     void initialize(QOpenGLContext *glContext);
 
     // VAOs
-    uint32 createVao();
-    uint32 destroyVao(uint32 &vaoId);
+    void createVao(GLVao &glVao);
+    void destroyVao(const GLVao &glVao);
 
     // Buffers
     void createBuffer(GLBuffer &buffer, GLBuffer::Type type, GLBuffer::Usage usage);
@@ -41,21 +43,22 @@ public:
     void allocateBuffer(const GLBuffer &buffer, uint32 size, const void *data);
 
     // Shaders and shader programs
-    uint32 buildShaderProgram(const ShaderProgram *program);
-    void destroyShaderProgram(uint32 programId);
+    void createShaderProgram(GLShaderProgram &glProgram, const ShaderProgram &program);
+    void destroyShaderProgram(const GLShaderProgram &glProgram);
 
-    void sendUniforms(uint32 programId, const std::vector<ShaderParam *> &params);
-    void sendActiveCameraUniforms(uint32 programId,
+    void sendUniforms(const GLShaderProgram &glProgram, const std::vector<ShaderParam *> &params);
+    void sendActiveCameraUniforms(const GLShaderProgram &glProgram,
                                   const QMatrix4x4 &worldMatrix,
                                   const QMatrix4x4 &viewMatrix,
                                   const QMatrix4x4 &projectionMatrix);
-    void sendTransformUniform(uint32 programId, const QMatrix4x4 &modelMatrix);
-    void sendTextureUniforms(uint32 programId,
+    void sendTransformUniform(const GLShaderProgram &glProgram,
+                              const QMatrix4x4 &modelMatrix);
+    void sendTextureUniforms(const GLShaderProgram &glProgram,
                              const std::vector<ShaderParam *> &textures,
                              TextureManager &textureManager);
 
-    void setupVaoForBufferAndShader(GLuint programId,
-                                    GLuint vaoId,
+    void setupVaoForBufferAndShader(const GLShaderProgram &glProgram,
+                                    const GLVao &vaoId,
                                     const VertexLayout &geometryLayout,
                                     GLBuffer &vertexBuffer,
                                     GLBuffer *indexBuffer = nullptr);
@@ -69,32 +72,31 @@ public:
 
     int maxTextureUnits();
 
-    // UBO
-    uint32 uniformBlockIndex(uint32 programId, const char *name);
-    void setUniformBlockForUBO(uint32 programId, uint32 blockIndex, uint32 bindingPoint);
-
     // Drawing
     void draw(const std::vector<DrawCommand> &commands);
 
     void checkForErrors();
 
 private:
+    void bindVao(const GLVao &buffer);
+    void releaseVao(const GLVao &glVao);
+
     void bindBuffer(const GLBuffer &buffer);
     void releaseBuffer(const GLBuffer &buffer);
 
-    void bindShaderProgram(uint32 programId);
-    void releaseShaderProgram(uint32 programId);
+    void bindShaderProgram(const GLShaderProgram &glProgram);
+    void releaseShaderProgram(const GLShaderProgram &glProgram);
 
     void bindTexture2D(const GLTexture &texture);
     void activeTexture2D(const GLTexture &texture, int i);
     void releaseTexture2D();
 
 private:
-    void compileShader(uint32 programId, uint32 shaderId,
+    void compileShader(const GLShaderProgram &glProgram, uint32 shaderId,
                        const std::string &shaderSource);
-    void linkShaderProgram(uint32 programId);
+    void linkShaderProgram(const GLShaderProgram &glProgram);
 
-    std::vector<std::string> activeUniforms(uint32 programId) const;
+    std::vector<std::string> activeUniforms(const GLShaderProgram &glProgram) const;
 
 private:
     void setUniform(uint32 programId, const char *name, int value);

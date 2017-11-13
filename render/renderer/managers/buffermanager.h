@@ -6,9 +6,8 @@
 
 #include "core/aliases_memory.h"
 
-#include "../glbuffer.h"
-
 class Geometry;
+class GLBuffer;
 class GLWrapper;
 
 

@@ -5,6 +5,7 @@
 
 #include "../../geometry/geometry.h"
 
+#include "../glbuffer.h"
 #include "../glwrapper.h"
 
 

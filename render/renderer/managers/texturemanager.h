@@ -22,7 +22,7 @@ public:
     GLTexture *addTexture(const Texture2D &texture, GLWrapper &glWrapper);
     bool isAllocated(const Texture2D &texture) const;
 
-    GLTexture *textureIdForTexture(const Texture2D &texture) const;
+    GLTexture *get(const Texture2D &texture) const;
 
     void cleanup(GLWrapper &glWrapper);
 

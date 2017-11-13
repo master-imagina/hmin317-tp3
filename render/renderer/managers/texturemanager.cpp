@@ -24,8 +24,9 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
     const auto isHandled = m_textureToId.find(texture);
 
     if (isHandled != m_textureToId.cend()) {
-        std::cerr << "TextureManager::addTexture(): vao already exists" << std::endl;
-        return 0;
+        std::cerr << "TextureManager::addTexture(): texture already exists"
+                  << std::endl;
+        return nullptr;
     }
 
     // Read texture from file
@@ -34,12 +35,12 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
         std::cerr << "TextureManager::addTexture(): "
                   << texture.path << " does not exist" << std::endl;
 
-        return 0;
+        return nullptr;
     }
 
     image = image.convertToFormat(QImage::Format_RGBA8888);
 
-    uptr<GLTexture> glTexture = std::make_unique<GLTexture>();
+    auto glTexture = std::make_unique<GLTexture>();
     GLTexture *ret = glTexture.get();
     m_textures.emplace_back(std::move(glTexture));
 
@@ -71,12 +72,12 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
 
 bool TextureManager::isAllocated(const Texture2D &texture) const
 {
-    const GLTexture *glTexture = textureIdForTexture(texture);
+    const GLTexture *glTexture = get(texture);
 
     return glTexture != nullptr;
 }
 
-GLTexture *TextureManager::textureIdForTexture(const Texture2D &texture) const
+GLTexture *TextureManager::get(const Texture2D &texture) const
 {
     const auto textureFound = m_textureToId.find(texture);
 

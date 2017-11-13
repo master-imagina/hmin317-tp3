@@ -74,6 +74,8 @@ set(RENDER_HEADERS
     render/renderer/drawcommand.h
     render/renderer/glbuffer.h
     render/renderer/gltexture.h
+    render/renderer/glshaderprogram.h
+    render/renderer/glvao.h
     render/renderer/glwrapper.h
     render/renderer/openglversion.h
     render/renderer/renderer.h

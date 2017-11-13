@@ -64,20 +64,14 @@ void GLWrapper::initialize(QOpenGLContext *glContext)
                 "GLWrapper::initialize()", "OpenGL 3.3 failed to initialize");
 }
 
-uint32 GLWrapper::createVao()
+void GLWrapper::createVao(GLVao &glVao)
 {
-    uint32 ret = 0;
-
-    m_gl->glGenVertexArrays(1, &ret);
-
-    assert (ret > 0);
-
-    return ret;
+    m_gl->glGenVertexArrays(1, &glVao.id);
 }
 
-uint32 GLWrapper::destroyVao(uint32 &vaoId)
+void GLWrapper::destroyVao(const GLVao &glVao)
 {
-    m_gl->glDeleteVertexArrays(1, &vaoId);
+    m_gl->glDeleteVertexArrays(1, &glVao.id);
 }
 
 void GLWrapper::createBuffer(GLBuffer &buffer,
@@ -119,50 +113,49 @@ void GLWrapper::allocateBuffer(const GLBuffer &buffer,
     releaseBuffer(buffer);
 }
 
-uint32 GLWrapper::buildShaderProgram(const ShaderProgram *program)
+void GLWrapper::createShaderProgram(GLShaderProgram &glProgram, const ShaderProgram &program)
 {
-    const uint32 programId = m_gl->glCreateProgram();
+    glProgram.id = m_gl->glCreateProgram();
+
     uint32 shaderId = 0;
 
-    if (!program->vertexShaderSource.empty()) {
+    if (!program.vertexShaderSource.empty()) {
         shaderId = m_gl->glCreateShader(GL_VERTEX_SHADER);
-        compileShader(programId, shaderId, program->vertexShaderSource);
+        compileShader(glProgram, shaderId, program.vertexShaderSource);
     }
 
-    if (!program->geometryShaderSource.empty()) {
+    if (!program.geometryShaderSource.empty()) {
         shaderId = m_gl->glCreateShader(GL_GEOMETRY_SHADER);
-        compileShader(programId, shaderId, program->geometryShaderSource);
+        compileShader(glProgram, shaderId, program.geometryShaderSource);
     }
 
-    if (!program->fragmentShaderSource.empty()) {
+    if (!program.fragmentShaderSource.empty()) {
         shaderId = m_gl->glCreateShader(GL_FRAGMENT_SHADER);
-        compileShader(programId, shaderId, program->fragmentShaderSource);
+        compileShader(glProgram, shaderId, program.fragmentShaderSource);
     }
 
-    linkShaderProgram(programId);
-
-    return programId;
+    linkShaderProgram(glProgram);
 }
 
-void GLWrapper::bindShaderProgram(uint32 programId)
+void GLWrapper::destroyShaderProgram(const GLShaderProgram &glProgram)
 {
-    m_gl->glUseProgram(programId);
+    m_gl->glDeleteProgram(glProgram.id);
 }
 
-void GLWrapper::releaseShaderProgram(uint32 programId)
+void GLWrapper::bindShaderProgram(const GLShaderProgram &glProgram)
+{
+    m_gl->glUseProgram(glProgram.id);
+}
+
+void GLWrapper::releaseShaderProgram(const GLShaderProgram &glProgram)
 {
     m_gl->glUseProgram(0);
 }
 
-void GLWrapper::destroyShaderProgram(uint32 programId)
-{
-    m_gl->glDeleteProgram(programId);
-}
-
-void GLWrapper::sendUniforms(uint32 programId,
+void GLWrapper::sendUniforms(const GLShaderProgram &glProgram,
                              const std::vector<ShaderParam*> &params)
 {
-    bindShaderProgram(programId);
+    bindShaderProgram(glProgram);
 
     // /!\ Assume a shader program is bound to the current context
     for (const ShaderParam *param : params) {
@@ -177,25 +170,25 @@ void GLWrapper::sendUniforms(uint32 programId,
 
         switch (valueType) {
         case QMetaType::Int:
-            setUniform(programId, rawName, value.toInt());
+            setUniform(glProgram.id, rawName, value.toInt());
             break;
         case QMetaType::Float:
-            setUniform(programId, rawName, value.toFloat());
+            setUniform(glProgram.id, rawName, value.toFloat());
             break;
         case QMetaType::QVector2D:
-            setUniform(programId, rawName, value.value<QVector2D>());
+            setUniform(glProgram.id, rawName, value.value<QVector2D>());
             break;
         case QMetaType::QVector3D:
-            setUniform(programId, rawName, value.value<QVector3D>());
+            setUniform(glProgram.id, rawName, value.value<QVector3D>());
             break;
         case QMetaType::QVector4D:
-            setUniform(programId, rawName, value.value<QVector4D>());
+            setUniform(glProgram.id, rawName, value.value<QVector4D>());
             break;
         case QMetaType::QColor:
-            setUniform(programId, rawName, value.value<QColor>());
+            setUniform(glProgram.id, rawName, value.value<QColor>());
             break;
         case QMetaType::QMatrix4x4:
-            setUniform(programId, rawName, value.value<QMatrix4x4>());
+            setUniform(glProgram.id, rawName, value.value<QMatrix4x4>());
             break;
         default:
             std::cerr << "GLWrapper: unsupported uniform type :"
@@ -206,65 +199,65 @@ void GLWrapper::sendUniforms(uint32 programId,
         }
     }
 
-    releaseShaderProgram(programId);
+    releaseShaderProgram(glProgram);
 }
 
-void GLWrapper::sendActiveCameraUniforms(uint32 programId,
+void GLWrapper::sendActiveCameraUniforms(const GLShaderProgram &glProgram,
                                          const QMatrix4x4 &worldMatrix,
                                          const QMatrix4x4 &viewMatrix,
                                          const QMatrix4x4 &projectionMatrix)
 {
-    bindShaderProgram(programId);
+    bindShaderProgram(glProgram);
 
     // Send world matrix
-    int location = m_gl->glGetUniformLocation(programId, "worldMatrix");
+    int location = m_gl->glGetUniformLocation(glProgram.id, "worldMatrix");
 
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, worldMatrix.constData());
     }
 
     // Send view matrix
-    location = m_gl->glGetUniformLocation(programId, "viewMatrix");
+    location = m_gl->glGetUniformLocation(glProgram.id, "viewMatrix");
 
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, viewMatrix.constData());
     }
 
     // Send projection matrix
-    location = m_gl->glGetUniformLocation(programId, "projectionMatrix");
+    location = m_gl->glGetUniformLocation(glProgram.id, "projectionMatrix");
 
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, projectionMatrix.constData());
     }
 
-    releaseShaderProgram(programId);
+    releaseShaderProgram(glProgram);
 }
 
-void GLWrapper::sendTransformUniform(uint32 programId,
+void GLWrapper::sendTransformUniform(const GLShaderProgram &glProgram,
                                      const QMatrix4x4 &modelMatrix)
 {
-    bindShaderProgram(programId);
+    bindShaderProgram(glProgram);
 
-    const int location = m_gl->glGetUniformLocation(programId, "modelMatrix");
+    int location = m_gl->glGetUniformLocation(glProgram.id, "modelMatrix");
 
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, modelMatrix.constData());
     }
 
-    releaseShaderProgram(programId);
+    releaseShaderProgram(glProgram);
 }
 
-void GLWrapper::sendTextureUniforms(uint32 programId,
+void GLWrapper::sendTextureUniforms(const GLShaderProgram &glProgram,
                                     const std::vector<ShaderParam *> &textureParams,
                                     TextureManager &textureManager)
 {
-    bindShaderProgram(programId);
+    bindShaderProgram(glProgram);
 
     for (int texUnit = 0; texUnit < textureParams.size(); texUnit++) {
         ShaderParam *param = textureParams[texUnit];
         auto texture = param->value.value<Texture2D>();
 
-         GLTexture *glTexture = textureManager.textureIdForTexture(texture);
+         GLTexture *glTexture = textureManager.get(texture);
 
         if (glTexture == 0) {
             glTexture = textureManager.addTexture(texture, *this);
@@ -275,13 +268,13 @@ void GLWrapper::sendTextureUniforms(uint32 programId,
 
         activeTexture2D(*glTexture, texUnit);
 
-        setUniform(programId, param->name.c_str(), texUnit);
+        setUniform(glProgram.id, param->name.c_str(), texUnit);
     }
 
-    releaseShaderProgram(programId);
+    releaseShaderProgram(glProgram);
 }
 
-void GLWrapper::compileShader(uint32 programId,
+void GLWrapper::compileShader(const GLShaderProgram &glProgram,
                               uint32 shaderId,
                               const std::string &shaderSource)
 {
@@ -311,26 +304,26 @@ void GLWrapper::compileShader(uint32 programId,
         }
     }
 
-    m_gl->glAttachShader(programId, shaderId);
+    m_gl->glAttachShader(glProgram.id, shaderId);
 
     checkForErrors();
 }
 
-void GLWrapper::linkShaderProgram(uint32 programId)
+void GLWrapper::linkShaderProgram(const GLShaderProgram &glProgram)
 {
-    m_gl->glLinkProgram(programId);
+    m_gl->glLinkProgram(glProgram.id);
 
     int linked = 0;
-    m_gl->glGetProgramiv(programId, GL_LINK_STATUS, &linked);
+    m_gl->glGetProgramiv(glProgram.id, GL_LINK_STATUS, &linked);
 
     if (!linked) {
         int logSize = 0;
-        m_gl->glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logSize);
+        m_gl->glGetProgramiv(glProgram.id, GL_INFO_LOG_LENGTH, &logSize);
 
         if (logSize > 1) {  // ignore the null termination character
             std::vector<char> logBuffer(logSize);
 
-            m_gl->glGetProgramInfoLog(programId, logSize, nullptr,
+            m_gl->glGetProgramInfoLog(glProgram.id, logSize, nullptr,
                                       logBuffer.data());
 
             std::cerr << "Shader linking error :" << std::endl
@@ -342,18 +335,18 @@ void GLWrapper::linkShaderProgram(uint32 programId)
     checkForErrors();
 }
 
-std::vector<std::string> GLWrapper::activeUniforms(uint32 programId) const
+std::vector<std::string> GLWrapper::activeUniforms(const GLShaderProgram &glProgram) const
 {
     std::vector<std::string> ret;
     ret.reserve(16);
 
     int count = 0;
-    m_gl->glGetProgramiv(programId, GL_ACTIVE_UNIFORMS, &count);
+    m_gl->glGetProgramiv(glProgram.id, GL_ACTIVE_UNIFORMS, &count);
 
     for (int i = 0; i < count; i++) {
         std::array<char, 128> name;
 
-        m_gl->glGetActiveUniformName(programId, i, sizeof(name), nullptr, name.data());
+        m_gl->glGetActiveUniformName(glProgram.id, i, sizeof(name), nullptr, name.data());
 
         ret.push_back(std::string(name.data()));
     }
@@ -371,20 +364,31 @@ void GLWrapper::checkForErrors()
     }
 }
 
-void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
-                                           GLuint vaoId,
+void GLWrapper::bindVao(const GLVao &glVao)
+{
+    m_gl->glBindVertexArray(glVao.id);
+
+}
+
+void GLWrapper::releaseVao(const GLVao &glVao)
+{
+    m_gl->glBindVertexArray(0);
+}
+
+void GLWrapper::setupVaoForBufferAndShader(const GLShaderProgram &glProgram,
+                                           const GLVao &glVao,
                                            const VertexLayout &vertexLayout,
                                            GLBuffer &arrayBuffer,
                                            GLBuffer *indexBuffer)
 {
-    bindShaderProgram(programId);
-    m_gl->glBindVertexArray(vaoId);
+    bindShaderProgram(glProgram);
+    bindVao(glVao);
 
     bindBuffer(arrayBuffer);
 
     for (const VertexAttrib &attrib : vertexLayout.attributes()) {
         const int location =
-                m_gl->glGetAttribLocation(programId, attrib.name.c_str());
+                m_gl->glGetAttribLocation(glProgram.id, attrib.name.c_str());
 
         m_gl->glEnableVertexAttribArray(location);
         m_gl->glVertexAttribPointer(location,
@@ -400,8 +404,8 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
 
     releaseBuffer(arrayBuffer);
 
-    m_gl->glBindVertexArray(0);
-    releaseShaderProgram(programId);
+    releaseVao(glVao);
+    releaseShaderProgram(glProgram);
 
     if (indexBuffer) {
         releaseBuffer(*indexBuffer);
@@ -476,25 +480,13 @@ int GLWrapper::maxTextureUnits()
     return ret;
 }
 
-uint32 GLWrapper::uniformBlockIndex(uint32 programId, const char *name)
-{
-    return m_gl->glGetUniformBlockIndex(programId, name);
-}
-
-void GLWrapper::setUniformBlockForUBO(uint32 programId,
-                                      uint32 blockIndex,
-                                      uint32 bindingPoint)
-{
-    m_gl->glUniformBlockBinding(programId, blockIndex, bindingPoint);
-}
-
 void GLWrapper::draw(const std::vector<DrawCommand> &commands)
 {
     for (const DrawCommand &cmd : commands) {
-        bindShaderProgram(cmd.shaderProgramId);
-        m_gl->glBindVertexArray(cmd.vaoId);
+        bindShaderProgram(*cmd.glProgram);
+        bindVao(*cmd.glVao);
 
-        if (cmd.indexGLBuffer) {
+        if (cmd.glIndexBuffer) {
             m_gl->glDrawElements(cmd.geometry.primitiveType,
                                  cmd.geometry.primitiveCount,
                                  GL_UNSIGNED_INT,
@@ -505,8 +497,8 @@ void GLWrapper::draw(const std::vector<DrawCommand> &commands)
                                cmd.geometry.primitiveCount);
         }
 
-        m_gl->glBindVertexArray(0);
-        releaseShaderProgram(cmd.shaderProgramId);
+        releaseVao(*cmd.glVao);
+        releaseShaderProgram(*cmd.glProgram);
     }
 }
 

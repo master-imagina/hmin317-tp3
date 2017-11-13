@@ -8,20 +8,22 @@
 
 #include "../transform.h"
 
-#include "glbuffer.h"
+class GLBuffer;
+class GLShaderProgram;
+class GLVao;
 
 
 struct DrawCommand
 {
-    uint32 shaderProgramId;
-    uint32 vaoId;
+    GLShaderProgram *glProgram;
+    GLVao *glVao;
 
     Geometry &geometry;
     Material &material;
     Transform &transform;
 
-    GLBuffer *vertexGLBuffer;
-    GLBuffer *indexGLBuffer;
+    GLBuffer *glVertexBuffer;
+    GLBuffer *glIndexBuffer;
 };
 
 #endif // DRAWCOMMAND_H
