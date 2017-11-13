@@ -16,6 +16,7 @@
 #include "../material/shaderparam.h"
 #include "../material/shaderprogram.h"
 #include "../material/shaderutils.h"
+#include "../material/texture.h"
 
 #include "../camera.h"
 #include "../transform.h"
@@ -27,10 +28,12 @@ Renderer::Renderer() :
     m_bufferManager(),
     m_shaderManager(),
     m_vaoManager(),
+    m_textureManager(),
     m_gl(nullptr),
     m_glWrapper(),
     m_drawCommands(),
-    m_currentShaderParams()
+    m_currentPassParams(),
+    m_activeTextures()
 {}
 
 Renderer::~Renderer()
@@ -56,6 +59,8 @@ void Renderer::initialize()
 
     //    gl->glEnable(GL_BLEND);
     //    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    m_activeTextures.reserve(m_glWrapper.maxTextureUnits());
 
     m_glWrapper.checkForErrors();
 }
@@ -104,6 +109,7 @@ void Renderer::render(Camera &camera, float dt)
 void Renderer::cleanup()
 {
     m_bufferManager.cleanup(m_glWrapper);
+    m_textureManager.cleanup(m_glWrapper);
     m_shaderManager.cleanup(m_glWrapper);
     m_vaoManager.cleanup(m_glWrapper);
 
@@ -205,13 +211,14 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
 
 void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
 {
-    m_currentShaderParams.clear();
+    m_activeTextures.clear();
+    m_currentPassParams.clear();
 
     // Note that material parameters override pass parameters
     Material &material = drawCmd.material;
 
     for (const uptr<ShaderParam> &materialParam : material.params()) {
-        m_currentShaderParams.push_back(materialParam.get());
+        m_currentPassParams.push_back(materialParam.get());
     }
 
     const uptr_vector<RenderPass> &passes = material.renderPasses();
@@ -226,11 +233,22 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
             ShaderParam *overridingParam = material.param(passParam->name);
 
             if (!overridingParam) {
-                m_currentShaderParams.push_back(passParam.get());
+                m_currentPassParams.push_back(passParam.get());
+            }
+        }
+
+        int textureUnitCounter = 0;
+        for (ShaderParam *param : m_currentPassParams) {
+            if (param->value.userType() == qMetaTypeId<Texture2D *>()) {
+                m_activeTextures.push_back(param);
+
+                textureUnitCounter++;
             }
         }
 
         m_glWrapper.bindShaderProgram(programId);
+
+        m_glWrapper.sendTextureUniforms(programId, m_activeTextures, m_textureManager);
 
         m_glWrapper.sendActiveCameraUniforms(programId,
                                              camera.worldMatrix(),
@@ -240,7 +258,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
         m_glWrapper.sendTransformUniform(programId, drawCmd.transform.matrix());
 
         //TODO material params must override eventual pass params
-        m_glWrapper.sendUniforms(programId, m_currentShaderParams);
+        m_glWrapper.sendUniforms(programId, m_currentPassParams);
 
         m_glWrapper.releaseShaderProgram(programId);
     }

@@ -6,6 +6,7 @@
 #include "glwrapper.h"
 #include "openglversion.h"
 #include "shadermanager.h"
+#include "texturemanager.h"
 #include "vaomanager.h"
 
 class Camera;
@@ -49,12 +50,14 @@ private:
     BufferManager m_bufferManager;
     ShaderManager m_shaderManager;
     VaoManager m_vaoManager;
+    TextureManager m_textureManager;
 
     OpenGLFuncs *m_gl;
     GLWrapper m_glWrapper;
 
     std::vector<DrawCommand> m_drawCommands;
-    std::vector<ShaderParam *> m_currentShaderParams;
+    std::vector<ShaderParam *> m_currentPassParams;
+    std::vector<ShaderParam *> m_activeTextures;
 };
 
 #endif // RENDERER_H

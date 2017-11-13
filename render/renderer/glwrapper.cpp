@@ -18,8 +18,10 @@
 
 #include "../material/shaderparam.h"
 #include "../material/shaderprogram.h"
+#include "../material/texture.h"
 
 #include "drawcommand.h"
+#include "texturemanager.h"
 
 
 using namespace std::literals;
@@ -31,7 +33,14 @@ namespace {
 
 void assertUniformFound(uint32 location, const char *name)
 {
-    C_ASSERT (location != -1, "Required Uniform "s + name + " not found in shader");
+    C_ASSERT (location != -1, "Required uniform "s + name + " not found in shader");
+}
+
+void checkUniformFound(uint32 location, const char *name)
+{
+    if (location == -1) {
+        std::cout << "Required uniform " << name << " not found in shader" << std::endl;
+    }
 }
 
 } // anon namespace
@@ -152,7 +161,12 @@ void GLWrapper::sendUniforms(uint32 programId,
     for (const ShaderParam *param : params) {
         const char *rawName = param->name.c_str();
         const QVariant value = param->value;
-        const int valueType = value.type();
+        const int valueType = value.userType();
+
+        //FIXME ugly trick
+        if (valueType == qMetaTypeId<Texture2D *>()) {
+            continue;
+        }
 
         switch (valueType) {
         case QMetaType::Int:
@@ -178,7 +192,8 @@ void GLWrapper::sendUniforms(uint32 programId,
             break;
         default:
             std::cerr << "GLWrapper: unsupported uniform type :"
-                      << QMetaType::typeName(valueType)
+                      << QMetaType::typeName(valueType) << " "
+                      << "(" << valueType << ")"
                       << std::endl;
             break;
         }
@@ -219,6 +234,26 @@ void GLWrapper::sendTransformUniform(uint32 programId,
 
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, modelMatrix.constData());
+    }
+}
+
+void GLWrapper::sendTextureUniforms(uint32 programId,
+                                    const std::vector<ShaderParam *> &textureParams,
+                                    TextureManager &textureManager)
+{
+    for (int texUnit = 0; texUnit < textureParams.size(); texUnit++) {
+        ShaderParam *param = textureParams[texUnit];
+        auto texture = param->value.value<Texture2D *>();
+
+        uint32 textureId = textureManager.textureIdForTexture(texture);
+
+        if (textureId == 0) {
+            textureId = textureManager.addTexture(texture, *this);
+        }
+
+        activeTexture2D(textureId, texUnit);
+
+        setUniform(programId, param->name.c_str(), texUnit);
     }
 }
 
@@ -351,6 +386,74 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
     checkForErrors();
 }
 
+uint32 GLWrapper::createTexture2D()
+{
+    uint32 ret = 0;
+
+    m_gl->glGenTextures(1, &ret);
+
+    return ret;
+}
+
+void GLWrapper::destroyTexture2D(uint32 &textureId)
+{
+    m_gl->glDeleteTextures(1, &textureId);
+}
+
+void GLWrapper::allocateTexture2D(uint32 textureId,
+                                  const Texture2DParams &params,
+                                  const ubyte *data)
+{
+    bindTexture2D(textureId);
+
+    m_gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, params.wrapS);
+    m_gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, params.wrapT);
+    m_gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, params.minFilter);
+    m_gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, params.magFilter);
+
+    m_gl->glTexImage2D(GL_TEXTURE_2D, 0, params.format,
+                       params.width, params.height, 0, params.format,
+                       GL_UNSIGNED_BYTE, data);
+
+    if (params.genMipMap) {
+        m_gl->glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    releaseTexture2D();
+}
+
+void GLWrapper::bindTexture2D(uint32 textureId)
+{
+    m_gl->glBindTexture(GL_TEXTURE_2D, textureId);
+}
+
+void GLWrapper::activeTexture2D(uint32 textureId, int i)
+{
+    const int maxTextureUnitsCount = maxTextureUnits();
+
+    C_ASSERT (i >= 0 && i <= maxTextureUnitsCount,
+              "GLWrapper: supports only up to "s +
+              std::to_string(maxTextureUnitsCount) + " active texture points");
+
+    m_gl->glActiveTexture(GL_TEXTURE0 + i);
+    bindTexture2D(textureId);
+//    releaseTexture2D();
+}
+
+void GLWrapper::releaseTexture2D()
+{
+    m_gl->glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+int GLWrapper::maxTextureUnits()
+{
+    int ret = 0;
+
+    m_gl->glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &ret);
+
+    return ret;
+}
+
 uint32 GLWrapper::uniformBlockIndex(uint32 programId, const char *name)
 {
     return m_gl->glGetUniformBlockIndex(programId, name);
@@ -388,7 +491,7 @@ void GLWrapper::draw(const std::vector<DrawCommand> &commands)
 void GLWrapper::setUniform(uint32 programId, const char *name, int value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assertUniformFound(location, name);
+    checkUniformFound(location, name);
 
     m_gl->glUniform1i(location, value);
 }
@@ -396,7 +499,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, int value)
 void GLWrapper::setUniform(uint32 programId, const char *name, float value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assertUniformFound(location, name);
+    checkUniformFound(location, name);
 
     m_gl->glUniform1fv(location, 1, &value);
 }
@@ -404,7 +507,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, float value)
 void GLWrapper::setUniform(uint32 programId, const char *name, const QVector2D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assertUniformFound(location, name);
+    checkUniformFound(location, name);
 
     m_gl->glUniform2fv(location, 1, reinterpret_cast<const float *>(&value));
 }
@@ -412,7 +515,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QVector2D &
 void GLWrapper::setUniform(uint32 programId, const char *name, const QVector3D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assertUniformFound(location, name);
+    checkUniformFound(location, name);
 
     m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&value));
 }
@@ -420,7 +523,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QVector3D &
 void GLWrapper::setUniform(uint32 programId, const char *name, const QVector4D &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assertUniformFound(location, name);
+    checkUniformFound(location, name);
 
     m_gl->glUniform4fv(location, 1, reinterpret_cast<const float *>(&value));
 }
@@ -428,7 +531,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QVector4D &
 void GLWrapper::setUniform(uint32 programId, const char *name, const QColor &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assertUniformFound(location, name);
+    checkUniformFound(location, name);
 
     const float rawValue[4] {
         static_cast<float>(value.redF()),
@@ -443,7 +546,7 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QColor &val
 void GLWrapper::setUniform(uint32 programId, const char *name, const QMatrix4x4 &value)
 {
     const int location = m_gl->glGetUniformLocation(programId, name);
-    assertUniformFound(location, name);
+    checkUniformFound(location, name);
 
     m_gl->glUniformMatrix4fv(location, 1, false, value.constData());
 }

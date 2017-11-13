@@ -34,13 +34,9 @@ uint32 VaoManager::addGeometry(Geometry *geom, GLWrapper &glWrapper)
 
 bool VaoManager::isAllocated(Geometry *geom) const
 {
-    const auto geomFound = m_geomToVao.find(geom);
+    const uint32 vaoId = vaoForGeometry(geom);
 
-    if (geomFound != m_geomToVao.end()) {
-        return true;
-    }
-
-    return false;
+    return vaoId > 0;
 }
 
 uint32 VaoManager::vaoForGeometry(Geometry *geom) const

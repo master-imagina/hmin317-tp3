@@ -66,6 +66,8 @@ set(RENDER_HEADERS
     render/material/shaderparam.h
     render/material/shaderprogram.h
     render/material/shaderutils.h
+    render/material/texture.h
+    render/material/textureutils.h
     render/renderer/buffermanager.h
     render/renderer/drawcommand.h
     render/renderer/glbuffer.h
@@ -73,6 +75,7 @@ set(RENDER_HEADERS
     render/renderer/openglversion.h
     render/renderer/renderer.h
     render/renderer/shadermanager.h
+    render/renderer/texturemanager.h
     render/renderer/vaomanager.h
     )
 set(RENDER_SOURCES
@@ -89,9 +92,11 @@ set(RENDER_SOURCES
     render/material/shaderparam.cpp
     render/material/shaderprogram.cpp
     render/material/shaderutils.cpp
+    render/material/textureutils.cpp
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp
     render/renderer/shadermanager.cpp
+    render/renderer/texturemanager.cpp
     render/renderer/vaomanager.cpp
     )
 

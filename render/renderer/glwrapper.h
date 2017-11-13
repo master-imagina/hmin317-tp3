@@ -11,6 +11,9 @@ class DrawCommand;
 class GLBuffer;
 class ShaderParam;
 class ShaderProgram;
+class Texture2D;
+class Texture2DParams;
+class TextureManager;
 class VertexLayout;
 
 class QColor;
@@ -51,12 +54,27 @@ public:
                                   const QMatrix4x4 &viewMatrix,
                                   const QMatrix4x4 &projectionMatrix);
     void sendTransformUniform(uint32 programId, const QMatrix4x4 &modelMatrix);
+    void sendTextureUniforms(uint32 programId,
+                             const std::vector<ShaderParam *> &textures,
+                             TextureManager &textureManager);
 
     void setupVaoForBufferAndShader(GLuint programId,
                                     GLuint vaoId,
                                     const VertexLayout &geometryLayout,
                                     GLBuffer &vertexBuffer,
                                     GLBuffer *indexBuffer = nullptr);
+
+    // Textures
+    uint32 createTexture2D();
+    void destroyTexture2D(uint32 &textureId);
+    void allocateTexture2D(uint32 textureId,
+                           const Texture2DParams &params,
+                           const ubyte *data);
+    void bindTexture2D(uint32 textureId);
+    void activeTexture2D(uint32 textureId, int i);
+    void releaseTexture2D();
+
+    int maxTextureUnits();
 
     // UBO
     uint32 uniformBlockIndex(uint32 programId, const char *name);
