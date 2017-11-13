@@ -6,7 +6,7 @@
 
 #include "core/aliases_memory.h"
 
-#include "glbuffer.h"
+#include "../glbuffer.h"
 
 class Geometry;
 class GLWrapper;

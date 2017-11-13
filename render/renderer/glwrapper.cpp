@@ -14,6 +14,8 @@
 
 #include "core/log.h"
 
+#include "managers/texturemanager.h"
+
 #include "../geometry/vertexlayout.h"
 
 #include "../material/shaderparam.h"
@@ -21,7 +23,6 @@
 #include "../material/texture.h"
 
 #include "drawcommand.h"
-#include "texturemanager.h"
 
 
 using namespace std::literals;

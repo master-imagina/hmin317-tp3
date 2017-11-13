@@ -1,8 +1,8 @@
 #include "shadermanager.h"
 
-#include "../material/shaderprogram.h"
+#include "../../material/shaderprogram.h"
 
-#include "glwrapper.h"
+#include "../glwrapper.h"
 
 
 ShaderManager::ShaderManager() :

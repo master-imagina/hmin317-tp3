@@ -67,16 +67,16 @@ set(RENDER_HEADERS
     render/material/shaderprogram.h
     render/material/shaderutils.h
     render/material/texture.h
-    render/renderer/buffermanager.h
+    render/renderer/managers/buffermanager.h
+    render/renderer/managers/shadermanager.h
+    render/renderer/managers/texturemanager.h
+    render/renderer/managers/vaomanager.h
     render/renderer/drawcommand.h
     render/renderer/glbuffer.h
     render/renderer/gltexture.h
     render/renderer/glwrapper.h
     render/renderer/openglversion.h
     render/renderer/renderer.h
-    render/renderer/shadermanager.h
-    render/renderer/texturemanager.h
-    render/renderer/vaomanager.h
     )
 set(RENDER_SOURCES
     render/aabb.cpp
@@ -86,7 +86,10 @@ set(RENDER_SOURCES
     render/renderwidget.cpp
     render/geometry/vertexattrib.cpp
     render/geometry/vertexlayout.cpp
-    render/renderer/buffermanager.cpp
+    render/renderer/managers/buffermanager.cpp
+    render/renderer/managers/shadermanager.cpp
+    render/renderer/managers/texturemanager.cpp
+    render/renderer/managers/vaomanager.cpp
     render/material/material.cpp
     render/material/renderpass.cpp
     render/material/shaderparam.cpp
@@ -94,9 +97,6 @@ set(RENDER_SOURCES
     render/material/shaderutils.cpp
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp
-    render/renderer/shadermanager.cpp
-    render/renderer/texturemanager.cpp
-    render/renderer/vaomanager.cpp
     )
 
 add_library(enginerender SHARED ${RENDER_SOURCES} ${RENDER_HEADERS})

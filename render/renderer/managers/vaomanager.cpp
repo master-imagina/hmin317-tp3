@@ -3,9 +3,9 @@
 #include <assert.h>
 #include <iostream>
 
-#include "../geometry/geometry.h"
+#include "../../geometry/geometry.h"
 
-#include "glwrapper.h"
+#include "../glwrapper.h"
 
 
 int VaoManager::RESERVE_VAO_COUNT = 64;

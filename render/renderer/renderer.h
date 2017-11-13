@@ -1,13 +1,14 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "buffermanager.h"
+#include "managers/buffermanager.h"
+#include "managers/shadermanager.h"
+#include "managers/texturemanager.h"
+#include "managers/vaomanager.h"
+
 #include "glbuffer.h"
 #include "glwrapper.h"
 #include "openglversion.h"
-#include "shadermanager.h"
-#include "texturemanager.h"
-#include "vaomanager.h"
 
 class Camera;
 class Geometry;
