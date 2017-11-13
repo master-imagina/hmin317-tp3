@@ -62,8 +62,4 @@ void GameWidget::iterateGameLoop(float dt)
     // Render
     m_systemEngine.update<ParticleSystem>(dt);
     m_systemEngine.update<RenderSystem>(dt);
-
-    //WARNING Comment from ingame build
-    //TODO Implement multithread rendering to remove that
-    qApp->processEvents();
 }
