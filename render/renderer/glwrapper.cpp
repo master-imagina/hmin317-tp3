@@ -164,7 +164,7 @@ void GLWrapper::sendUniforms(uint32 programId,
         const int valueType = value.userType();
 
         //FIXME ugly trick
-        if (valueType == qMetaTypeId<Texture2D *>()) {
+        if (valueType == qMetaTypeId<Texture2D>()) {
             continue;
         }
 
@@ -243,15 +243,18 @@ void GLWrapper::sendTextureUniforms(uint32 programId,
 {
     for (int texUnit = 0; texUnit < textureParams.size(); texUnit++) {
         ShaderParam *param = textureParams[texUnit];
-        auto texture = param->value.value<Texture2D *>();
+        auto texture = param->value.value<Texture2D>();
 
-        uint32 textureId = textureManager.textureIdForTexture(texture);
+         GLTexture *glTexture = textureManager.textureIdForTexture(texture);
 
-        if (textureId == 0) {
-            textureId = textureManager.addTexture(texture, *this);
+        if (glTexture == 0) {
+            glTexture = textureManager.addTexture(texture, *this);
         }
 
-        activeTexture2D(textureId, texUnit);
+        C_ASSERT (glTexture,
+                  "GLWrapper::sendTextureUniforms(): texture must exist");
+
+        activeTexture2D(*glTexture, texUnit);
 
         setUniform(programId, param->name.c_str(), texUnit);
     }
@@ -386,25 +389,23 @@ void GLWrapper::setupVaoForBufferAndShader(GLuint programId,
     checkForErrors();
 }
 
-uint32 GLWrapper::createTexture2D()
+void GLWrapper::createTexture2D(GLTexture &texture)
 {
     uint32 ret = 0;
 
-    m_gl->glGenTextures(1, &ret);
-
-    return ret;
+    m_gl->glGenTextures(1, &texture.id);
 }
 
-void GLWrapper::destroyTexture2D(uint32 &textureId)
+void GLWrapper::destroyTexture2D(GLTexture &texture)
 {
-    m_gl->glDeleteTextures(1, &textureId);
+    m_gl->glDeleteTextures(1, &texture.id);
 }
 
-void GLWrapper::allocateTexture2D(uint32 textureId,
-                                  const Texture2DParams &params,
+void GLWrapper::allocateTexture2D(const GLTexture &texture,
+                                  const GLTexture::Params &params,
                                   const ubyte *data)
 {
-    bindTexture2D(textureId);
+    bindTexture2D(texture);
 
     m_gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, params.wrapS);
     m_gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, params.wrapT);
@@ -422,12 +423,12 @@ void GLWrapper::allocateTexture2D(uint32 textureId,
     releaseTexture2D();
 }
 
-void GLWrapper::bindTexture2D(uint32 textureId)
+void GLWrapper::bindTexture2D(const GLTexture &texture)
 {
-    m_gl->glBindTexture(GL_TEXTURE_2D, textureId);
+    m_gl->glBindTexture(GL_TEXTURE_2D, texture.id);
 }
 
-void GLWrapper::activeTexture2D(uint32 textureId, int i)
+void GLWrapper::activeTexture2D(const GLTexture &texture, int i)
 {
     const int maxTextureUnitsCount = maxTextureUnits();
 
@@ -436,7 +437,7 @@ void GLWrapper::activeTexture2D(uint32 textureId, int i)
               std::to_string(maxTextureUnitsCount) + " active texture points");
 
     m_gl->glActiveTexture(GL_TEXTURE0 + i);
-    bindTexture2D(textureId);
+    bindTexture2D(texture);
 //    releaseTexture2D();
 }
 

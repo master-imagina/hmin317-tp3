@@ -3,10 +3,13 @@
 
 #include <unordered_map>
 
-#include "core/aliases_int.h"
+#include "core/aliases_memory.h"
+
+#include "../material/texture.h"
+
+#include "gltexture.h"
 
 class GLWrapper;
-class Texture2D;
 
 
 class TextureManager
@@ -16,15 +19,16 @@ public:
 
     TextureManager();
 
-    uint32 addTexture(Texture2D *texture, GLWrapper &glWrapper);
-    bool isAllocated(Texture2D *texture) const;
+    GLTexture *addTexture(const Texture2D &texture, GLWrapper &glWrapper);
+    bool isAllocated(const Texture2D &texture) const;
 
-    uint32 textureIdForTexture(Texture2D *texture) const;
+    GLTexture *textureIdForTexture(const Texture2D &texture) const;
 
     void cleanup(GLWrapper &glWrapper);
 
 private:
-    std::unordered_map<Texture2D *, uint32> m_textureToId;
+    uptr_vector<GLTexture> m_textures;
+    std::unordered_map<Texture2D, GLTexture *> m_textureToId;
 };
 
 #endif // TEXTUREMANAGER_H

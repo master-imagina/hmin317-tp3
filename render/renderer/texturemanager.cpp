@@ -3,8 +3,11 @@
 #include <assert.h>
 #include <iostream>
 
+#include <QImage>
+
 #include "../material/texture.h"
 
+#include "gltexture.h"
 #include "glwrapper.h"
 
 
@@ -16,7 +19,7 @@ TextureManager::TextureManager() :
     m_textureToId.reserve(RESERVE_TEXTURE_COUNT);
 }
 
-uint32 TextureManager::addTexture(Texture2D *texture, GLWrapper &glWrapper)
+GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWrapper)
 {
     const auto isHandled = m_textureToId.find(texture);
 
@@ -25,26 +28,59 @@ uint32 TextureManager::addTexture(Texture2D *texture, GLWrapper &glWrapper)
         return 0;
     }
 
-    uint32 ret = glWrapper.createTexture2D();
-    glWrapper.allocateTexture2D(ret, texture->params, texture->image.constBits());
+    // Read texture from file
+    QImage image(QString::fromStdString(texture.path));
+    if (image.isNull()) {
+        std::cerr << "TextureManager::addTexture(): "
+                  << texture.path << " does not exist" << std::endl;
+
+        return 0;
+    }
+
+    image = image.convertToFormat(QImage::Format_RGBA8888);
+
+    uptr<GLTexture> glTexture = std::make_unique<GLTexture>();
+    GLTexture *ret = glTexture.get();
+    m_textures.emplace_back(std::move(glTexture));
+
+    switch (image.pixelFormat().channelCount()) {
+    case 1:
+        ret->params.format = GLTexture::Params::Format::Red;
+        break;
+    case 3:
+        ret->params.format = GLTexture::Params::Format::Rgb;
+        break;
+    case 4:
+        ret->params.format = GLTexture::Params::Format::Rgba;
+        break;
+    default:
+        assert (false);
+    }
+
+    ret->params.width = image.width();
+    ret->params.height = image.height();
+
+    // Allocate GL texture
+    glWrapper.createTexture2D(*ret);
+    glWrapper.allocateTexture2D(*ret, ret->params, image.constBits());
 
     m_textureToId.insert({texture, ret});
 
     return ret;
 }
 
-bool TextureManager::isAllocated(Texture2D *texture) const
+bool TextureManager::isAllocated(const Texture2D &texture) const
 {
-    const uint32 textureId = textureIdForTexture(texture);
+    const GLTexture *glTexture = textureIdForTexture(texture);
 
-    return textureId > 0;
+    return glTexture != nullptr;
 }
 
-uint32 TextureManager::textureIdForTexture(Texture2D *texture) const
+GLTexture *TextureManager::textureIdForTexture(const Texture2D &texture) const
 {
     const auto textureFound = m_textureToId.find(texture);
 
-    uint32 ret = 0;
+    GLTexture * ret = nullptr;
 
     if (textureFound != m_textureToId.end()) {
         ret = textureFound->second;
@@ -55,7 +91,7 @@ uint32 TextureManager::textureIdForTexture(Texture2D *texture) const
 
 void TextureManager::cleanup(GLWrapper &glWrapper)
 {
-    for (auto &textureAndId : m_textureToId) {
-        glWrapper.destroyTexture2D(textureAndId.second);
+    for (auto &texture : m_textures) {
+        glWrapper.destroyTexture2D(*texture.get());
     }
 }

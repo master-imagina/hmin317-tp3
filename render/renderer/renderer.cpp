@@ -239,8 +239,11 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
 
         int textureUnitCounter = 0;
         for (ShaderParam *param : m_currentPassParams) {
-            if (param->value.userType() == qMetaTypeId<Texture2D *>()) {
-                m_activeTextures.push_back(param);
+            if (param->value.userType() == qMetaTypeId<Texture2D>()) {
+                auto texture = param->value.value<Texture2D>();
+                if (!texture.path.empty()) {
+                    m_activeTextures.push_back(param);
+                }
 
                 textureUnitCounter++;
             }

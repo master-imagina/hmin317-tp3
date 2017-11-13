@@ -5,14 +5,13 @@
 #include "core/aliases_memory.h"
 
 #include "glbuffer.h"
+#include "gltexture.h"
 #include "openglversion.h"
 
 class DrawCommand;
-class GLBuffer;
 class ShaderParam;
 class ShaderProgram;
 class Texture2D;
-class Texture2DParams;
 class TextureManager;
 class VertexLayout;
 
@@ -65,13 +64,13 @@ public:
                                     GLBuffer *indexBuffer = nullptr);
 
     // Textures
-    uint32 createTexture2D();
-    void destroyTexture2D(uint32 &textureId);
-    void allocateTexture2D(uint32 textureId,
-                           const Texture2DParams &params,
+    void createTexture2D(GLTexture &texture);
+    void destroyTexture2D(GLTexture &texture);
+    void allocateTexture2D(const GLTexture &texture,
+                           const GLTexture::Params &params,
                            const ubyte *data);
-    void bindTexture2D(uint32 textureId);
-    void activeTexture2D(uint32 textureId, int i);
+    void bindTexture2D(const GLTexture &texture);
+    void activeTexture2D(const GLTexture &texture, int i);
     void releaseTexture2D();
 
     int maxTextureUnits();
