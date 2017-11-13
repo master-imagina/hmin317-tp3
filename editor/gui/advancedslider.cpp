@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QStyle>
 #include <QStyleOptionSlider>
 
 
@@ -26,11 +27,14 @@ void AdvancedSlider::setValueAtomic(int newValue)
 void AdvancedSlider::mousePressEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton) {
+        const int range = maximum() - minimum();
+
+        //FIXME when selecting the handle if its to the max
         if (orientation() == Qt::Vertical) {
-            setValue(minimum() + ((maximum()-minimum()) * (height()-e->y())) / height() ) ;
+            setValue(minimum() + range * (height() - e->y()) / height()) ;
         }
         else {
-            setValue(minimum() + ((maximum()-minimum()) * e->x()) / width() ) ;
+            setValue(minimum() + range * e->x() / width());
         }
 
         e->accept();
@@ -95,4 +99,28 @@ void PrettySlider::drawHandleBackground(QPainter *painter, const QRect &rect, in
     Q_UNUSED(painter);
     Q_UNUSED(rect);
     Q_UNUSED(radius);
+}
+
+
+////////////////////// ValuedSlider //////////////////////
+
+ValuedSlider::ValuedSlider(QWidget *parent) :
+    AdvancedSlider(parent)
+{}
+
+ValuedSlider::ValuedSlider(Qt::Orientation orientation, QWidget *parent) :
+    AdvancedSlider(orientation, parent)
+{}
+
+void ValuedSlider::paintEvent(QPaintEvent *e)
+{
+    QStyleOptionSlider opt;
+    initStyleOption(&opt);
+
+    QRect handleRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle);
+    handleRect.adjust(0, 0, 0, 3);
+
+    QPainter p(this);
+    p.fillRect(0, 0, handleRect.center().x(), handleRect.bottom(), palette().dark());
+    p.drawText(handleRect, QString::number(value()));
 }

@@ -105,17 +105,17 @@ void ParticleEditor::initGui()
     auto *propertiesWidget = new QWidget(scrollArea);
     auto *propertiesLayout = new QFormLayout(propertiesWidget);
 
-    auto *countSlider = new AdvancedSlider(Qt::Horizontal, propertiesWidget);
+    auto *countSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     countSlider->setValue(m_particleEffect->count());
-    auto *maxLifeSlider = new AdvancedSlider(Qt::Horizontal, propertiesWidget);
+    auto *maxLifeSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     maxLifeSlider->setValue(m_particleEffect->maxLife());
     auto *worldPosEditor = new Vec3DEdit(propertiesWidget);
-    auto *radiusSlider = new AdvancedSlider(Qt::Horizontal, propertiesWidget);
+    auto *radiusSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     radiusSlider->setValue(m_particleEffect->radius());
     auto *directionEditor = new Vec3DEdit(propertiesWidget);
-    auto *speedSlider = new AdvancedSlider(Qt::Horizontal, propertiesWidget);
+    auto *speedSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     speedSlider->setValue(m_particleEffect->speed());
-    auto *particleSizeSlider = new AdvancedSlider(Qt::Horizontal, propertiesWidget);
+    auto *particleSizeSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     particleSizeSlider->setValue(m_particleEffect->particleSize());
     auto *particleColorEditor = new ColorEditor(propertiesWidget);
     particleColorEditor->setValue(m_particleMaterial->param("particleColor")->value.value<QColor>());

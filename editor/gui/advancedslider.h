@@ -1,6 +1,7 @@
 #ifndef ADVANDEDSLIDER_H
 #define ADVANDEDSLIDER_H
 
+#include <QLabel>
 #include <QSlider>
 
 
@@ -16,6 +17,22 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
+};
+
+
+class ValuedSlider : public AdvancedSlider
+{
+    Q_OBJECT
+
+public:
+    explicit ValuedSlider(QWidget *parent = nullptr);
+    ValuedSlider(Qt::Orientation orientation, QWidget *parent = nullptr);
+
+protected:
+    void paintEvent(QPaintEvent *e) override;
+
+private:
+    void init();
 };
 
 
