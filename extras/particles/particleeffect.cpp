@@ -10,6 +10,7 @@ ParticleEffect::ParticleEffect() :
     m_direction({0.f, 1.f, 0.f}),
     m_speed(0.4f),
     m_particleSize(4.f),
+    m_spawnRate(100),
     m_lifes()
 {
     resetCount();
@@ -102,6 +103,20 @@ void ParticleEffect::setParticleSize(float particleSize)
 {
     if (m_particleSize != particleSize) {
         m_particleSize = particleSize;
+    }
+}
+
+int ParticleEffect::spawnRate() const
+{
+    return m_spawnRate;
+}
+
+void ParticleEffect::setSpawnRate(int rate)
+{
+    if (m_spawnRate != rate) {
+        m_spawnRate = rate;
+
+        setDirty();
     }
 }
 

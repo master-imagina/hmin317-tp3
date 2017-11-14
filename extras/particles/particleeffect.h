@@ -32,6 +32,9 @@ public:
     float particleSize() const;
     void setParticleSize(float particleSize);
 
+    int spawnRate() const;
+    void setSpawnRate(int rate);
+
     bool isDirty() const;
     void setDirty();
     void unsetDirty();
@@ -50,6 +53,7 @@ private:
     QVector3D m_direction;
     float m_speed;
     float m_particleSize;
+    int m_spawnRate;
 
 public:
     //TODO preallocate

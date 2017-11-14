@@ -46,12 +46,16 @@ void ParticleSystem::liveParticles(entityx::Entity entity,
         geom.primitiveCount = count;
 
         std::fill(geom.vertices.begin(), geom.vertices.end(), worldPos);
+        std::fill(particleEffect.m_lifes.begin(), particleEffect.m_lifes.end(), particleEffect.maxLife());
 
         particleEffect.unsetDirty();
     }
 
     // Compute particles positions
     const int maxLife = particleEffect.maxLife();
+
+    const int spawnMaxCount = particleEffect.count() * ((float)particleEffect.spawnRate() / 100);
+    int spawnCounter = 0;
 
     for (int i = 0; i < particleEffect.m_lifes.size(); i++) {
         int &life = particleEffect.m_lifes[i];
@@ -67,7 +71,11 @@ void ParticleSystem::liveParticles(entityx::Entity entity,
             particlePos.setX(m_radiusXRandDistrib(m_randEngine));
             particlePos.setZ(m_radiusZRandDistrib(m_randEngine));
 
-            life--;
+            if (spawnCounter < spawnMaxCount) {
+                life--;
+
+                spawnCounter++;
+            }
         }
         // or animate and decrase life
         else {
@@ -77,6 +85,8 @@ void ParticleSystem::liveParticles(entityx::Entity entity,
             particlePos += particleEffect.speed() * particleEffect.direction() * dt;
         }
     }
+
+    spawnCounter = 0;
 
     geom.isDirty = true;
 }
