@@ -107,6 +107,10 @@ void ParticleEditor::initGui()
 
     auto *countSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     countSlider->setValue(m_particleEffect->count());
+    auto *spawnRateSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
+    spawnRateSlider->setMinimum(1);
+    spawnRateSlider->setMaximum(100);
+    spawnRateSlider->setValue(m_particleEffect->spawnRate());
     auto *maxLifeSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     maxLifeSlider->setValue(m_particleEffect->maxLife());
     auto *worldPosEditor = new Vec3DEdit(propertiesWidget);
@@ -137,6 +141,10 @@ void ParticleEditor::initGui()
     connect(countSlider, &QSlider::valueChanged,
             [this] (int value) {
         m_particleEffect->setCount(value);
+    });
+    connect(spawnRateSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setSpawnRate(value);
     });
     connect(maxLifeSlider, &QSlider::valueChanged,
             [this] (int value) {
@@ -182,6 +190,7 @@ void ParticleEditor::initGui()
     });
 
     propertiesLayout->addRow("Count", countSlider);
+    propertiesLayout->addRow("Spawn Rate", spawnRateSlider);
     propertiesLayout->addRow("Max Life", maxLifeSlider);
     propertiesLayout->addRow("World Position", worldPosEditor);
     propertiesLayout->addRow("Radius", radiusSlider);
