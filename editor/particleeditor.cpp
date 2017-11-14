@@ -117,6 +117,13 @@ void ParticleEditor::initGui()
     auto *radiusSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     radiusSlider->setValue(m_particleEffect->radius());
     auto *directionEditor = new Vec3DEdit(propertiesWidget);
+    directionEditor->setXMin(-1.f);
+    directionEditor->setYMin(-1.f);
+    directionEditor->setZMin(-1.f);
+    directionEditor->setXMax(1.f);
+    directionEditor->setYMax(1.f);
+    directionEditor->setZMax(1.f);
+    directionEditor->setStepSize(0.1f);
     auto *speedSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     speedSlider->setValue(m_particleEffect->speed());
     auto *particleSizeSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
