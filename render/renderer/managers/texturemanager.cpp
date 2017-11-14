@@ -5,10 +5,10 @@
 
 #include <QImage>
 
-#include "../../material/texture.h"
+#include "render/material/texture.h"
 
-#include "../gltexture.h"
-#include "../glwrapper.h"
+#include "render/renderer/gltexture.h"
+#include "render/renderer/glwrapper.h"
 
 
 int TextureManager::RESERVE_TEXTURE_COUNT = 64;

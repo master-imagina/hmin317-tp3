@@ -1,7 +1,7 @@
 #ifndef VALUESLIDER_H
 #define VALUESLIDER_H
 
-#include "../advancedslider.h"
+#include "editor/gui/advancedslider.h"
 
 
 class ValueSlider : public PrettySlider

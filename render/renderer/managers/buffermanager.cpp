@@ -3,10 +3,10 @@
 #include <assert.h>
 #include <iostream>
 
-#include "../../geometry/geometry.h"
+#include "render/geometry/geometry.h"
 
-#include "../glbuffer.h"
-#include "../glwrapper.h"
+#include "render/renderer/glbuffer.h"
+#include "render/renderer/glwrapper.h"
 
 
 int BufferManager::RESERVE_BUFFERS_COUNT = 64;

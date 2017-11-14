@@ -1,7 +1,7 @@
 #ifndef SATURATIONSLIDER_H
 #define SATURATIONSLIDER_H
 
-#include "../advancedslider.h"
+#include "editor/gui/advancedslider.h"
 
 
 class SaturationSlider : public PrettySlider

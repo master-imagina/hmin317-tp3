@@ -2,9 +2,9 @@
 
 #include <iostream>
 
-#include "../../material/shaderprogram.h"
+#include "render/material/shaderprogram.h"
 
-#include "../glwrapper.h"
+#include "render/renderer/glwrapper.h"
 
 
 ShaderManager::ShaderManager() :

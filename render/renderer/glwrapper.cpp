@@ -16,11 +16,11 @@
 
 #include "managers/texturemanager.h"
 
-#include "../geometry/vertexlayout.h"
+#include "render/geometry/vertexlayout.h"
 
-#include "../material/shaderparam.h"
-#include "../material/shaderprogram.h"
-#include "../material/texture.h"
+#include "render/material/shaderparam.h"
+#include "render/material/shaderprogram.h"
+#include "render/material/texture.h"
 
 #include "drawcommand.h"
 

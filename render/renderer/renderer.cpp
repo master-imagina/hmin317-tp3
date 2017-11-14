@@ -7,21 +7,21 @@
 
 #include "3rdparty/entityx/Entity.h"
 
-#include "../geometry/geometry.h"
-#include "../geometry/vertexattrib.h"
-#include "../geometry/vertexlayout.h"
+#include "render/geometry/geometry.h"
+#include "render/geometry/vertexattrib.h"
+#include "render/geometry/vertexlayout.h"
 
-#include "../material/material.h"
-#include "../material/renderpass.h"
-#include "../material/shaderparam.h"
-#include "../material/shaderprogram.h"
-#include "../material/shaderutils.h"
-#include "../material/texture.h"
+#include "render/material/material.h"
+#include "render/material/renderpass.h"
+#include "render/material/shaderparam.h"
+#include "render/material/shaderprogram.h"
+#include "render/material/shaderutils.h"
+#include "render/material/texture.h"
 
-#include "../camera.h"
-#include "../transform.h"
+#include "render/camera.h"
+#include "render/transform.h"
 
-#include "drawcommand.h"
+#include "render/renderer/drawcommand.h"
 
 
 Renderer::Renderer() :
@@ -223,8 +223,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
     for (const uptr<RenderPass> &pass : passes) {
         assert (pass);
 
-        GLShaderProgram *glProgram =
-                m_shaderManager.get(pass->shaderProgram());
+        GLShaderProgram *glProgram = m_shaderManager.get(pass->shaderProgram());
 
         for (const uptr<ShaderParam> &passParam : pass->params()) {
             ShaderParam *overridingParam = material.param(passParam->name);

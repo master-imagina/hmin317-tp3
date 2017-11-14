@@ -1,7 +1,7 @@
 #ifndef HUESLIDER_H
 #define HUESLIDER_H
 
-#include "../advancedslider.h"
+#include "editor/gui/advancedslider.h"
 
 
 class HueSlider : public PrettySlider

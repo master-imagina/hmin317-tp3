@@ -5,9 +5,9 @@
 
 #include "core/aliases_memory.h"
 
-#include "../../material/texture.h"
+#include "render/material/texture.h"
 
-#include "../gltexture.h"
+#include "render/renderer/gltexture.h"
 
 class GLWrapper;
 

@@ -6,7 +6,7 @@
 #include "core/aliases_int.h"
 #include "core/aliases_memory.h"
 
-#include "../glshaderprogram.h"
+#include "render/renderer/glshaderprogram.h"
 
 class GLWrapper;
 class ShaderProgram;

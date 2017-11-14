@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-#include "../../geometry/geometry.h"
+#include "render/geometry/geometry.h"
 
-#include "../glvao.h"
-#include "../glwrapper.h"
+#include "render/renderer/glvao.h"
+#include "render/renderer/glwrapper.h"
 
 
 int VaoManager::RESERVE_VAO_COUNT = 64;

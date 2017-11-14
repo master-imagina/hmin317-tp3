@@ -3,10 +3,10 @@
 
 #include "core/aliases_int.h"
 
-#include "../geometry/geometry.h"
-#include "../material/material.h"
+#include "render/geometry/geometry.h"
+#include "render/material/material.h"
 
-#include "../transform.h"
+#include "render/transform.h"
 
 class GLBuffer;
 class GLShaderProgram;
