@@ -44,6 +44,30 @@ void AdvancedSlider::mousePressEvent(QMouseEvent *e)
 }
 
 
+////////////////////// ValuedSlider //////////////////////
+
+ValuedSlider::ValuedSlider(QWidget *parent) :
+    AdvancedSlider(parent)
+{}
+
+ValuedSlider::ValuedSlider(Qt::Orientation orientation, QWidget *parent) :
+    AdvancedSlider(orientation, parent)
+{}
+
+void ValuedSlider::paintEvent(QPaintEvent *e)
+{
+    QStyleOptionSlider opt;
+    initStyleOption(&opt);
+
+    QRect handleRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle);
+    handleRect.adjust(0, 0, 0, 3);
+
+    QPainter p(this);
+    p.fillRect(0, 0, handleRect.center().x(), handleRect.bottom(), palette().dark());
+    p.drawText(handleRect, QString::number(value()));
+}
+
+
 ////////////////////// PrettySlider //////////////////////
 
 PrettySlider::PrettySlider(QWidget *parent) :
@@ -99,28 +123,4 @@ void PrettySlider::drawHandleBackground(QPainter *painter, const QRect &rect, in
     Q_UNUSED(painter);
     Q_UNUSED(rect);
     Q_UNUSED(radius);
-}
-
-
-////////////////////// ValuedSlider //////////////////////
-
-ValuedSlider::ValuedSlider(QWidget *parent) :
-    AdvancedSlider(parent)
-{}
-
-ValuedSlider::ValuedSlider(Qt::Orientation orientation, QWidget *parent) :
-    AdvancedSlider(orientation, parent)
-{}
-
-void ValuedSlider::paintEvent(QPaintEvent *e)
-{
-    QStyleOptionSlider opt;
-    initStyleOption(&opt);
-
-    QRect handleRect = style()->subControlRect(QStyle::CC_Slider, &opt, QStyle::SC_SliderHandle);
-    handleRect.adjust(0, 0, 0, 3);
-
-    QPainter p(this);
-    p.fillRect(0, 0, handleRect.center().x(), handleRect.bottom(), palette().dark());
-    p.drawText(handleRect, QString::number(value()));
 }

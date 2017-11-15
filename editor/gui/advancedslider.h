@@ -30,9 +30,6 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *e) override;
-
-private:
-    void init();
 };
 
 
