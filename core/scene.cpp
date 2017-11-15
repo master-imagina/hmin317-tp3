@@ -7,5 +7,9 @@ Scene::Scene() :
 
 entityx::Entity Scene::createEntity()
 {
-    return entities.create();
+    entityx::Entity ret = entities.create();
+
+    Q_EMIT entityAdded(ret);
+
+    return ret;
 }

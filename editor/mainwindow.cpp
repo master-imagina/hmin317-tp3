@@ -3,51 +3,74 @@
 #include <QApplication>
 #include <QBoxLayout>
 #include <QDebug>
-#include <QFileDialog>
-#include <QGridLayout>
 #include <QMenu>
 #include <QMenuBar>
 
+#include "extras/gamewidget.h"
 
-MainWindow::MainWindow()
+#include "editor/gui/fpswidgets.h"
+
+#include "editor/panemanager.h"
+#include "editor/sceneview.h"
+#include "editor/componenteditors.h"
+#include "editor/componentview.h"
+
+
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    m_paneManager(nullptr),
+    m_openViewPaneMenu(nullptr),
+    m_scene(),
+    m_camera(),
+    m_gameWidget(nullptr)
 {
-//    // Build UI
-//    auto centralWidget = new QWidget(this);
-//    centralWidget->setFocusPolicy(Qt::StrongFocus);
+    auto centralWidget = new QWidget(this);
+    centralWidget->setFocusPolicy(Qt::StrongFocus);
 
-//    m_cameraController = new CameraController(centralWidget);
-//    centralWidget->installEventFilter(m_cameraController);
+    setCentralWidget(centralWidget);
 
-//    auto centralLayout = new QVBoxLayout(centralWidget);
+    m_gameWidget = new GameWidget(m_scene, centralWidget);
+    m_gameWidget->setCamera(&m_camera);
 
-//    // Viewport
-//    auto viewportsLayout = new QGridLayout;
+    auto centralLayout = new QVBoxLayout(centralWidget);
+    centralLayout->setMargin(0);
+    centralLayout->addWidget(m_gameWidget);
 
-//    // Create game widget
-//    m_renderWidget = new RenderWidget(centralWidget);
+    // Add controls to game widget
+    createFpsLabel(m_gameWidget->gameLoop(), m_gameWidget);
 
-//    viewportsLayout->addWidget(m_renderWidget);
-
-//    // Add controls to game widget
-//    auto *renderWidgetLayout = new QVBoxLayout(m_renderWidget);
-//    auto *renderWidgetTopLayout = new QHBoxLayout;
-//    renderWidgetTopLayout->addWidget(m_fpsLabel);
-//    renderWidgetTopLayout->addStretch();
-//    renderWidgetTopLayout->addWidget(new CameraControls(m_camera.get(), m_renderWidget));
-//    renderWidgetLayout->addLayout(renderWidgetTopLayout);
-//    renderWidgetLayout->addStretch();
-
-//    auto cameraControllerControls = new CameraControllerControls(m_cameraController,
-//                                                                 centralWidget);
-
-////    centralLayout->addLayout(fpsControlsLayout);
-//    centralLayout->addLayout(viewportsLayout, 1);
-//    centralLayout->addWidget(cameraControllerControls);
-
-//    setCentralWidget(centralWidget);
-
-//    centralWidget->setFocus();
+    createMenus();
+    initPanes();
 }
 
-MainWindow::~MainWindow()
-{}
+void MainWindow::createMenus()
+{
+    auto menuBar = new QMenuBar(this);
+
+    // View menu
+    auto viewMenu = new QMenu(tr("View"), menuBar);
+    m_openViewPaneMenu = new QMenu(tr("Open view pane"), viewMenu);
+
+    viewMenu->addMenu(m_openViewPaneMenu);
+
+    menuBar->addMenu(viewMenu);
+
+    setMenuBar(menuBar);
+}
+
+void MainWindow::initPanes()
+{
+    auto *sceneView = new SceneView(m_scene, this);
+    auto *componentView = new ComponentView(sceneView, this);
+
+    m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
+    m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);
+    m_paneManager->registerPane(Qt::RightDockWidgetArea, componentView);
+
+    createDefaultComponentEditorCreators(componentView);
+}
+
+void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentView)
+{
+    componentView->addComponentEditorCreator(&createTransformEditor);
+}

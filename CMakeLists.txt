@@ -153,6 +153,8 @@ set(EDITORGUI_HEADERS
     editor/gui/coloreditor/valueslider.h
     editor/gui/dragtoolbutton.h
     editor/gui/fpswidgets.h
+    editor/gui/layoututils.h
+    editor/gui/pane.h
     editor/gui/urledit.h
     editor/gui/vec3edit.h
     editor/gui/vecdimindicator.h
@@ -165,6 +167,8 @@ set(EDITORGUI_SOURCES
     editor/gui/coloreditor/valueslider.cpp
     editor/gui/dragtoolbutton.cpp
     editor/gui/fpswidgets.cpp
+    editor/gui/layoututils.cpp
+    editor/gui/pane.cpp
     editor/gui/urledit.cpp
     editor/gui/vec3edit.cpp
     editor/gui/vecdimindicator.cpp
@@ -208,15 +212,23 @@ install(TARGETS season RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})
 set(EDITOR_HEADERS
     editor/cameracontrols.h
     editor/cameracontrollercontrols.h
+    editor/componenteditors.h
+    editor/componentview.h
     editor/mainwindow.h
     editor/particleeditor.h
+    editor/sceneview.h
+    editor/panemanager.h
     )
 set(EDITOR_SOURCES
     editor/cameracontrols.cpp
     editor/cameracontrollercontrols.cpp
+    editor/componenteditors.cpp
+    editor/componentview.cpp
     editor/main.cpp
     editor/mainwindow.cpp
     editor/particleeditor.cpp
+    editor/sceneview.cpp
+    editor/panemanager.cpp
     )
 set(EDITOR_RESOURCES
     )

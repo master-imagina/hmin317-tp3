@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QSurfaceFormat>
 
-#include "particleeditor.h"
+#include "mainwindow.h"
 
 
 int main(int argc, char *argv[])
@@ -19,9 +19,9 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName("Game Engines - Editor");
 
-    ParticleEditor particleEditor;
-    particleEditor.setMinimumSize(640, 400);
-    particleEditor.show();
+    MainWindow mw;
+    mw.setMinimumSize(640, 400);
+    mw.show();
 
     return app.exec();
 }
