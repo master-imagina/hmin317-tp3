@@ -106,6 +106,7 @@ void ParticleEditor::initGui()
     auto *propertiesLayout = new QFormLayout(propertiesWidget);
 
     auto *countSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
+    countSlider->setMaximum(500);
     countSlider->setValue(m_particleEffect->count());
     auto *spawnRateSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     spawnRateSlider->setMinimum(1);
