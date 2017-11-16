@@ -6,6 +6,8 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 
+#include "editor/componenteditors.h"
+
 #include "extras/cameraactions.h"
 #include "extras/gamewidget.h"
 #include "extras/heightmap.h"
@@ -37,21 +39,10 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
     m_camera(),
     m_gameWidget(nullptr),
     m_particleEffect(),
-    m_particleMaterial(),
-    m_textureSelectorWidget(nullptr)
+    m_particleMaterial()
 {
     initEditorScene();
     initGui();
-}
-
-void ParticleEditor::setTextureEnabled(bool enable)
-{
-    m_textureSelectorWidget->setEnabled(enable);
-
-    // Update the shader flag
-    const float textureFlag = (enable) ? 1.f : 0.f;
-
-    m_particleMaterial->setParam("textureFlag", textureFlag);
 }
 
 void ParticleEditor::initEditorScene()
@@ -129,21 +120,29 @@ void ParticleEditor::initGui()
     speedSlider->setValue(m_particleEffect->speed());
     auto *particleSizeSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     particleSizeSlider->setValue(m_particleEffect->particleSize());
+
     auto *particleColorEditor = new ColorEditor(propertiesWidget);
     particleColorEditor->setValue(m_particleMaterial->param("particleColor")->value.value<QColor>());
 
     auto *fullTextureSelectorWidget = new QWidget(propertiesWidget);
     auto *textureSelectorLayout = new QHBoxLayout(fullTextureSelectorWidget);
     textureSelectorLayout->setMargin(0);
-    m_textureSelectorWidget = new UrlEdit(fullTextureSelectorWidget);
-    m_textureSelectorWidget->setNameFilters({"Image files (*.png *.jpg)"});
-    m_textureSelectorWidget->setUrl(QString::fromStdString(m_particleMaterial->param("particleTexture")->value.value<Texture2D>().path));
+    auto *textureSelectorWidget = new UrlEdit(fullTextureSelectorWidget);
+    textureSelectorWidget->setNameFilters({"Image files (*.png *.jpg)"});
+    textureSelectorWidget->setUrl(QString::fromStdString(m_particleMaterial->param("particleTexture")->value.value<Texture2D>().path));
     auto *enableTextureCheckBox = new QCheckBox(fullTextureSelectorWidget);
     enableTextureCheckBox->setChecked(true);
     connect(enableTextureCheckBox, &QCheckBox::toggled,
-            this, &ParticleEditor::setTextureEnabled);
+            [this, textureSelectorWidget] (bool enable) {
+        textureSelectorWidget->setEnabled(enable);
 
-    textureSelectorLayout->addWidget(m_textureSelectorWidget);
+        // Update the shader flag
+        const float textureFlag = (enable) ? 1.f : 0.f;
+
+        m_particleMaterial->setParam("textureFlag", textureFlag);
+    });
+
+    textureSelectorLayout->addWidget(textureSelectorWidget);
     textureSelectorLayout->addWidget(enableTextureCheckBox);
 
     connect(countSlider, &QSlider::valueChanged,
@@ -179,11 +178,12 @@ void ParticleEditor::initGui()
         m_particleEffect->setParticleSize(value);
         m_particleMaterial->setParam("particleSize", (float)value);
     });
+
     connect(particleColorEditor, &ColorEditor::valueChanged,
             [this] (const QColor &value) {
         m_particleMaterial->setParam("particleColor", value);
     });
-    connect(m_textureSelectorWidget, &UrlEdit::urlChanged,
+    connect(textureSelectorWidget, &UrlEdit::urlChanged,
             [this] (const QUrl &url) {
         const QString path = url.toString(QUrl::PreferLocalFile);
 
