@@ -4,6 +4,8 @@
 
 #include "render/geometry/geometry.h"
 
+#include "render/transform.h"
+
 #include "particleeffect.h"
 
 
@@ -11,18 +13,22 @@ void ParticleSystem::update(entityx::EntityManager &entities,
                             entityx::EventManager &events,
                             double dt)
 {
-    entities.each<ParticleEffect, Geometry>([dt] (entityx::Entity entity,
-                                                  ParticleEffect &particleEffect,
-                                                  Geometry &geom) {
-        liveParticles(entity, particleEffect, geom, dt);
+    entities.each<ParticleEffect, Geometry, Transform>(
+                [dt] (entityx::Entity entity,
+                ParticleEffect &particleEffect,
+                Geometry &geom,
+                Transform &transform) {
+        liveParticles(entity, particleEffect, geom, transform, dt);
     });
 }
 
 void ParticleSystem::liveParticles(entityx::Entity entity,
                                    ParticleEffect &particleEffect,
-                                   Geometry &geom, double dt)
+                                   Geometry &geom,
+                                   Transform &transform,
+                                   double dt)
 {
-    const QVector3D worldPos = particleEffect.worldPos();
+    const QVector3D worldPos = transform.translate();
     const float worldPosX = worldPos.x();
     const float worldPosZ = worldPos.z();
 
@@ -31,15 +37,10 @@ void ParticleSystem::liveParticles(entityx::Entity entity,
     static std::random_device m_randDevice;
     static std::default_random_engine m_randEngine(m_randDevice());
 
-    static std::uniform_real_distribution<float> m_radiusXRandDistrib;
-    static std::uniform_real_distribution<float> m_radiusZRandDistrib;
+    std::uniform_real_distribution<float> m_radiusXRandDistrib(worldPosX - radius, worldPosX + radius);
+    std::uniform_real_distribution<float> m_radiusZRandDistrib(worldPosZ - radius, worldPosZ + radius);
 
-    // If the particle effect's primary attributes were changed, change the
-    // random settings accordingly
     if (particleEffect.isDirty()) {
-        m_radiusXRandDistrib = std::uniform_real_distribution<float>(worldPosX - radius, worldPosX + radius);
-        m_radiusZRandDistrib = std::uniform_real_distribution<float>(worldPosZ - radius, worldPosZ + radius);
-
         const int count = particleEffect.count();
 
         geom.vertices.resize(count);

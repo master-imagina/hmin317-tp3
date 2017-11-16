@@ -5,6 +5,7 @@
 
 class Geometry;
 class ParticleEffect;
+class Transform;
 
 
 class ParticleSystem : public entityx::System<ParticleSystem>
@@ -18,6 +19,7 @@ private:
     static void liveParticles(entityx::Entity entity,
                               ParticleEffect &particleEffect,
                               Geometry &geom,
+                              Transform &transform,
                               double dt);
 };
 

@@ -14,8 +14,9 @@
 #include "render/material/shaderutils.h"
 #include "render/material/texture.h"
 
-#include "particleeffect.h"
+#include "render/transform.h"
 
+#include "particleeffect.h"
 
 
 entityx::Entity createParticleEffect(Scene &scene,
@@ -32,7 +33,10 @@ entityx::Entity createParticleEffect(Scene &scene,
     entityx::Entity ret = scene.createEntity();
 
     entityx::ComponentHandle<ParticleEffect> effect = ret.assign<ParticleEffect>();
-    effect->setWorldPos(worldPos);
+
+    entityx::ComponentHandle<Transform> transform = ret.component<Transform>();
+    transform->setTranslate(worldPos);
+
     effect->setDirection(direction);
     effect->setCount(count);
     effect->setMaxLife(maxLife);

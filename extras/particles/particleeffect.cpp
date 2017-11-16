@@ -5,7 +5,6 @@ ParticleEffect::ParticleEffect() :
     m_isDirty(true),
     m_count(50),
     m_maxLife(100),
-    m_worldPos({0.f, 0.f, 0.f}),
     m_radius(50.f),
     m_direction({0.f, 1.f, 0.f}),
     m_speed(0.4f),
@@ -39,20 +38,6 @@ void ParticleEffect::setMaxLife(int maxLife)
 {
     if (m_maxLife != maxLife) {
         m_maxLife = maxLife;
-    }
-}
-
-QVector3D ParticleEffect::worldPos() const
-{
-    return m_worldPos;
-}
-
-void ParticleEffect::setWorldPos(const QVector3D &pos)
-{
-    if (m_worldPos != pos) {
-        m_worldPos = pos;
-
-        setDirty();
     }
 }
 

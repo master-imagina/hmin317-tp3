@@ -17,9 +17,6 @@ public:
     int maxLife() const;
     void setMaxLife(int maxLife);
 
-    QVector3D worldPos() const;
-    void setWorldPos(const QVector3D &worldPos);
-
     float radius() const;
     void setRadius(float radius);
 
@@ -48,7 +45,6 @@ private:
     int m_count;
     int m_maxLife;
 
-    QVector3D m_worldPos;
     float m_radius;
     QVector3D m_direction;
     float m_speed;
