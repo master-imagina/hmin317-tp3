@@ -8,11 +8,17 @@
 
 #include "render/transform.h"
 
+#include "render/geometry/geometry.h"
+
+#include "render/material/material.h"
+
 
 void registerHookSystems(SystemEngine &systemEngine,
                          ComponentView &componentView)
 {
     systemEngine.registerSystem<ComponentAddedHook<Transform>>(componentView);
+    systemEngine.registerSystem<ComponentAddedHook<Geometry>>(componentView);
+    systemEngine.registerSystem<ComponentAddedHook<Material>>(componentView);
     systemEngine.registerSystem<ComponentAddedHook<ParticleEffect>>(componentView);
 
     systemEngine.initialize();
