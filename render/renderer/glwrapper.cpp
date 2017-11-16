@@ -55,6 +55,11 @@ GLWrapper::GLWrapper()
 GLWrapper::~GLWrapper()
 {}
 
+bool GLWrapper::isInitialized() const
+{
+    return m_gl;
+}
+
 void GLWrapper::initialize(QOpenGLContext *glContext)
 {
     m_gl = glContext->versionFunctions<OpenGLFuncs>();

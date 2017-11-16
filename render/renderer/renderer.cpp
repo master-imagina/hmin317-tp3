@@ -57,8 +57,8 @@ void Renderer::initialize()
     m_gl->glEnable(GL_DEPTH_TEST);
     m_gl->glDepthFunc(GL_LESS);
 
-    //    gl->glEnable(GL_BLEND);
-    //    gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    m_gl->glEnable(GL_BLEND);
+//    m_gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     m_activeTextures.reserve(m_glWrapper.maxTextureUnits());
 
@@ -108,6 +108,10 @@ void Renderer::render(Camera &camera, float dt)
 
 void Renderer::cleanup()
 {
+    if (!m_glWrapper.isInitialized()) {
+        return;
+    }
+
     m_bufferManager.cleanup(m_glWrapper);
     m_textureManager.cleanup(m_glWrapper);
     m_shaderManager.cleanup(m_glWrapper);

@@ -31,6 +31,7 @@ public:
     GLWrapper();
     ~GLWrapper();
 
+    bool isInitialized() const;
     void initialize(QOpenGLContext *glContext);
 
     // VAOs

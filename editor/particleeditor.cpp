@@ -46,6 +46,7 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
 void ParticleEditor::initEditorScene()
 {
     m_gameWidget = new GameWidget(m_scene, this);
+    m_gameWidget->setObjectName("Particle Editor Viewport");
 
     // Create particle scene
     entityx::Entity gridEntity = m_scene.createEntity();
@@ -82,6 +83,7 @@ void ParticleEditor::initEditorScene()
 
 void ParticleEditor::initGui()
 {
+    m_gameWidget->setMinimumSize(200, 100);
     m_gameWidget->setFocusPolicy(Qt::StrongFocus);
     m_gameWidget->setCamera(&m_camera);
 

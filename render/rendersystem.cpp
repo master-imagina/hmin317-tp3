@@ -8,7 +8,6 @@
 #include "transform.h"
 
 
-
 RenderSystem::RenderSystem(RenderWidget *surface) :
     m_surface(surface),
     m_renderer(surface->renderer())

@@ -14,6 +14,7 @@
 #include "editor/componentview.h"
 #include "editor/hooksystems.h"
 #include "editor/panemanager.h"
+#include "editor/particleeditor.h"
 #include "editor/sceneview.h"
 
 
@@ -31,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(centralWidget);
 
     m_gameWidget = new GameWidget(m_scene, centralWidget);
+    m_gameWidget->setObjectName("Editor Main Viewport");
+    m_gameWidget->setFocusPolicy(Qt::StrongFocus);
     m_gameWidget->setCamera(&m_camera);
 
     auto centralLayout = new QVBoxLayout(centralWidget);
@@ -64,11 +67,16 @@ void MainWindow::initPanes()
     auto *sceneView = new SceneView(m_scene, this);
     auto *componentView = new ComponentView(sceneView, this);
 
+    auto *particleEditorPane = new QDockWidget(tr("Particle Editor"), this);
+    auto *particleEditor = new ParticleEditor(particleEditorPane);
+    particleEditorPane->setWidget(particleEditor);
+
     registerHookSystems(m_gameWidget->systemEngine(), *componentView);
 
     m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, componentView);
+    m_paneManager->registerPane(Qt::LeftDockWidgetArea, particleEditorPane, false);
 
     createDefaultComponentEditorCreators(componentView);
 }

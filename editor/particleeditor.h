@@ -7,11 +7,12 @@
 
 #include "core/scene.h"
 
+#include "extras/particles/particleeffect.h"
+
 #include "render/material/material.h"
 
 #include "render/camera.h"
 
-#include "extras/particles/particleeffect.h"
 
 class GameWidget;
 
@@ -28,6 +29,7 @@ private:
 private:
     Scene m_scene;
     Camera m_camera;
+
     GameWidget *m_gameWidget;
 
     entityx::ComponentHandle<ParticleEffect> m_particleEffect;
