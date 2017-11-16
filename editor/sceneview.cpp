@@ -10,7 +10,7 @@
 
 
 SceneView::SceneView(Scene &scene, QWidget *parent) :
-    Pane(tr("Scene Outline"), parent),
+    ScrollablePane(tr("Scene Outline"), parent),
     m_scene(scene),
     m_entityTreeView(nullptr),
     m_itemToEntity()

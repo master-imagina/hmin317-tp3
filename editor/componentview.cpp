@@ -13,7 +13,7 @@
 
 
 ComponentView::ComponentView(SceneView *sceneView, QWidget *parent) :
-    Pane(tr("Components"), parent),
+    ScrollablePane(tr("Components"), parent),
     m_theSceneView(sceneView),
     m_mainWidget(nullptr),
     m_mainLayout(nullptr),

@@ -5,7 +5,7 @@
 #include <QToolBar>
 
 
-Pane::Pane(const QString &title, QWidget *parent) :
+ScrollablePane::ScrollablePane(const QString &title, QWidget *parent) :
     QDockWidget(title, parent),
     m_placeholder(new QMainWindow(this)),
     m_scrollArea(new QScrollArea(m_placeholder))
@@ -19,27 +19,27 @@ Pane::Pane(const QString &title, QWidget *parent) :
     m_placeholder->setCentralWidget(m_scrollArea);
 }
 
-Pane::~Pane()
+ScrollablePane::~ScrollablePane()
 {}
 
-QScrollArea *Pane::placeholder() const
+QScrollArea *ScrollablePane::placeholder() const
 {
     return m_scrollArea;
 }
 
-QWidget *Pane::widget() const
+QWidget *ScrollablePane::widget() const
 {
     return m_scrollArea->widget();
 }
 
-void Pane::setWidget(QWidget *widget)
+void ScrollablePane::setWidget(QWidget *widget)
 {
     if (m_scrollArea->widget() != widget) {
         m_scrollArea->setWidget(widget);
     }
 }
 
-void Pane::addToolBar(Qt::ToolBarArea area, QToolBar *toolbar)
+void ScrollablePane::addToolBar(Qt::ToolBarArea area, QToolBar *toolbar)
 {
     m_placeholder->addToolBar(area, toolbar);
 }

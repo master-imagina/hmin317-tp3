@@ -16,7 +16,7 @@ class QVBoxLayout;
 class SceneView;
 
 
-class ComponentView : public Pane
+class ComponentView : public ScrollablePane
 {
     Q_OBJECT
 

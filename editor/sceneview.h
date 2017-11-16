@@ -13,7 +13,7 @@ class QTreeWidgetItem;
 class Scene;
 
 
-class SceneView : public Pane
+class SceneView : public ScrollablePane
 {
     Q_OBJECT
 

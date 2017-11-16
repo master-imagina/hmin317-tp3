@@ -4,7 +4,6 @@
 
 #include "mainwindow.h"
 
-
 int main(int argc, char *argv[])
 {
     // Set OpenGL version
@@ -16,6 +15,8 @@ int main(int argc, char *argv[])
     QSurfaceFormat::setDefaultFormat(format);
 
     // Create app
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
+
     QApplication app(argc, argv);
     app.setApplicationName("Game Engines - Editor");
 

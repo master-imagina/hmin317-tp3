@@ -3,10 +3,9 @@
 
 #include <qnamespace.h>
 
-
 class MainWindow;
-class Pane;
 
+class QDockWidget;
 class QMenu;
 
 
@@ -16,7 +15,8 @@ public:
     PaneManager(MainWindow *mainWindow, QMenu *viewPaneMenu);
     ~PaneManager() = default;
 
-    void registerPane(Qt::DockWidgetArea area, Pane *pane);
+    void registerPane(Qt::DockWidgetArea area, QDockWidget *pane,
+                      bool open = true);
 
 private:
     MainWindow *m_mainWindow;

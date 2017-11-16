@@ -7,11 +7,11 @@ class QScrollArea;
 class QToolBar;
 
 
-class Pane : public QDockWidget
+class ScrollablePane : public QDockWidget
 {
 public:
-    explicit Pane(const QString &title, QWidget *parent = nullptr);
-    virtual ~Pane();
+    explicit ScrollablePane(const QString &title, QWidget *parent = nullptr);
+    ~ScrollablePane();
 
     QScrollArea *placeholder() const;
 

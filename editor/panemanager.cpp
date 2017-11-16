@@ -1,8 +1,7 @@
 #include "panemanager.h"
 
-#include <QtWidgets/QMenu>
-
-#include "gui/pane.h"
+#include <QDockWidget>
+#include <QMenu>
 
 #include "mainwindow.h"
 
@@ -12,9 +11,16 @@ PaneManager::PaneManager(MainWindow *mainWindow, QMenu *viewPaneMenu) :
     m_openViewPaneMenu(viewPaneMenu)
 {}
 
-void PaneManager::registerPane(Qt::DockWidgetArea area, Pane *pane)
+void PaneManager::registerPane(Qt::DockWidgetArea area, QDockWidget *pane,
+                               bool open)
 {
-    m_openViewPaneMenu->addAction(pane->toggleViewAction());
+    QAction *toggleViewAction = pane->toggleViewAction();
+
+    m_openViewPaneMenu->addAction(toggleViewAction);
 
     m_mainWindow->addDockWidget(area, pane);
+
+    if (!open) {
+        pane->hide();
+    }
 }
