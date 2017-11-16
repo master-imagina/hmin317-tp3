@@ -96,6 +96,15 @@ void ParticleEditor::initGui()
     auto *propertiesWidget = new QWidget(scrollArea);
     auto *propertiesLayout = new QFormLayout(propertiesWidget);
 
+    auto *directionEditor = new Vec3DEdit(propertiesWidget);
+    directionEditor->setXMin(-1.f);
+    directionEditor->setYMin(-1.f);
+    directionEditor->setZMin(-1.f);
+    directionEditor->setXMax(1.f);
+    directionEditor->setYMax(1.f);
+    directionEditor->setZMax(1.f);
+    directionEditor->setStepSize(0.1f);
+    directionEditor->setValue(m_particleEffect->direction());
     auto *countSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     countSlider->setMaximum(500);
     countSlider->setValue(m_particleEffect->count());
@@ -105,17 +114,8 @@ void ParticleEditor::initGui()
     spawnRateSlider->setValue(m_particleEffect->spawnRate());
     auto *maxLifeSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     maxLifeSlider->setValue(m_particleEffect->maxLife());
-    auto *worldPosEditor = new Vec3DEdit(propertiesWidget);
     auto *radiusSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     radiusSlider->setValue(m_particleEffect->radius());
-    auto *directionEditor = new Vec3DEdit(propertiesWidget);
-    directionEditor->setXMin(-1.f);
-    directionEditor->setYMin(-1.f);
-    directionEditor->setZMin(-1.f);
-    directionEditor->setXMax(1.f);
-    directionEditor->setYMax(1.f);
-    directionEditor->setZMax(1.f);
-    directionEditor->setStepSize(0.1f);
     auto *speedSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
     speedSlider->setValue(m_particleEffect->speed());
     auto *particleSizeSlider = new ValuedSlider(Qt::Horizontal, propertiesWidget);
@@ -145,34 +145,36 @@ void ParticleEditor::initGui()
     textureSelectorLayout->addWidget(textureSelectorWidget);
     textureSelectorLayout->addWidget(enableTextureCheckBox);
 
-    connect(countSlider, &QSlider::valueChanged,
-            [this] (int value) {
-        m_particleEffect->setCount(value);
-    });
-    connect(spawnRateSlider, &QSlider::valueChanged,
-            [this] (int value) {
-        m_particleEffect->setSpawnRate(value);
-    });
-    connect(maxLifeSlider, &QSlider::valueChanged,
-            [this] (int value) {
-        m_particleEffect->setMaxLife(value);
-    });
-    connect(worldPosEditor, &Vec3DEdit::valueChanged,
-            [this] (const QVector3D &value) {
-        m_particleEffect->setWorldPos(value);
-    });
-    connect(radiusSlider, &QSlider::valueChanged,
-            [this] (int value) {
-        m_particleEffect->setRadius(value);
-    });
     connect(directionEditor, &Vec3DEdit::valueChanged,
             [this] (const QVector3D &value) {
         m_particleEffect->setDirection(value);
     });
+
+    connect(countSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setCount(value);
+    });
+
+    connect(spawnRateSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setSpawnRate(value);
+    });
+
+    connect(maxLifeSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setMaxLife(value);
+    });
+
+    connect(radiusSlider, &QSlider::valueChanged,
+            [this] (int value) {
+        m_particleEffect->setRadius(value);
+    });
+
     connect(speedSlider, &QSlider::valueChanged,
             [this] (int value) {
         m_particleEffect->setSpeed(value);
     });
+
     connect(particleSizeSlider, &QSlider::valueChanged,
             [this] (int value) {
         m_particleEffect->setParticleSize(value);
@@ -183,6 +185,7 @@ void ParticleEditor::initGui()
             [this] (const QColor &value) {
         m_particleMaterial->setParam("particleColor", value);
     });
+
     connect(textureSelectorWidget, &UrlEdit::urlChanged,
             [this] (const QUrl &url) {
         const QString path = url.toString(QUrl::PreferLocalFile);
@@ -197,12 +200,11 @@ void ParticleEditor::initGui()
         m_particleMaterial->setParam("textureFlag", textureFlag);
     });
 
+    propertiesLayout->addRow("Direction", directionEditor);
     propertiesLayout->addRow("Count", countSlider);
     propertiesLayout->addRow("Spawn Rate", spawnRateSlider);
     propertiesLayout->addRow("Max Life", maxLifeSlider);
-    propertiesLayout->addRow("World Position", worldPosEditor);
     propertiesLayout->addRow("Radius", radiusSlider);
-    propertiesLayout->addRow("Direction", directionEditor);
     propertiesLayout->addRow("Speed", speedSlider);
     propertiesLayout->addRow("Particle Size", particleSizeSlider);
     propertiesLayout->addRow("Particle Color", particleColorEditor);

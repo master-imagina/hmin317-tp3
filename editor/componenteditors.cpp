@@ -40,6 +40,9 @@ void createTransformEditor(entityx::Entity entity,
     rotateEditor->setZMax(maxRotateAngle);
 
     auto *scaleEditor = new Vec3DEdit(parent);
+    scaleEditor->setXMin(1.);
+    scaleEditor->setYMin(1.);
+    scaleEditor->setZMin(1.);
     scaleEditor->setValue(comp->scale());
 
     auto *editorLayout = new QFormLayout(editorWidget);
@@ -81,7 +84,15 @@ void createParticleEffectEditor(entityx::Entity entity,
     layout->insertWidget(layout->count() - 1, new QLabel("Particle Effect"));
     layout->insertWidget(layout->count() - 1, editorWidget);
 
-
+    auto *directionEditor = new Vec3DEdit(editorWidget);
+    directionEditor->setXMin(-1.f);
+    directionEditor->setYMin(-1.f);
+    directionEditor->setZMin(-1.f);
+    directionEditor->setXMax(1.f);
+    directionEditor->setYMax(1.f);
+    directionEditor->setZMax(1.f);
+    directionEditor->setStepSize(0.1f);
+    directionEditor->setValue(comp->direction());
     auto *countSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
     countSlider->setMaximum(500);
     countSlider->setValue(comp->count());
@@ -91,32 +102,26 @@ void createParticleEffectEditor(entityx::Entity entity,
     spawnRateSlider->setValue(comp->spawnRate());
     auto *maxLifeSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
     maxLifeSlider->setValue(comp->maxLife());
-    auto *worldPosEditor = new Vec3DEdit(editorWidget);
     auto *radiusSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
     radiusSlider->setValue(comp->radius());
-    auto *directionEditor = new Vec3DEdit(editorWidget);
-    directionEditor->setXMin(-1.f);
-    directionEditor->setYMin(-1.f);
-    directionEditor->setZMin(-1.f);
-    directionEditor->setXMax(1.f);
-    directionEditor->setYMax(1.f);
-    directionEditor->setZMax(1.f);
-    directionEditor->setStepSize(0.1f);
     auto *speedSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
     speedSlider->setValue(comp->speed());
     auto *particleSizeSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
     particleSizeSlider->setValue(comp->particleSize());
 
     auto *editorLayout = new QFormLayout(editorWidget);
+    editorLayout->addRow("Direction", directionEditor);
     editorLayout->addRow("Count", countSlider);
     editorLayout->addRow("Spawn Rate", spawnRateSlider);
     editorLayout->addRow("Max Life", maxLifeSlider);
-    editorLayout->addRow("World Position", worldPosEditor);
     editorLayout->addRow("Radius", radiusSlider);
-    editorLayout->addRow("Direction", directionEditor);
     editorLayout->addRow("Speed", speedSlider);
     editorLayout->addRow("Particle Size", particleSizeSlider);
 
+    QObject::connect(directionEditor, &Vec3DEdit::valueChanged,
+                     [comp] (const QVector3D &value) {
+        comp->setDirection(value);
+    });
 
     QObject::connect(countSlider, &QSlider::valueChanged,
                      [comp] (int value) {
@@ -133,19 +138,9 @@ void createParticleEffectEditor(entityx::Entity entity,
         comp->setMaxLife(value);
     });
 
-    QObject::connect(worldPosEditor, &Vec3DEdit::valueChanged,
-                     [comp] (const QVector3D &value) {
-        comp->setWorldPos(value);
-    });
-
     QObject::connect(radiusSlider, &QSlider::valueChanged,
                      [comp] (int value) {
         comp->setRadius(value);
-    });
-
-    QObject::connect(directionEditor, &Vec3DEdit::valueChanged,
-                     [comp] (const QVector3D &value) {
-        comp->setDirection(value);
     });
 
     QObject::connect(speedSlider, &QSlider::valueChanged,
