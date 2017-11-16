@@ -1,7 +1,5 @@
 #include "gamewidget.h"
 
-#include <QApplication>
-
 #include "3rdparty/entityx/deps/Dependencies.h"
 
 #include "core/scene.h"
@@ -25,6 +23,7 @@
 
 GameWidget::GameWidget(Scene &scene, QWidget *parent) :
     RenderWidget(parent),
+    m_initialized(false),
     m_systemEngine(scene),
     m_gameLoop(new GameLoop(60, this)),
     m_cameraController(new CameraController(this))
@@ -32,9 +31,6 @@ GameWidget::GameWidget(Scene &scene, QWidget *parent) :
     installEventFilter(m_cameraController);
 
     initSystems();
-
-    m_gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
-    m_gameLoop->run();
 }
 
 GameLoop *GameWidget::gameLoop() const
@@ -45,6 +41,16 @@ GameLoop *GameWidget::gameLoop() const
 SystemEngine &GameWidget::systemEngine()
 {
     return m_systemEngine;
+}
+
+void GameWidget::showEvent(QShowEvent *)
+{
+    if (!m_initialized) {
+        m_gameLoop->setCallback([this] (float dt) { iterateGameLoop(dt); });
+        m_gameLoop->run();
+
+        m_initialized = true;
+    }
 }
 
 void GameWidget::initSystems()

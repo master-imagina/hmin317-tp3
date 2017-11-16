@@ -23,11 +23,16 @@ public:
 
     SystemEngine &systemEngine();
 
+protected:
+    void showEvent(QShowEvent *) override;
+
 private:
     void initSystems();
     void iterateGameLoop(float dt);
 
 private:
+    bool m_initialized;
+
     SystemEngine m_systemEngine;
 
     GameLoop *m_gameLoop;
