@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 
     // Create app
     QApplication app(argc, argv);
-    app.setApplicationName("Game Engines - PW3");
+    app.setApplicationName("Seasons");
 
     // Create scene
     Scene scene;
