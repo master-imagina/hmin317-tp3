@@ -4,7 +4,7 @@
 Particle::Particle()
     : pos(QVector3D(0.0f, 0.0f, 0.0f))
     , color(QVector4D(1.0f, 1.0f, 1.0f, 1.0f))
-    , life(1000.0f)
+    , life(-1000.0f)
     , velocity(QVector3D(0.0f, 0.0f, 0.0f))
     , lastTime(0)
     , size(5.0f)
@@ -44,7 +44,7 @@ void Particle::update()
     life -= delta;
 
     if(life > 0){
-        pos += (velocity * (delta / 100.0f));
+        pos += (velocity * (delta / 1000.0f));
 
         if(pos.y() <= 0.0f) {
             life = 0;

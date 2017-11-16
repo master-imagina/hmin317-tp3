@@ -5,7 +5,10 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 #include <vector>
+#include <random>
 #include "particle.h"
+
+#define MAX_PARTICULES 10000
 
 struct ParticleData {
     QVector4D posSize, color;
@@ -32,7 +35,7 @@ public:
 private:
     int lastUsedParticle;
     int maxParticle;
-    Particle particleContainer[10000];
+    Particle particleContainer[MAX_PARTICULES];
     QOpenGLBuffer arrayBuffer;
     std::vector<ParticleData> vParticlesData;
     double lastTime;

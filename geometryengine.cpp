@@ -206,13 +206,13 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program) {
 }
 
 void GeometryEngine::initPlaneGeometry() {
-    int size = PLAN_SIZE;
-    int mapSize = MAP_SIZE;
+    const int size = PLAN_SIZE;
+    float mapSize = MAP_SIZE;
     VertexData vert[size*size];
     GLushort indices[(size - 1) * (size - 1) * 6];
     // creation des vertices
     int i = 0;
-    float size_f = size;
+    const float size_f = size;
     for(int y= 0; y < size; ++y) {
         for(int x = 0; x < size; ++x) {
             //en premier la position, puis la texture dans le QVector2D

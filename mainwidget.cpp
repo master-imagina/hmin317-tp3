@@ -53,6 +53,8 @@
 #include <QMouseEvent>
 
 #include <math.h>
+#include <iostream>
+#include "utils.h"
 
 MainWidget::MainWidget(int fps, Season s, int seasonTime, QWidget *parent) :
     QOpenGLWidget(parent),
@@ -158,8 +160,9 @@ void MainWidget::initializeGL()
 
     glClearColor(0, 0, 0, 1);
 
-    initShaders();
     initTextures();
+    initShaders();
+
 
 //! [2]
     // Enable depth buffer
@@ -247,7 +250,7 @@ void MainWidget::resizeGL(int w, int h)
     qreal aspect = qreal(w) / qreal(h ? h : 1);
 
     // Set near plane to 3.0, far plane to 7.0, field of view 45 degrees
-    const qreal zNear = 0.3, zFar = 100.0, fov = 45.0;
+    const qreal zNear = 0.3, zFar = 500.0, fov = 45.0;
 
     // Reset projection
     projection.setToIdentity();
@@ -259,6 +262,7 @@ void MainWidget::resizeGL(int w, int h)
 
 void MainWidget::paintGL()
 {
+    program.bind();
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

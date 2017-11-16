@@ -67,6 +67,8 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
+#define CALENDAR_TIME 10000
+
 class GeometryEngine;
 
 class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
