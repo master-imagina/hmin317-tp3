@@ -8,7 +8,7 @@
 
 #include "extras/cameraactions.h"
 #include "extras/gamewidget.h"
-#include "extras/heightmap.h"
+#include "extras/grid.h"
 
 #include "extras/particles/quick.h"
 
@@ -52,7 +52,7 @@ void ParticleEditor::initEditorScene()
 
     //  Grid geometry
     auto gridGeom = gridEntity.assign<Geometry>();
-    *gridGeom.get() = heightmapToGeometry(QImage("images/flat_heightmap.png"));
+    *gridGeom.get() = grid(50);
 
     AABoundingBox gridBBox(gridGeom->vertices);
 
