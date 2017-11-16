@@ -74,10 +74,11 @@ void initScene(Scene &scene)
     terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
 
     // Create particle effect
-    entityx::Entity particleEntity =
-            createParticleEffect(scene, {0, 400, 0}, {0, -1, 0},
-                                 50, 300, terrainBoundingBox.radius().z(),
-                                 0.1f, 4.f);
+    entityx::Entity particleEntity = scene.createEntity();
+
+    createParticleEffect(particleEntity, {0, 400, 0}, {0, -1, 0},
+                         50, 300, terrainBoundingBox.radius().z(),
+                         0.1f, 4.f);
 
     particleEffect = particleEntity.component<ParticleEffect>();
     particleMaterial = particleEntity.component<Material>();

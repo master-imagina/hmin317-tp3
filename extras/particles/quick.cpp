@@ -1,7 +1,6 @@
 #include "quick.h"
 
 #include <QColor>
-#include <QVector3D>
 
 #include "core/scene.h"
 
@@ -19,22 +18,20 @@
 #include "particleeffect.h"
 
 
-entityx::Entity createParticleEffect(Scene &scene,
-                                     const QVector3D &worldPos,
-                                     const QVector3D &direction,
-                                     int count,
-                                     int maxLife,
-                                     float radius,
-                                     float speed,
-                                     float size)
+void createParticleEffect(entityx::Entity entity,
+                          const QVector3D &worldPos,
+                          const QVector3D &direction,
+                          int count,
+                          int maxLife,
+                          float radius,
+                          float speed,
+                          float size)
 {
     // /!\ Assume the system engine has the following component dependency
     // ParticleEffect -> Geometry, Material
-    entityx::Entity ret = scene.createEntity();
+    entityx::ComponentHandle<ParticleEffect> effect = entity.assign<ParticleEffect>();
 
-    entityx::ComponentHandle<ParticleEffect> effect = ret.assign<ParticleEffect>();
-
-    entityx::ComponentHandle<Transform> transform = ret.component<Transform>();
+    entityx::ComponentHandle<Transform> transform = entity.component<Transform>();
     transform->setTranslate(worldPos);
 
     effect->setDirection(direction);
@@ -44,17 +41,17 @@ entityx::Entity createParticleEffect(Scene &scene,
     effect->setSpeed(speed);
     effect->setParticleSize(size);
 
-    entityx::ComponentHandle<Geometry> geom = ret.component<Geometry>();
+    entityx::ComponentHandle<Geometry> geom = entity.component<Geometry>();
     VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
     geom->vertexLayout.addAttribute(standardVertexAttrib);
 
     uptr<ShaderProgram> shaderProgram = shaderProgramFromFile(
-        "shaders/particle.vert",
-        "shaders/particle.geom",
-        "shaders/particle.frag"
-    );
+                "shaders/particle.vert",
+                "shaders/particle.geom",
+                "shaders/particle.frag"
+                );
 
-    entityx::ComponentHandle<Material> material = ret.component<Material>();
+    entityx::ComponentHandle<Material> material = entity.component<Material>();
     RenderPass *basePass = material->addRenderPass("base");
     basePass->setShaderProgram(std::move(shaderProgram));
 
@@ -62,6 +59,4 @@ entityx::Entity createParticleEffect(Scene &scene,
     material->setParam("particleSize", size);
     material->setParam("particleTexture", QVariant::fromValue(Texture2D()));
     material->setParam("textureFlag", 0.f);
-
-    return ret;
 }

@@ -6,8 +6,6 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 
-#include "editor/componenteditors.h"
-
 #include "extras/cameraactions.h"
 #include "extras/gamewidget.h"
 #include "extras/heightmap.h"
@@ -70,10 +68,10 @@ void ParticleEditor::initEditorScene()
     terrainPass->setShaderProgram(std::move(terrainShader));
 
     // Create particle effect
-    entityx::Entity particleEntity =
-            createParticleEffect(m_scene, {0, 0, 0}, {0, 1, 0},
-                                 50, 100, gridBBox.radius().z(),
-                                 0.4f, 4.f);
+    entityx::Entity particleEntity = m_scene.createEntity();
+    createParticleEffect(particleEntity, {0, 0, 0}, {0, 1, 0},
+                         50, 100, gridBBox.radius().z(),
+                         0.4f, 4.f);
 
     m_particleEffect = particleEntity.component<ParticleEffect>();
     m_particleMaterial = particleEntity.component<Material>();
