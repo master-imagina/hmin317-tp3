@@ -212,18 +212,19 @@ install(TARGETS season RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})
 set(EDITOR_HEADERS
     editor/cameracontrols.h
     editor/cameracontrollercontrols.h
-    editor/componenteditors.h
+    editor/componentuihandlers.h
     editor/componentview.h
     editor/hooksystems.h
     editor/mainwindow.h
     editor/particleeditor.h
     editor/sceneview.h
     editor/panemanager.h
+    editor/icomponentuihandler.h
     )
 set(EDITOR_SOURCES
     editor/cameracontrols.cpp
     editor/cameracontrollercontrols.cpp
-    editor/componenteditors.cpp
+    editor/componentuihandlers.cpp
     editor/componentview.cpp
     editor/hooksystems.cpp
     editor/main.cpp

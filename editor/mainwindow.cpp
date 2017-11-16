@@ -10,7 +10,7 @@
 
 #include "editor/gui/fpswidgets.h"
 
-#include "editor/componenteditors.h"
+#include "editor/componentuihandlers.h"
 #include "editor/componentview.h"
 #include "editor/hooksystems.h"
 #include "editor/panemanager.h"
@@ -75,6 +75,6 @@ void MainWindow::initPanes()
 
 void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentView)
 {
-    componentView->addComponentEditorCreator(&createTransformEditor);
-    componentView->addComponentEditorCreator(&createParticleEffectEditor);
+    componentView->registerComponentUiHandler<TransformCompUiHandler>();
+    componentView->registerComponentUiHandler<ParticleEffectCompUiHandler>();
 }

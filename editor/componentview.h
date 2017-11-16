@@ -1,14 +1,16 @@
 #ifndef COMPONENTVIEW_H
 #define COMPONENTVIEW_H
 
-#include <functional>
-#include <map>
+#include "core/aliases_memory.h"
 
 #include "editor/gui/pane.h"
+
+#include "editor/icomponentuihandler.h"
 
 #include "3rdparty/entityx/Entity.h"
 #include "3rdparty/entityx/System.h"
 
+class QMenu;
 class QVBoxLayout;
 
 class SceneView;
@@ -19,17 +21,21 @@ class ComponentView : public Pane
     Q_OBJECT
 
 public:
-    using ComponentEditorCreator = std::function<void (entityx::Entity, QWidget *, QVBoxLayout *)>;
-
     ComponentView(SceneView *sceneView, QWidget *parent = nullptr);
     ~ComponentView() = default;
 
-    void addComponentEditorCreator(ComponentEditorCreator creator);
+    template <class Handler>
+    void registerComponentUiHandler()
+    {
+        m_componentUiHandlers.emplace_back(std::make_unique<Handler>());
+    }
 
     void setCurrentEntity(entityx::Entity entity);
 
 private:
     void createConnections();
+
+    void updateComponentMenuForEntity();
 
 private:
     SceneView *m_theSceneView;
@@ -37,9 +43,11 @@ private:
     QWidget *m_mainWidget;
     QVBoxLayout *m_mainLayout;
 
+    QMenu *m_addComponentMenu;
+
     entityx::Entity m_currentEntity;
 
-    std::vector<ComponentEditorCreator> m_componentEditorCreators;
+    std::vector<uptr<IComponentUiHandler>> m_componentUiHandlers;
 };
 
 

@@ -1,25 +1,30 @@
-#include "componenteditors.h"
+#include "componentuihandlers.h"
 
+#include <QAction>
 #include <QFormLayout>
 #include <QLabel>
 
 #include "editor/gui/advancedslider.h"
 #include "editor/gui/vec3edit.h"
 
-#include "extras/particles/particleeffect.h"
-
-#include "render/transform.h"
+#include "extras/particles/quick.h"
 
 
+////////////////////// TransformCompUiHandler //////////////////////
 
-void createTransformEditor(entityx::Entity entity,
-                           QWidget *parent,
-                           QVBoxLayout *layout)
+void TransformCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                                QAction *action)
 {
-    if (!entity.has_component<Transform>()) {
-        return;
-    }
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] () {
+        entity.assign<Transform>();
+    });
+}
 
+void TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                   QWidget *parent,
+                                                   QVBoxLayout *layout)
+{
     Transform *comp = entity.component<Transform>().get();
 
     // Build UI
@@ -68,14 +73,21 @@ void createTransformEditor(entityx::Entity entity,
 }
 
 
-void createParticleEffectEditor(entityx::Entity entity,
-                                QWidget *parent,
-                                QVBoxLayout *layout)
-{
-    if (!entity.has_component<ParticleEffect>()) {
-        return;
-    }
+////////////////////// ParticleEffectCompUiHandler //////////////////////
 
+void ParticleEffectCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                                     QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [entity] () {
+        createParticleEffect(entity);
+    });
+}
+
+void ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                        QWidget *parent,
+                                                        QVBoxLayout *layout)
+{
     ParticleEffect *comp = entity.component<ParticleEffect>().get();
 
     // Build UI
@@ -152,7 +164,6 @@ void createParticleEffectEditor(entityx::Entity entity,
                      [comp] (int value) {
         comp->setParticleSize(value);
         //FIXME
-//        m_particleMaterial->setParam("particleSize", (float)value);
+        //        m_particleMaterial->setParam("particleSize", (float)value);
     });
-
 }

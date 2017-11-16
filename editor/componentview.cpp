@@ -1,8 +1,11 @@
 #include "componentview.h"
 
 #include <QBoxLayout>
+#include <QDebug>
 #include <QMenu>
 #include <QToolButton>
+
+#include "core/scene.h"
 
 #include "editor/sceneview.h"
 
@@ -15,7 +18,7 @@ ComponentView::ComponentView(SceneView *sceneView, QWidget *parent) :
     m_mainWidget(nullptr),
     m_mainLayout(nullptr),
     m_currentEntity(),
-    m_componentEditorCreators()
+    m_componentUiHandlers()
 {
     Q_ASSERT (m_theSceneView);
 
@@ -27,9 +30,9 @@ ComponentView::ComponentView(SceneView *sceneView, QWidget *parent) :
     addComponentBtn->setPopupMode(QToolButton::InstantPopup);
     addComponentBtn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    auto addComponentMenu = new QMenu(addComponentBtn);
+    m_addComponentMenu = new QMenu(addComponentBtn);
 
-    addComponentBtn->setMenu(addComponentMenu);
+    addComponentBtn->setMenu(m_addComponentMenu);
 
     m_mainLayout = new QVBoxLayout(m_mainWidget);
     m_mainLayout->addWidget(addComponentBtn);
@@ -37,11 +40,6 @@ ComponentView::ComponentView(SceneView *sceneView, QWidget *parent) :
 
 
     createConnections();
-}
-
-void ComponentView::addComponentEditorCreator(ComponentEditorCreator creator)
-{
-    m_componentEditorCreators.emplace_back(creator);
 }
 
 void ComponentView::setCurrentEntity(entityx::Entity entity)
@@ -52,14 +50,44 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
 
     m_mainLayout->addStretch();
 
+    const bool entityIsValid = entity.valid();
+
+    m_addComponentMenu->setEnabled(entityIsValid);
+
     // Re-create editors
-    for (ComponentEditorCreator creator : m_componentEditorCreators) {
-        creator(entity, m_mainWidget, m_mainLayout);
+    if (entityIsValid) {
+        for (uptr<IComponentUiHandler> &compUiHandler : m_componentUiHandlers) {
+            const bool hasComponent = compUiHandler->hasComponent(m_currentEntity);
+
+            if (hasComponent) {
+                compUiHandler->createComponentEditor(m_currentEntity,
+                                                     m_mainWidget,
+                                                     m_mainLayout);
+            }
+        }
     }
+
+    updateComponentMenuForEntity();
 }
 
 void ComponentView::createConnections()
 {
     connect(m_theSceneView, &SceneView::entityItemSelected,
             this, &ComponentView::setCurrentEntity);
+}
+
+void ComponentView::updateComponentMenuForEntity()
+{
+    m_addComponentMenu->clear();
+
+    for (uptr<IComponentUiHandler> &compUiHandler : m_componentUiHandlers) {
+        QAction *addComponentAction =
+                m_addComponentMenu->addAction(compUiHandler->componentName());
+
+        const bool hasComponent = compUiHandler->hasComponent(m_currentEntity);
+
+        addComponentAction->setDisabled(hasComponent);
+
+        compUiHandler->configureAddAction(m_currentEntity, addComponentAction);
+    }
 }
