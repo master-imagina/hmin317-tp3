@@ -21,6 +21,8 @@ public:
 
     GameLoop *gameLoop() const;
 
+    SystemEngine &systemEngine();
+
 private:
     void initSystems();
     void iterateGameLoop(float dt);

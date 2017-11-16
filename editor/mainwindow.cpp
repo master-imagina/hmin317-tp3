@@ -10,10 +10,11 @@
 
 #include "editor/gui/fpswidgets.h"
 
-#include "editor/panemanager.h"
-#include "editor/sceneview.h"
 #include "editor/componenteditors.h"
 #include "editor/componentview.h"
+#include "editor/hooksystems.h"
+#include "editor/panemanager.h"
+#include "editor/sceneview.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -63,6 +64,8 @@ void MainWindow::initPanes()
     auto *sceneView = new SceneView(m_scene, this);
     auto *componentView = new ComponentView(sceneView, this);
 
+    registerHookSystems(m_gameWidget->systemEngine(), *componentView);
+
     m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, componentView);
@@ -73,4 +76,5 @@ void MainWindow::initPanes()
 void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentView)
 {
     componentView->addComponentEditorCreator(&createTransformEditor);
+    componentView->addComponentEditorCreator(&createParticleEffectEditor);
 }

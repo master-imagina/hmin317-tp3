@@ -42,6 +42,11 @@ GameLoop *GameWidget::gameLoop() const
     return m_gameLoop;
 }
 
+SystemEngine &GameWidget::systemEngine()
+{
+    return m_systemEngine;
+}
+
 void GameWidget::initSystems()
 {
     // Add system dependencies
@@ -51,6 +56,7 @@ void GameWidget::initSystems()
     // Add systems
     m_systemEngine.registerSystem<ParticleSystem>();
     m_systemEngine.registerSystem<RenderSystem>(this);
+
     m_systemEngine.initialize();
 }
 

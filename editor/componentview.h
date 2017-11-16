@@ -7,6 +7,7 @@
 #include "editor/gui/pane.h"
 
 #include "3rdparty/entityx/Entity.h"
+#include "3rdparty/entityx/System.h"
 
 class QVBoxLayout;
 
@@ -25,11 +26,10 @@ public:
 
     void addComponentEditorCreator(ComponentEditorCreator creator);
 
-private:
-    void createConnections();
+    void setCurrentEntity(entityx::Entity entity);
 
 private:
-    void onEntityItemSelected(entityx::Entity entity);
+    void createConnections();
 
 private:
     SceneView *m_theSceneView;
@@ -37,7 +37,35 @@ private:
     QWidget *m_mainWidget;
     QVBoxLayout *m_mainLayout;
 
+    entityx::Entity m_currentEntity;
+
     std::vector<ComponentEditorCreator> m_componentEditorCreators;
+};
+
+
+template <typename C>
+class ComponentAddedHook : public entityx::System<ComponentAddedHook<C>>, public entityx::Receiver<ComponentAddedHook<C>>
+{
+public:
+    ComponentAddedHook(ComponentView &componentView) :
+        m_componentView(componentView)
+    {}
+
+    void receive(const entityx::ComponentAddedEvent<C> &event)
+    {
+        m_componentView.setCurrentEntity(event.entity);
+    }
+
+    void configure(entityx::EventManager &events) override
+    {
+        events.subscribe<entityx::ComponentAddedEvent<C>>(*this);
+    }
+
+    void update(entityx::EntityManager &entities,
+                entityx::EventManager &events,
+                double dt) override {}
+private:
+    ComponentView &m_componentView;
 };
 
 #endif // COMPONENTVIEW_H

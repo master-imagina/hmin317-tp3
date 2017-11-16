@@ -14,6 +14,7 @@ ComponentView::ComponentView(SceneView *sceneView, QWidget *parent) :
     m_theSceneView(sceneView),
     m_mainWidget(nullptr),
     m_mainLayout(nullptr),
+    m_currentEntity(),
     m_componentEditorCreators()
 {
     Q_ASSERT (m_theSceneView);
@@ -43,14 +44,10 @@ void ComponentView::addComponentEditorCreator(ComponentEditorCreator creator)
     m_componentEditorCreators.emplace_back(creator);
 }
 
-void ComponentView::createConnections()
+void ComponentView::setCurrentEntity(entityx::Entity entity)
 {
-    connect(m_theSceneView, &SceneView::entityItemSelected,
-            this, &ComponentView::onEntityItemSelected);
-}
+    m_currentEntity = entity;
 
-void ComponentView::onEntityItemSelected(entityx::Entity entity)
-{
     clearLayout(m_mainLayout, 1);
 
     m_mainLayout->addStretch();
@@ -59,4 +56,10 @@ void ComponentView::onEntityItemSelected(entityx::Entity entity)
     for (ComponentEditorCreator creator : m_componentEditorCreators) {
         creator(entity, m_mainWidget, m_mainLayout);
     }
+}
+
+void ComponentView::createConnections()
+{
+    connect(m_theSceneView, &SceneView::entityItemSelected,
+            this, &ComponentView::setCurrentEntity);
 }

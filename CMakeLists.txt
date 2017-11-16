@@ -214,6 +214,7 @@ set(EDITOR_HEADERS
     editor/cameracontrollercontrols.h
     editor/componenteditors.h
     editor/componentview.h
+    editor/hooksystems.h
     editor/mainwindow.h
     editor/particleeditor.h
     editor/sceneview.h
@@ -224,6 +225,7 @@ set(EDITOR_SOURCES
     editor/cameracontrollercontrols.cpp
     editor/componenteditors.cpp
     editor/componentview.cpp
+    editor/hooksystems.cpp
     editor/main.cpp
     editor/mainwindow.cpp
     editor/particleeditor.cpp
