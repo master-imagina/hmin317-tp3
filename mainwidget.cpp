@@ -54,20 +54,28 @@
 
 #include <math.h>
 
-MainWidget::MainWidget(int fps, QWidget *parent) :
+MainWidget::MainWidget(int fps, Season s, int seasonTime, QWidget *parent) :
     QOpenGLWidget(parent),
     geometries(0),
     height(0),
-    sand(0),
     rock(0),
-    angularSpeed(0.3),
+    snowRock(0),
+    sand(0),
+    snowSand(0),
     camera(),
     orbit(false),
-    fps(fps)
+    angularSpeed(0.3),
+    fps(fps),
+    seasonTime(seasonTime),
+    particleEngineSnow(nullptr),
+    particleEngineRain(nullptr),
+    lightPos(4.0f, 10.0f, -4.0f)
 {
-    rotationAxis.setY(1.f);
     setMouseTracking(true);
-    //angularSpeed = angularSpeed * (float) (60.0f / (float) fps);
+    seasonTimer = new QTimer();
+    seasonM = new SeasonManager(s);
+    seasonTimer->connect(seasonTimer, SIGNAL(timeout()), seasonM, SLOT(updtateSeason()));
+    seasonTimer->start(seasonTime);
 }
 
 MainWidget::~MainWidget()
@@ -78,7 +86,11 @@ MainWidget::~MainWidget()
     delete height;
     delete sand;
     delete rock;
+    delete snowRock;
+    delete snowSand;
     delete geometries;
+    delete particleEngineSnow;
+    delete particleEngineRain;
     doneCurrent();
 }
 
@@ -94,7 +106,6 @@ void MainWidget::mouseReleaseEvent(QMouseEvent *e)
     if(e->button() == Qt::RightButton) {
 
         orbit = !orbit;
-        //update();
     }
 }
 //! [0]
@@ -105,9 +116,7 @@ void MainWidget::wheelEvent(QWheelEvent *event) {
 //! [1]
 void MainWidget::timerEvent(QTimerEvent *)
 {
-    rotation = QQuaternion::fromAxisAndAngle(rotationAxis, angularSpeed) * rotation;
     update();
-    //if(orbit) update();
 }
 //! [1]
 
@@ -132,7 +141,6 @@ void MainWidget::keyPressEvent(QKeyEvent *event) {
             camera.processKeyPress(Camera_Movement::W);
             break;
     }
-    //update();
 }
 
 void MainWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -141,7 +149,6 @@ void MainWidget::mouseMoveEvent(QMouseEvent *event) {
         float yoffset = mousePressPosition.y() - event->y(); // reversed since y-coordinates range from bottom to top
         mousePressPosition = QVector2D(event->localPos());
         camera.processMouseMovement(xoffset, yoffset);
-        //update();
     }
 }
 
@@ -157,15 +164,17 @@ void MainWidget::initializeGL()
 //! [2]
     // Enable depth buffer
     glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_BLEND);
     // Enable back face culling
     //glEnable(GL_CULL_FACE);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //! [2]
     geometries = new GeometryEngine;
-
+    particleEngineRain = new ParticuleEngine(ParticleType::Rain);
+    particleEngineSnow = new ParticuleEngine(ParticleType::Snow);
     // Use QBasicTimer because its faster than QTimer
-    int milliSleep = 1000 / fps;
-    timer.start(milliSleep, this);
+    timer.start(1000 / fps, this);
 }
 
 //! [3]
@@ -183,8 +192,16 @@ void MainWidget::initShaders()
     if (!program.link())
         close();
 
-    // Bind shader pipeline for use
-    if (!program.bind())
+    // Compile vertex shader
+    if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/particlevshader.glsl"))
+        close();
+
+    // Compile fragment shader
+    if (!particlesProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/particlefshader.glsl"))
+        close();
+
+    // Link shader pipeline
+    if (!particlesProgram.link())
         close();
 }
 //! [3]
@@ -196,22 +213,30 @@ void MainWidget::initTextures()
     height = new QOpenGLTexture(QImage(":/heightmap-1.png").mirrored());
     sand= new QOpenGLTexture(QImage(":/sand.jpg").mirrored());
     rock= new QOpenGLTexture(QImage(":/rock.jpg").mirrored());
+    snowRock= new QOpenGLTexture(QImage(":/snow_rock.jpg").mirrored());
+    snowSand= new QOpenGLTexture(QImage(":/snow_sand.jpg").mirrored());
 
     // Set nearest filtering mode for texture minification
     height->setMinificationFilter(QOpenGLTexture::Nearest);
     sand->setMinificationFilter(QOpenGLTexture::Nearest);
     rock->setMinificationFilter(QOpenGLTexture::Nearest);
+    snowRock->setMinificationFilter(QOpenGLTexture::Nearest);
+    snowSand->setMinificationFilter(QOpenGLTexture::Nearest);
 
     // Set bilinear filtering mode for texture magnification
     height->setMagnificationFilter(QOpenGLTexture::Linear);
     sand->setMagnificationFilter(QOpenGLTexture::Linear);
     rock->setMagnificationFilter(QOpenGLTexture::Linear);
+    snowRock->setMagnificationFilter(QOpenGLTexture::Linear);
+    snowSand->setMagnificationFilter(QOpenGLTexture::Linear);
 
     // Wrap texture coordinates by repeating
     // f.ex. texture coordinate (1.1, 1.2) is same as (0.1, 0.2)
     height->setWrapMode(QOpenGLTexture::Repeat);
     sand->setWrapMode(QOpenGLTexture::Repeat);
     rock->setWrapMode(QOpenGLTexture::Repeat);
+    snowRock->setWrapMode(QOpenGLTexture::Repeat);
+    snowSand->setWrapMode(QOpenGLTexture::Repeat);
 }
 //! [4]
 
@@ -240,33 +265,61 @@ void MainWidget::paintGL()
     height->bind(0);
     sand->bind(1);
     rock->bind(2);
+    snowRock->bind(3);
+    snowSand->bind(4);
 
 //! [6]
     // Calculate model view transformation
     QMatrix4x4 matrix;
     if(orbit) {
-        camera.orbitAround();
+        camera.orbitAround(matrix, 1.0f , 0.0f);
     }
-    matrix.translate(0.0, 0.0, -5.0);
-
-    QQuaternion framing = QQuaternion::fromAxisAndAngle(QVector3D(1,0,0),45.0);
-    matrix.rotate(framing);
-
-    matrix.translate(0.0, -1.8, 0.0);
-
+    camera.lookAt(matrix);
     matrix.rotate(rotation);
 
     // Set modelview-projection matrix
     program.setUniformValue("mvp_matrix", projection * matrix);
 //! [6]
-
+    program.setUniformValue("lightColor", QVector3D(1.0f, 1.0f, 1.0f));
     program.setUniformValue("height_map", 0);
+    program.setUniformValue("sizeV", (float) PLAN_SIZE);
     // Use texture unit 1 which contains cube.png
-    program.setUniformValue("sand", 1);
-    program.setUniformValue("rock", 2);
+    if(seasonM->getSeason() != Season::Winter) {
+        program.setUniformValue("sand", 1);
+    } else {
+        program.setUniformValue("sand", 4);
+    }
+    if(seasonM->getSeason() != Season::Winter) {
+        program.setUniformValue("rock", 2);
+    } else {
+        program.setUniformValue("rock", 3);
+    }
 
     // Draw cube geometry
     //geometries->drawCubeGeometry(&program);
-    geometries->drawPlaneGeometry(&program, 64);
-
+    geometries->drawPlaneGeometry(&program);
+    // draw particles
+    particlesProgram.bind();
+    height->bind(0);
+    particlesProgram.setUniformValue("height_map", 0);
+    particlesProgram.setUniformValue("mvp_matrix", projection * matrix);
+    particlesProgram.setUniformValue("lightColor", QVector3D(1.0f, 1.0f, 1.0f));
+    particlesProgram.setUniformValue("map_size", MAP_SIZE);
+    if(seasonM->getSeason() == Season::Winter) {
+        ParticuleEngine &pe = *particleEngineSnow;
+        pe.generateParticles(400.0f);
+        pe.uptadeParticles();
+        pe.drawParticles(&particlesProgram);
+    } else if(seasonM->getSeason() == Season::Spring) {
+        ParticuleEngine &pe = *particleEngineRain;
+        pe.generateParticles(2000.0f);
+        pe.uptadeParticles();
+        pe.drawParticles(&particlesProgram);
+    }
+    auto lerp = [] (QColor &a, QColor &b, float step) {
+        float h = a.redF() * (1.0 - step) + b.redF() * step;
+        float s = a.greenF() * (1.0 - step) + b.greenF() * step;
+        float v = a.blueF() * (1.0 - step) + b.blueF() * step;
+        return QColor::fromRgbF(h, s, v);
+    };
 }

@@ -53,16 +53,19 @@
 
 #include "geometryengine.h"
 #include "camera.h"
+#include "seasonmanager.h"
+#include "particulesengine.h"
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
-#include <QBasicTimer>
+#include <QTime>
+#include <QTimer>
+#include <QElapsedTimer>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
-
 
 class GeometryEngine;
 
@@ -71,7 +74,7 @@ class MainWidget : public QOpenGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit MainWidget(int fps, Season s, int seasonTime, QWidget *parent = 0);
+    explicit MainWidget(int fps, Season s = Season::Autumn, int seasonTime = 10000, QWidget *parent = 0);
     ~MainWidget();
 
 protected:
@@ -91,12 +94,13 @@ protected:
 
 private:
     QBasicTimer timer;
-    QOpenGLShaderProgram program;
+    QTimer *seasonTimer;
+    QOpenGLShaderProgram program, particlesProgram;
     GeometryEngine *geometries;
 
     QOpenGLTexture *height;
-    QOpenGLTexture *rock;
-    QOpenGLTexture *sand;
+    QOpenGLTexture *rock, *snowRock;
+    QOpenGLTexture *sand, *snowSand;
 
     QMatrix4x4 projection;
     Camera camera;
@@ -107,6 +111,10 @@ private:
     QQuaternion rotation;
     int fov;
     int fps;
+    int seasonTime;
+    SeasonManager *seasonM;
+    ParticuleEngine *particleEngineSnow, *particleEngineRain;
+    QVector3D lightPos;
 };
 
 #endif // MAINWIDGET_H

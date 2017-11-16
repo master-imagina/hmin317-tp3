@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 #ifndef QT_NO_OPENGL
 
     app.setApplicationName("Particle");
-    MainWidget widget(144);
+    MainWidget widget(144, Season::Autumn, 5000);
     widget.show();
 
 #else

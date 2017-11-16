@@ -5,34 +5,23 @@ precision mediump float;
 #endif
 
 
-// Input vertex data, different for all executions of this shader.
-layout(location = 0) in vec3 squareVertices;
-layout(location = 1) in vec4 xyzs; // Position of the center of the particule and size of the square
-layout(location = 2) in vec4 color; // Position of the center of the particule and size of the square
+uniform mat4 mvp_matrix;
+uniform sampler2D height_map;
+uniform float map_size;
 
-// Output data ; will be interpolated for each fragment.
-out vec2 UV;
-out vec4 particlecolor;
+attribute vec4 a_position;
+attribute vec4 a_color;
 
-// Values that stay constant for the whole mesh.
-uniform vec3 CameraRight_worldspace;
-uniform vec3 CameraUp_worldspace;
-uniform mat4 VP; // Model-View-Projection matrix, but without the Model (the position is in BillboardPos; the orientation depends on the camera)
+varying vec4 v_color;
+varying float render;
 
+//! [0]
 void main()
 {
-        float particleSize = xyzs.w; // because we encoded it this way.
-        vec3 particleCenter_wordspace = xyzs.xyz;
-
-        vec3 vertexPosition_worldspace =
-                particleCenter_wordspace
-                + CameraRight_worldspace * squareVertices.x * particleSize
-                + CameraUp_worldspace * squareVertices.y * particleSize;
-
-        // Output position of the vertex
-        gl_Position = VP * vec4(vertexPosition_worldspace, 1.0f);
-
-        // UV of the vertex. No special space for this one.
-        UV = squareVertices.xy + vec2(0.5, 0.5);
-        particlecolor = color;
+    // Calculate vertex position in screen space
+    float h = texture2D(height_map, a_position.xz / map_size).r;
+    render = a_position.y < (h * 5.0f)  ? 0.0f : 1.0f;
+    gl_Position = mvp_matrix * vec4(a_position.xyz, 1.0f);
+    gl_PointSize = a_position.w;
+    v_color = a_color;
 }

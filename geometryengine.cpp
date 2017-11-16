@@ -72,7 +72,7 @@ GeometryEngine::GeometryEngine()
 
     // Initializes cube geometry and transfers it to VBOs
     //initCubeGeometry();
-    initPlaneGeometry(64);
+    initPlaneGeometry();
 }
 
 GeometryEngine::~GeometryEngine()
@@ -180,7 +180,7 @@ void GeometryEngine::drawCubeGeometry(QOpenGLShaderProgram *program)
 }
 //! [2]
 
-void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program, int size) {
+void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program) {
     // Tell OpenGL which VBOs to use
     arrayBuf.bind();
     indexBuf.bind();
@@ -202,11 +202,12 @@ void GeometryEngine::drawPlaneGeometry(QOpenGLShaderProgram *program, int size) 
     program->setAttributeBuffer(texcoordLocation, GL_FLOAT, offset, 2, sizeof(VertexData));
 
     // Draw cube geometry using indices from VBO 1
-    glDrawElements(GL_TRIANGLES, ((size - 1) * (size -1) * 6), GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, ((PLAN_SIZE - 1) * (PLAN_SIZE -1) * 6), GL_UNSIGNED_SHORT, 0);
 }
 
-void GeometryEngine::initPlaneGeometry(int map_size) {
-    float size = PLAN_SIZE;
+void GeometryEngine::initPlaneGeometry() {
+    int size = PLAN_SIZE;
+    int mapSize = MAP_SIZE;
     VertexData vert[size*size];
     GLushort indices[(size - 1) * (size - 1) * 6];
     // creation des vertices
@@ -215,9 +216,10 @@ void GeometryEngine::initPlaneGeometry(int map_size) {
     for(int y= 0; y < size; ++y) {
         for(int x = 0; x < size; ++x) {
             //en premier la position, puis la texture dans le QVector2D
-            vert[i++] = {QVector3D( (x / size_f) * map_size, 0.0f, (y / size_f) * map_size),
-                         QVector2D( (x / size_f), (y / size_f) )
-                        };
+            vert[i++] = {
+                QVector3D( (x / size_f) * mapSize, 0.0f, (y / size_f) * mapSize),
+                QVector2D( (x / size_f), (y / size_f) )
+            };
         }
     }
     //init tableau indices

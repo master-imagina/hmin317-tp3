@@ -55,7 +55,8 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
-#define PLAN_SIZE 150;
+#define PLAN_SIZE 150
+#define MAP_SIZE 50
 
 class GeometryEngine : protected QOpenGLFunctions
 {
@@ -64,11 +65,11 @@ public:
     virtual ~GeometryEngine();
 
     void drawCubeGeometry(QOpenGLShaderProgram *program);
-    void drawPlaneGeometry(QOpenGLShaderProgram *program, int size);
+    void drawPlaneGeometry(QOpenGLShaderProgram *program);
 
 private:
     void initCubeGeometry();
-    void initPlaneGeometry(int size);
+    void initPlaneGeometry();
 
     QOpenGLBuffer arrayBuf;
     QOpenGLBuffer indexBuf;
