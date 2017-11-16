@@ -8,7 +8,7 @@ Transform::Transform() :
     m_translateVec(),
     m_rotateAngles(),
     m_scaleFactors(1., 1., 1.),
-    m_isMatrixDirty()
+    m_isMatrixDirty(true)
 {}
 
 QVector3D Transform::translate() const
@@ -66,6 +66,8 @@ void Transform::setScale(const QVector3D &factors)
 QMatrix4x4 Transform::matrix()
 {
     if (m_isMatrixDirty) {
+        m_matrix.setToIdentity();
+
         m_matrix.scale(m_scaleFactors);
         m_matrix.rotate(QQuaternion::fromEulerAngles(m_rotateAngles));
         m_matrix.translate(m_translateVec);
