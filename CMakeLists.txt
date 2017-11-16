@@ -204,11 +204,11 @@ set(SEASONS_RESOURCES
 file(COPY lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR})
 file(INSTALL lab/seasons/res/images DESTINATION ${ENGINESPW_INSTALL_DIR})
 
-add_executable(season ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_RESOURCES})
-target_include_directories(season PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(season editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
+add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_RESOURCES})
+target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(seasons editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
-install(TARGETS season RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})
+install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})
 
 #  editor
 set(EDITOR_HEADERS
