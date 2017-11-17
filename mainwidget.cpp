@@ -283,6 +283,15 @@ void MainWidget::resizeGL(int w, int h)
 
 void MainWidget::paintGL()
 {
+    auto lerp = [] (QColor &a, QColor &b, float step) {
+        float h = a.redF() * (1.0 - step) + b.redF() * step;
+        float s = a.greenF() * (1.0 - step) + b.greenF() * step;
+        float v = a.blueF() * (1.0 - step) + b.blueF() * step;
+        return QColor::fromRgbF(h, s, v);
+    };
+    //QColor color = LerpHSV(seasonM->getCurrentSeasonColor().toHsv(), seasonM->getNextSeasonColor().toHsv(), 1.0 - (seasonTimer->remainingTime() /(float) CALENDAR_TIME));
+    QColor color = lerp(seasonM->getCurrentSeasonColor(), seasonM->getNextSeasonColor(),1.0 - (seasonTimer->remainingTime() / (float) CALENDAR_TIME));
+    glClearColor(color.redF(), color.greenF(), color.blueF(), 1);
     program.bind();
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -334,21 +343,12 @@ void MainWidget::paintGL()
         pe.generateParticles(400.0f);
         pe.updateParticles();
         pe.drawParticles(&particlesProgram);
-    } else if(seasonM->getSeason() == Seasons::Spring) {
+    } else if(seasonM->getSeason() == Seasons::Autumn) {
         ParticleEngine &pe = *particleEngineRain;
         pe.generateParticles(2000.0f);
         pe.updateParticles();
         pe.drawParticles(&particlesProgram);
     }
-    auto lerp = [] (QColor &a, QColor &b, float step) {
-        float h = a.redF() * (1.0 - step) + b.redF() * step;
-        float s = a.greenF() * (1.0 - step) + b.greenF() * step;
-        float v = a.blueF() * (1.0 - step) + b.blueF() * step;
-        return QColor::fromRgbF(h, s, v);
-    };
-    //QColor color = LerpHSV(seasonM->getCurrentSeasonColor().toHsv(), seasonM->getNextSeasonColor().toHsv(), 1.0 - (seasonTimer->remainingTime() /(float) CALENDAR_TIME));
-    //QColor color = lerp(seasonM->getCurrentSeasonColor(), seasonM->getNextSeasonColor(),1.0 - (seasonTimer->remainingTime() / (float) CALENDAR_TIME));
-    //glClearColor(color.redF(), color.greenF(), color.blueF(), 1);
 }
 
 

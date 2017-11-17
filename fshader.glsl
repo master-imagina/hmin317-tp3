@@ -19,16 +19,18 @@ void main()
     float rockH = 0.3f;
     float sandH = 0.20f;
     // Set fragment color from texture
-    float diffuse = max(dot(normal, lightVector), 0.0);
+    float diffuse = max(dot(normal, lightVector), 0.1);
+    vec3 color;
     if(h > rockH) {
-        gl_FragColor = texture2D(rock, v_texcoord * 5) * diffuse;
+        color = texture2D(rock, v_texcoord * 5).rgb * diffuse;
     } else if (h > sandH && h < rockH ){
-        gl_FragColor = mix(texture2D(sand, v_texcoord * 5),texture2D(rock, v_texcoord * 5), (h - sandH) / (rockH - sandH)) * diffuse;
+        color = mix(texture2D(sand, v_texcoord * 5),texture2D(rock, v_texcoord * 5), (h - sandH) / (rockH - sandH)).rgb * diffuse;
     } else {
-        gl_FragColor = texture2D(sand, v_texcoord * 5) * diffuse;
+        color = texture2D(sand, v_texcoord * 5).rgb * diffuse;
     }
+    gl_FragColor = vec4(color, 1.0);
     //debug normal
    // gl_FragColor = vec4(normal, 1.0);
+    //gl_FragColor = vec4(diffuse);
 }
 //! [0]
-

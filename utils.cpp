@@ -23,7 +23,7 @@ QColor LerpHSV (QColor &a, QColor &b, float t)
      }
      if (d <= 0.5) {
         h = aH + t * d;
-     }
+     } //test
      // Interpolates the rest
      return QColor::fromHsvF
      (

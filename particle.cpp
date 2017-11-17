@@ -103,9 +103,9 @@ Particle Particle::generateRainParticle() {
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> disXZ(0.0, (float) MAP_SIZE);
     std::uniform_real_distribution<> disY(8.0, 13.0);
-    std::uniform_real_distribution<> disSp(8.0, 9.0);
+    std::uniform_real_distribution<> disSp(10.0, 12.0);
     std::uniform_int_distribution<> disPhi(170, 175);
-    std::uniform_real_distribution<> disSi(1.3f, 1.3f);
+    std::uniform_real_distribution<> disSi(2.0f, 2.0f);
     return Particle(QVector3D(disXZ(gen), disY(gen), disXZ(gen))
                     , QVector4D(0.1f, 0.7f, 0.9f, 1.0f)
                     , 0.0f
