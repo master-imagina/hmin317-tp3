@@ -63,12 +63,16 @@ set(CMAKE_AUTORCC true)
 set(CORE_HEADERS
     core/aliases_int.h
     core/aliases_memory.h
+    core/assetmanager.h
+    core/bigfile.h
     core/gameloop.h
     core/log.h
     core/scene.h
     core/systemengine.h
     )
 set(CORE_SOURCES
+    core/assetmanager.cpp
+    core/bigfile.cpp
     core/gameloop.cpp
     core/scene.cpp
     core/systemengine.cpp
@@ -77,7 +81,7 @@ set(CORE_SOURCES
 add_library(enginecore SHARED ${CORE_SOURCES} ${CORE_HEADERS})
 target_include_directories(enginecore PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(enginecore PRIVATE CORE_LIBRARY=1)
-target_link_libraries(enginecore Qt5::Core entityx)
+target_link_libraries(enginecore Qt5::Core Qt5::Gui entityx)
 
 install(TARGETS enginecore LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
@@ -231,8 +235,10 @@ set(SEASONS_SOURCES
 set(SEASONS_RESOURCES
     )
 
-file(COPY lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR})
-file(INSTALL lab/seasons/res/images DESTINATION ${ENGINESPW_INSTALL_PATH})
+file(COPY lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR}/res_seasons)
+file(INSTALL lab/seasons/res/images DESTINATION ${ENGINESPW_INSTALL_PATH}/res_seasons)
+file(COPY lab/seasons/res/meshes DESTINATION ${CMAKE_BINARY_DIR}/res_seasons)
+file(INSTALL lab/seasons/res/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/res_seasons)
 
 add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_RESOURCES})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})

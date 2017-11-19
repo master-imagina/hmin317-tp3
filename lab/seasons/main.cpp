@@ -1,7 +1,9 @@
 #include <QApplication>
 #include <QDebug>
+#include <QFileInfo>
 #include <QSurfaceFormat>
 
+#include "core/assetmanager.h"
 #include "core/scene.h"
 
 #include "editor/gui/fpswidgets.h"
@@ -29,6 +31,7 @@
 
 
 // Global attributes
+
 Camera camera;
 
 AABoundingBox terrainBoundingBox;
@@ -37,6 +40,30 @@ ShaderParam *terrainColorParam;
 
 entityx::ComponentHandle<ParticleEffect> particleEffect;
 entityx::ComponentHandle<Material> particleMaterial;
+
+
+void fetchBigFile()
+{
+    const std::string bigFilePath = "seasons_bigfile.pak";
+
+    const std::vector<std::string> bfFilePaths {
+        "res_seasons/images/heightmap-1.png",
+        "res_seasons/images/autumn_leaf.png",
+        "res_seasons/images/winter_flake.png",
+        "res_seasons/images/spring_leaf.png"
+    };
+
+    const std::vector<std::string> bfEntryPaths {
+        "images/heightmap-1.png",
+        "images/autumn_leaf.png",
+        "images/winter_flake.png",
+        "images/spring_leaf.png"
+    };
+
+    createBigFile(bigFilePath, bfFilePaths, bfEntryPaths);
+
+    AssetManager::self()->loadBigFile(bigFilePath);
+}
 
 
 void initScene(Scene &scene)
@@ -48,7 +75,7 @@ void initScene(Scene &scene)
 
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
-    *terrainGeom.get() = heightmapToGeometry(QImage("images/heightmap-1.png"));
+    *terrainGeom.get() = heightmapToGeometry(*AssetManager::self()->image("images/heightmap-1.png"));
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
 
@@ -147,6 +174,8 @@ void onSeasonChanged(Season season)
 
 int main(int argc, char *argv[])
 {
+    fetchBigFile();
+
     // Set OpenGL version
     QSurfaceFormat format;
     format.setVersion(3, 3);

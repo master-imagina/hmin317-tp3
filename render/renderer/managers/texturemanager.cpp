@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <iostream>
 
-#include <QImage>
+#include "core/assetmanager.h"
 
 #include "render/material/texture.h"
 
@@ -30,21 +30,21 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
     }
 
     // Read texture from file
-    QImage image(QString::fromStdString(texture.path));
-    if (image.isNull()) {
+    QImage *image = AssetManager::self()->image(texture.path);
+    if (!image) {
         std::cerr << "TextureManager::addTexture(): "
                   << texture.path << " does not exist" << std::endl;
 
         return nullptr;
     }
 
-    image = image.convertToFormat(QImage::Format_RGBA8888);
+    *image = image->convertToFormat(QImage::Format_RGBA8888);
 
     auto glTexture = std::make_unique<GLTexture>();
     GLTexture *ret = glTexture.get();
     m_textures.emplace_back(std::move(glTexture));
 
-    switch (image.pixelFormat().channelCount()) {
+    switch (image->pixelFormat().channelCount()) {
     case 1:
         ret->params.format = GLTexture::Params::Format::Red;
         break;
@@ -58,12 +58,12 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
         assert (false);
     }
 
-    ret->params.width = image.width();
-    ret->params.height = image.height();
+    ret->params.width = image->width();
+    ret->params.height = image->height();
 
     // Allocate GL texture
     glWrapper.createTexture2D(*ret);
-    glWrapper.allocateTexture2D(*ret, ret->params, image.constBits());
+    glWrapper.allocateTexture2D(*ret, ret->params, image->constBits());
 
     m_textureToId.insert({texture, ret});
 
