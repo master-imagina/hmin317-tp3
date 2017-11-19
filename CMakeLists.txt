@@ -7,16 +7,48 @@ set (ENGINESPW_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set (ENGINESPW_BUILD_DIR ${CMAKE_BINARY_DIR})
 
 # Install directories
-set(ENGINESPW_INSTALL_DIR ${ENGINESPW_BUILD_DIR}/install)
-set(CMAKE_INSTALL_PREFIX ${ENGINESPW_INSTALL_DIR})
+set(ENGINESPW_INSTALL_PATH ${ENGINESPW_BUILD_DIR}/install)
+set(CMAKE_INSTALL_PREFIX ${ENGINESPW_INSTALL_PATH})
 
-set(ENGINESPW_BIN_DIR ${ENGINESPW_INSTALL_DIR})
-set(ENGINESPW_LIBRARY_DIR ${ENGINESPW_INSTALL_DIR}/lib)
+set(ENGINESPW_LIB_INSTALL_DIR lib)
+
+set(ENGINESPW_BIN_INSTALL_PATH ${ENGINESPW_INSTALL_PATH})
+set(ENGINESPW_LIB_INSTALL_PATH ${ENGINESPW_INSTALL_PATH}/lib)
+
+
+# Configure assimp
+#  Don't pollute the the install dir with public headers
+set(ASSIMP_INCLUDE_INSTALL_DIR ${PROJECT_BINARY_DIR}/USELESS/include CACHE STRING "" FORCE)
+
+#  Don't build exporters, we only need importers
+set(ASSIMP_NO_EXPORT true CACHE BOOL "" FORCE)
+#  Choose importers
+set(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT false CACHE BOOL "" FORCE)
+
+set(ENABLED_ASSIMP_FORMATS
+    BLEND
+    OBJ
+    OFF
+    PLY)
+
+foreach(format ${ENABLED_ASSIMP_FORMATS})
+    set(ASSIMP_BUILD_${format}_IMPORTER true CACHE BOOL "" FORCE)
+endforeach(format)
+
+#  Retrieve include directories
+set(3RDPARTY_ASSIMP_INCLUDE_DIRS
+    3rdparty/assimp-4.0.1/include
+    ${PROJECT_BINARY_DIR}/3rdparty/assimp-4.0.1/include
+    )
 
 
 # C++
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_EMIT")
+
+
+# Subdirs
+add_subdirectory(3rdparty)
 
 
 # Packages
@@ -25,8 +57,6 @@ find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
 set(CMAKE_AUTOMOC true)
 set(CMAKE_AUTORCC true)
 
-# Subdirs
-add_subdirectory(3rdparty)
 
 # Targets
 #  core
@@ -49,7 +79,7 @@ target_include_directories(enginecore PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(enginecore PRIVATE CORE_LIBRARY=1)
 target_link_libraries(enginecore Qt5::Core entityx)
 
-install(TARGETS enginecore LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+install(TARGETS enginecore LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  render
 set(RENDER_HEADERS
@@ -106,7 +136,7 @@ target_include_directories(enginerender PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(enginerender PRIVATE RENDER_LIBRARY=1)
 target_link_libraries(enginerender enginecore Qt5::Gui Qt5::Widgets entityx)
 
-install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  extras
 set(EXTRAS_HEADERS
@@ -137,14 +167,14 @@ file(GLOB EXTRAS_SHADERS
     extras/shaders/*.frag)
 
 file(COPY extras/shaders DESTINATION ${CMAKE_BINARY_DIR})
-file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_DIR})
+file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_PATH})
 
 add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES} ${EXTRAS_SHADERS})
 target_include_directories(engineextras PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(engineextras PRIVATE EXTRAS_LIBRARY=1)
 target_link_libraries(engineextras enginecore enginerender Qt5::Core Qt5::Gui entityx)
 
-install(TARGETS engineextras LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+install(TARGETS engineextras LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  editor.gui
 set(EDITORGUI_HEADERS
@@ -184,7 +214,7 @@ target_include_directories(editorgui PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(editorgui PRIVATE EDITORGUI_LIBRARY=1)
 target_link_libraries(editorgui enginecore Qt5::Widgets)
 
-install(TARGETS editorgui LIBRARY DESTINATION ${ENGINESPW_LIBRARY_DIR})
+install(TARGETS editorgui LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 # RPath
 set(CMAKE_INSTALL_RPATH "lib")
@@ -202,13 +232,13 @@ set(SEASONS_RESOURCES
     )
 
 file(COPY lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR})
-file(INSTALL lab/seasons/res/images DESTINATION ${ENGINESPW_INSTALL_DIR})
+file(INSTALL lab/seasons/res/images DESTINATION ${ENGINESPW_INSTALL_PATH})
 
 add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_RESOURCES})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(seasons editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
-install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})
+install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
 
 #  editor
 set(EDITOR_HEADERS
@@ -239,10 +269,10 @@ set(EDITOR_RESOURCES
     )
 
 file(COPY editor/res/images DESTINATION ${CMAKE_BINARY_DIR})
-file(INSTALL editor/res/images DESTINATION ${ENGINESPW_INSTALL_DIR})
+file(INSTALL editor/res/images DESTINATION ${ENGINESPW_INSTALL_PATH})
 
 add_executable(editor ${EDITOR_SOURCES} ${EDITOR_HEADERS} ${EDITOR_RESOURCES})
 target_include_directories(editor PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(editor editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
-install(TARGETS editor RUNTIME DESTINATION ${ENGINESPW_BIN_DIR})
+install(TARGETS editor RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
