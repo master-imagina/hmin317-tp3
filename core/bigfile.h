@@ -28,6 +28,7 @@ public:
                           qint64 size);
 
     int entryCount() const;
+    std::vector<std::string> entries() const;
 
     void allocateDataCount(int byteCount);
 

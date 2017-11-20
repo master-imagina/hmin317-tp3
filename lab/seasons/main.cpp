@@ -61,7 +61,7 @@ void initScene(Scene &scene)
 
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
-    *terrainGeom.get() = heightmapToGeometry(*AssetManager::self()->image("images/heightmap-1.png"));
+    *terrainGeom.get() = heightmapToGeometry(*AssetManager::self()->image("/images/heightmap-1.png"));
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
 
@@ -134,15 +134,15 @@ void onSeasonChanged(Season season)
 
     switch (season) {
     case Season::Autumn:
-        particleTexture.path = "images/autumn_leaf.png";
+        particleTexture.path = "/images/autumn_leaf.png";
         particleSize = 15.f;
         break;
     case Season::Winter:
-        particleTexture.path = "images/winter_flake.png";
+        particleTexture.path = "/images/winter_flake.png";
         particleSize = 10.f;
         break;
     case Season::Spring:
-        particleTexture.path = "images/spring_leaf.png";
+        particleTexture.path = "/images/spring_leaf.png";
         particleSize = 8.f;
         break;
     case Season::Summer:

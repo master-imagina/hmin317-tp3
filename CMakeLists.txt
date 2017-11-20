@@ -188,6 +188,7 @@ set(EDITORGUI_HEADERS
     editor/gui/coloreditor/saturationslider.h
     editor/gui/coloreditor/valueslider.h
     editor/gui/dragtoolbutton.h
+    editor/gui/flowlayout.h
     editor/gui/fpswidgets.h
     editor/gui/layoututils.h
     editor/gui/pane.h
@@ -202,6 +203,7 @@ set(EDITORGUI_SOURCES
     editor/gui/coloreditor/saturationslider.cpp
     editor/gui/coloreditor/valueslider.cpp
     editor/gui/dragtoolbutton.cpp
+    editor/gui/flowlayout.cpp
     editor/gui/fpswidgets.cpp
     editor/gui/layoututils.cpp
     editor/gui/pane.cpp
@@ -247,6 +249,7 @@ install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
 
 #  editor
 set(EDITOR_HEADERS
+    editor/assetmanagerview.h
     editor/cameracontrols.h
     editor/cameracontrollercontrols.h
     editor/componentuihandlers.h
@@ -259,6 +262,7 @@ set(EDITOR_HEADERS
     editor/icomponentuihandler.h
     )
 set(EDITOR_SOURCES
+    editor/assetmanagerview.cpp
     editor/cameracontrols.cpp
     editor/cameracontrollercontrols.cpp
     editor/componentuihandlers.cpp

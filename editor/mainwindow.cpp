@@ -10,6 +10,7 @@
 
 #include "editor/gui/fpswidgets.h"
 
+#include "editor/assetmanagerview.h"
 #include "editor/componentuihandlers.h"
 #include "editor/componentview.h"
 #include "editor/hooksystems.h"
@@ -67,6 +68,11 @@ void MainWindow::initPanes()
     auto *sceneView = new SceneView(m_scene, this);
     auto *componentView = new ComponentView(sceneView, this);
 
+    auto *assetManagerPane = new QDockWidget(tr("Asset Manager"), this);
+    auto *assetManagerView = new AssetManagerView(assetManagerPane);
+    assetManagerView->setWindowFlags(assetManagerView->windowFlags() & ~Qt::Window);
+    assetManagerPane->setWidget(assetManagerView);
+
     auto *particleEditorPane = new QDockWidget(tr("Particle Editor"), this);
     auto *particleEditor = new ParticleEditor(particleEditorPane);
     particleEditorPane->setWidget(particleEditor);
@@ -76,6 +82,7 @@ void MainWindow::initPanes()
     m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, componentView);
+    m_paneManager->registerPane(Qt::BottomDockWidgetArea, assetManagerPane/*, false*/);
     m_paneManager->registerPane(Qt::LeftDockWidgetArea, particleEditorPane, false);
 
     createDefaultComponentEditorCreators(componentView);

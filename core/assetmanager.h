@@ -16,8 +16,10 @@ public:
 
     ~AssetManager() = default;
 
+    const BigFile &bigFile();
     void loadBigFile(const std::string &path);
 
+    static QStringList supportedImageFormats();
     QImage *image(const std::string &path);
 
 private:

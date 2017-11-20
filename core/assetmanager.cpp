@@ -20,9 +20,19 @@ AssetManager *AssetManager::self()
     return m_self;
 }
 
+const BigFile &AssetManager::bigFile()
+{
+    return m_bigFile;
+}
+
 void AssetManager::loadBigFile(const std::string &path)
 {
     m_bigFile = importBigFile(path);
+}
+
+QStringList AssetManager::supportedImageFormats()
+{
+    return {"png", "jpg", "jpeg", "bmp"};
 }
 
 QImage *AssetManager::image(const std::string &path)

@@ -34,6 +34,18 @@ int BigFile::entryCount() const
     return m_entries.size();
 }
 
+std::vector<std::string> BigFile::entries() const
+{
+    std::vector<std::string> ret;
+    ret.reserve(m_entries.size());
+
+    for (const auto &entry : m_entries) {
+        ret.emplace_back(entry.first);
+    }
+
+    return ret;
+}
+
 void BigFile::allocateDataCount(int byteCount)
 {
     m_data.reserve(byteCount);
@@ -67,7 +79,9 @@ void createBigFile(const std::string &folderPath,
 {
     QStringList filesPaths;
 
-    QDirIterator folderIt(QString::fromStdString(folderPath),
+    const QString qFolderPath = QString::fromStdString(folderPath);
+
+    QDirIterator folderIt(qFolderPath,
                           QDirIterator::Subdirectories);
 
     while (folderIt.hasNext()) {
@@ -93,7 +107,7 @@ void createBigFile(const std::string &folderPath,
 
     for (const QString &filePath : filesPaths) {
         QString entryPath = filePath;
-        entryPath.remove(0, filePath.indexOf('/') + 1);
+        entryPath.remove(qFolderPath);
 
         const QFileInfo fileInfo(filePath);
         const qint64 fileSize = fileInfo.size();
