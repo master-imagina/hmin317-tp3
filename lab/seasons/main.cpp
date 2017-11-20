@@ -44,25 +44,11 @@ entityx::ComponentHandle<Material> particleMaterial;
 
 void fetchBigFile()
 {
-    const std::string bigFilePath = "seasons_bigfile.pak";
+    const std::string bigFileName = "data_seasons.pak";
 
-    const std::vector<std::string> bfFilePaths {
-        "res_seasons/images/heightmap-1.png",
-        "res_seasons/images/autumn_leaf.png",
-        "res_seasons/images/winter_flake.png",
-        "res_seasons/images/spring_leaf.png"
-    };
+    createBigFile("data_seasons", bigFileName);
 
-    const std::vector<std::string> bfEntryPaths {
-        "images/heightmap-1.png",
-        "images/autumn_leaf.png",
-        "images/winter_flake.png",
-        "images/spring_leaf.png"
-    };
-
-    createBigFile(bigFilePath, bfFilePaths, bfEntryPaths);
-
-    AssetManager::self()->loadBigFile(bigFilePath);
+    AssetManager::self()->loadBigFile(bigFileName);
 }
 
 

@@ -41,9 +41,7 @@ private:
 };
 
 
-void createBigFile(const std::string &bigFilePath,
-                   const std::vector<std::string> &filePaths,
-                   const std::vector<std::string> &entryPaths);
+void createBigFile(const std::string &folderPath, const std::string &bigFilePath);
 
 BigFile importBigFile(const std::string &filePath);
 

@@ -4,6 +4,8 @@
 
 #include <QDataStream>
 #include <QDebug>
+#include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
 
@@ -60,13 +62,24 @@ QByteArray BigFile::data(const std::string &entryPath) const
 
 ////////////////////// Functions //////////////////////
 
-void createBigFile(const std::string &bigFilePath,
-                   const std::vector<std::string> &filePaths,
-                   const std::vector<std::string> &entryPaths)
+void createBigFile(const std::string &folderPath,
+                   const std::string &bigFilePath)
 {
-    const int entryCount = entryPaths.size();
+    QStringList filesPaths;
 
-    Q_ASSERT (filePaths.size() == entryCount);
+    QDirIterator folderIt(QString::fromStdString(folderPath),
+                          QDirIterator::Subdirectories);
+
+    while (folderIt.hasNext()) {
+        const QString filePath = folderIt.next();
+        const QFileInfo fileInfo(filePath);
+
+        if (fileInfo.isFile()) {
+            filesPaths << filePath;
+        }
+    }
+
+    const int entryCount = filesPaths.size();
 
     QFile bigFileOnDisk(QString::fromStdString(bigFilePath));
     bigFileOnDisk.open(QFile::WriteOnly);
@@ -78,19 +91,14 @@ void createBigFile(const std::string &bigFilePath,
 
     qint64 startIndex = 0;
 
-    for (int i = 0; i < entryCount; i++) {
-        const std::string filePath = filePaths[i];
-        const std::string entryPath = entryPaths[i];
+    for (const QString &filePath : filesPaths) {
+        QString entryPath = filePath;
+        entryPath.remove(0, filePath.indexOf('/') + 1);
 
-        const QFileInfo fileInfo(QString::fromStdString(filePath));
-
-        Q_ASSERT_X (fileInfo.exists(),
-                    "createBigFile()",
-                    "Big file entries must be existing files.");
-
+        const QFileInfo fileInfo(filePath);
         const qint64 fileSize = fileInfo.size();
 
-        outStream << QString::fromStdString(entryPath)
+        outStream << entryPath
                   << startIndex
                   << fileSize;
 
@@ -98,10 +106,8 @@ void createBigFile(const std::string &bigFilePath,
     }
 
     // Write files contents
-    for (int i = 0; i < entryCount; i++) {
-        const std::string filePath = filePaths[i];
-
-        QFile entryFile(QString::fromStdString(filePath));
+    for (const QString &filePath : filesPaths) {
+        QFile entryFile(filePath);
         entryFile.open(QFile::ReadOnly);
 
         const qint64 entrySize = entryFile.size();

@@ -232,15 +232,14 @@ set(SEASONS_SOURCES
     lab/seasons/main.cpp
     lab/seasons/seasoncontroller.cpp
     )
-set(SEASONS_RESOURCES
-    )
 
-file(COPY lab/seasons/res/images DESTINATION ${CMAKE_BINARY_DIR}/res_seasons)
-file(INSTALL lab/seasons/res/images DESTINATION ${ENGINESPW_INSTALL_PATH}/res_seasons)
-file(COPY lab/seasons/res/meshes DESTINATION ${CMAKE_BINARY_DIR}/res_seasons)
-file(INSTALL lab/seasons/res/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/res_seasons)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data_seasons)
+file(COPY lab/seasons/data/images DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/images DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
+file(COPY lab/seasons/data/meshes DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
 
-add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_RESOURCES})
+add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(seasons editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
