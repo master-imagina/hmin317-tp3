@@ -16,7 +16,7 @@ void TransformCompUiHandler::configureAddAction(entityx::Entity &entity,
                                                 QAction *action)
 {
     QObject::connect(action, &QAction::triggered,
-                     [&entity] () {
+                     [&entity] {
         entity.assign<Transform>();
     });
 }
@@ -79,7 +79,7 @@ void ParticleEffectCompUiHandler::configureAddAction(entityx::Entity &entity,
                                                      QAction *action)
 {
     QObject::connect(action, &QAction::triggered,
-                     [entity] () {
+                     [entity] {
         createParticleEffect(entity);
     });
 }

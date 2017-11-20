@@ -88,7 +88,7 @@ UrlEdit::UrlEdit(QWidget *parent) :
             this, &UrlEdit::openFileDialog);
 
     connect(d->fileDialog, &QFileDialog::accepted,
-            this, [=] () {
+            this, [=] {
         const QList<QUrl> urls = d->fileDialog->selectedUrls();
         Q_ASSERT(urls.size() > 0);
 
