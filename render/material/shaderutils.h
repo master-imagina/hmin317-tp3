@@ -10,4 +10,8 @@ uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,
                                           const std::string &geomFilePath,
                                           const std::string &fragFilePath);
 
+uptr<ShaderProgram> shaderProgramFromSource(const std::string &vertShaderSource,
+                                            const std::string &geomShaderSource,
+                                            const std::string &fragShaderSource);
+
 #endif // SHADERUTILS_H

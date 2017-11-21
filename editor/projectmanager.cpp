@@ -50,6 +50,7 @@ QString createNewProject(const QString &projectName)
         const std::vector<QUrl> subdirUrls {
             projectUrl.resolved(QUrl("images/")),
             projectUrl.resolved(QUrl("meshes/")),
+            projectUrl.resolved(QUrl("shaders/")),
             projectUrl.resolved(QUrl("scripts/"))
         };
 

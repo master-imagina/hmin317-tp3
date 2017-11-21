@@ -3,11 +3,11 @@
 #include <QFileInfo>
 #include <QSurfaceFormat>
 
-#include "core/assetmanager.h"
 #include "core/scene.h"
 
 #include "editor/gui/fpswidgets.h"
 
+#include "extras/assetmanager.h"
 #include "extras/cameraactions.h"
 #include "extras/gamewidget.h"
 #include "extras/heightmap.h"
@@ -61,7 +61,7 @@ void initScene(Scene &scene)
 
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
-    *terrainGeom.get() = heightmapToGeometry(*AssetManager::self()->image("/images/heightmap-1.png"));
+    *terrainGeom.get() = heightmapToGeometry(AssetManager::self()->image("/images/heightmap-1.png"));
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
 
@@ -71,9 +71,10 @@ void initScene(Scene &scene)
     //  Terrain material
     auto terrainMaterial = terrainEntity.assign<Material>();
     RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
-    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("shaders/terrain_heightmap.vert",
-                                                              "",
-                                                              "shaders/terrain_heightmap.frag");
+    uptr<ShaderProgram> terrainShader =
+            AssetManager::self()->shader("/shaders/terrain_heightmap.vert",
+                                         "",
+                                         "/shaders/terrain_heightmap.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
     const QVector3D terrainAABBCenter = terrainBoundingBox.center();

@@ -63,16 +63,12 @@ set(CMAKE_AUTORCC true)
 set(CORE_HEADERS
     core/aliases_int.h
     core/aliases_memory.h
-    core/assetmanager.h
-    core/bigfile.h
     core/gameloop.h
     core/log.h
     core/scene.h
     core/systemengine.h
     )
 set(CORE_SOURCES
-    core/assetmanager.cpp
-    core/bigfile.cpp
     core/gameloop.cpp
     core/scene.cpp
     core/systemengine.cpp
@@ -144,6 +140,8 @@ install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  extras
 set(EXTRAS_HEADERS
+    extras/assetmanager.h
+    extras/bigfile.h
     extras/cameraactions.h
     extras/cameracontroller.h
     extras/gamewidget.h
@@ -154,6 +152,8 @@ set(EXTRAS_HEADERS
     extras/particles/quick.h
     )
 set(EXTRAS_SOURCES
+    extras/assetmanager.cpp
+    extras/bigfile.cpp
     extras/cameraactions.cpp
     extras/cameracontroller.cpp
     extras/gamewidget.cpp
@@ -240,6 +240,8 @@ file(COPY lab/seasons/data/images DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
 file(INSTALL lab/seasons/data/images DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
 file(COPY lab/seasons/data/meshes DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
 file(INSTALL lab/seasons/data/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
+file(COPY lab/seasons/data/shaders DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
 
 add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})

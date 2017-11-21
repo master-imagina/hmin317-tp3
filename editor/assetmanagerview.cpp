@@ -15,10 +15,10 @@
 #include <QSplitter>
 #include <QTreeView>
 
-#include "core/assetmanager.h"
-
 #include "editor/gui/flowlayout.h"
 #include "editor/gui/layoututils.h"
+
+#include "extras/assetmanager.h"
 
 
 ////////////////////// Helpers //////////////////////
