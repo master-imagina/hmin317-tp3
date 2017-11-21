@@ -40,12 +40,12 @@ public:
     explicit AssetManagerView(QWidget *parent = nullptr);
     ~AssetManagerView() = default;
 
-private Q_SLOTS:
+    void setProjectPath(const QString &dirPath);
+
     void packBigFile();
 
 private:
-    void setDataDirectory(const QString &dirPath);
-    void setViewFolder(const QString &dirPath);
+    void setViewPath(const QString &dirPath);
 
 private:
     QString m_currentFolderPath;

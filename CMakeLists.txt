@@ -257,6 +257,7 @@ set(EDITOR_HEADERS
     editor/hooksystems.h
     editor/mainwindow.h
     editor/particleeditor.h
+    editor/projectmanager.h
     editor/sceneview.h
     editor/panemanager.h
     editor/icomponentuihandler.h
@@ -271,6 +272,7 @@ set(EDITOR_SOURCES
     editor/main.cpp
     editor/mainwindow.cpp
     editor/particleeditor.cpp
+    editor/projectmanager.cpp
     editor/sceneview.cpp
     editor/panemanager.cpp
     )

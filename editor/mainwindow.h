@@ -10,6 +10,7 @@
 
 #include "render/camera.h"
 
+class AssetManagerView;
 class ComponentView;
 class GameWidget;
 class PaneManager;
@@ -23,6 +24,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() = default;
 
+private Q_SLOTS:
+    void buildCurrentProject();
+
 private:
     void createMenus();
     void initPanes();
@@ -32,6 +36,8 @@ private:
 private:
     uptr<PaneManager> m_paneManager;
     QMenu *m_openViewPaneMenu;
+
+    AssetManagerView *m_assetManagerView;
 
     Scene m_scene;
     Camera m_camera;

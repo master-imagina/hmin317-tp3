@@ -3,6 +3,7 @@
 #include <QAction>
 #include <QDebug>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QFileSystemModel>
 #include <QHBoxLayout>
 #include <QItemSelectionModel>
@@ -101,30 +102,6 @@ AssetManagerView::AssetManagerView(QWidget *parent) :
     auto *menuBar = new QMenuBar(this);
     setMenuBar(menuBar);
 
-    auto *fileMenu = menuBar->addMenu(tr("File"));
-
-    QAction *setDataDirectoryAction = fileMenu->addAction(tr("Set Data Directory"));
-    setDataDirectoryAction->setShortcut(QKeySequence("Ctrl+O"));
-
-    connect(setDataDirectoryAction, &QAction::triggered,
-            [this] {
-        const QString dirPath =
-                QFileDialog::getExistingDirectory(this, tr("Set Data Directory"),
-                                                  QDir::homePath(),
-                                                  QFileDialog::ShowDirsOnly |
-                                                  QFileDialog::DontResolveSymlinks);
-
-        if (!dirPath.isNull()) {
-            setDataDirectory(dirPath);
-        }
-    });
-
-    QAction *createBigFileAction = fileMenu->addAction(tr("Create Big File"));
-
-    connect(createBigFileAction, &QAction::triggered,
-            this, &AssetManagerView::packBigFile);
-
-
     // Create UI
     auto *mainWidget = new QSplitter(Qt::Horizontal, this);
     setCentralWidget(mainWidget);
@@ -155,8 +132,14 @@ AssetManagerView::AssetManagerView(QWidget *parent) :
     mainWidget->setStretchFactor(1, 20);
 }
 
-void AssetManagerView::setDataDirectory(const QString &dirPath)
+void AssetManagerView::setProjectPath(const QString &dirPath)
 {
+    const QFileInfo dirInfos(dirPath);
+
+    if (!dirInfos.exists() || !dirInfos.isDir()) {
+        return;
+    }
+
     m_currentFolderPath = dirPath;
 
     m_currentFolderLabel->setText(dirPath);
@@ -174,16 +157,22 @@ void AssetManagerView::setDataDirectory(const QString &dirPath)
 
         connect(selectionModel, &QItemSelectionModel::currentChanged,
                 [this] (const QModelIndex &current, const QModelIndex &) {
-            setViewFolder(m_fileSystemModel->filePath(current));
+            setViewPath(m_fileSystemModel->filePath(current));
         });
     }
 
     m_fileSystemView->setRootIndex(m_fileSystemModel->setRootPath(dirPath));
+
+    setViewPath(QString());
 }
 
-void AssetManagerView::setViewFolder(const QString &dirPath)
+void AssetManagerView::setViewPath(const QString &dirPath)
 {
     clearLayout(m_folderViewLayout);
+
+    if (dirPath.isNull()) {
+        return;
+    }
 
     QDirIterator dirIt(dirPath);
 
