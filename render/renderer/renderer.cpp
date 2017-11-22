@@ -156,11 +156,13 @@ void Renderer::createGLResources(Geometry &geom, Material &material, DrawCommand
 
     // Generate shader program
     ShaderProgram *shaderProgram = material.renderPasses()[0]->shaderProgram();
-    GLShaderProgram *glProgram =
-            m_shaderManager.addShaderProgram(shaderProgram, m_glWrapper);
+    GLShaderProgram *glProgram = m_shaderManager.get(shaderProgram);
 
-    m_glWrapper.createShaderProgram(*glProgram, *shaderProgram);
+    if (!glProgram) {
+        glProgram = m_shaderManager.addShaderProgram(shaderProgram, m_glWrapper);
 
+        m_glWrapper.createShaderProgram(*glProgram, *shaderProgram);
+    }
 
     m_glWrapper.setupVaoForBufferAndShader(*glProgram, *glVao,
                                            geom.vertexLayout,
