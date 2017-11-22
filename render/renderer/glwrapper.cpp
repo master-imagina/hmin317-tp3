@@ -196,7 +196,7 @@ void GLWrapper::sendUniforms(const GLShaderProgram &glProgram,
             setUniform(glProgram.id, rawName, value.value<QMatrix4x4>());
             break;
         default:
-            std::cerr << "GLWrapper: unsupported uniform type :"
+            std::cerr << "[ERROR] GLWrapper: unsupported uniform type :"
                       << QMetaType::typeName(valueType) << " "
                       << "(" << valueType << ")"
                       << std::endl;
@@ -301,7 +301,7 @@ void GLWrapper::compileShader(const GLShaderProgram &glProgram,
             m_gl->glGetShaderInfoLog(shaderId, logSize, nullptr,
                                      logBuffer.data());
 
-            std::cerr << "Shader compilation error :" << std::endl
+            std::cerr << "[ERROR] Shader compilation error :" << std::endl
                       << std::string(logBuffer.data()) << "in :" << std::endl
                       << "--------------------------" << std::endl
                       << shaderSource
@@ -331,7 +331,7 @@ void GLWrapper::linkShaderProgram(const GLShaderProgram &glProgram)
             m_gl->glGetProgramInfoLog(glProgram.id, logSize, nullptr,
                                       logBuffer.data());
 
-            std::cerr << "Shader linking error :" << std::endl
+            std::cerr << "[ERROR] Shader linking error :" << std::endl
                       << std::string(logBuffer.data())
                       << std::endl;
         }
@@ -364,7 +364,7 @@ void GLWrapper::checkForErrors()
     const GLenum err = m_gl->glGetError();
 
     if (err != 0) {
-        std::cerr << "OpenGL error: " << err << std::endl;
+        std::cerr << "[ERROR] OpenGL error: " << err << std::endl;
         assert (false);
     }
 }

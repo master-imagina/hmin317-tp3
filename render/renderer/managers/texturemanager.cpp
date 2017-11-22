@@ -24,7 +24,7 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
     const auto isHandled = m_textureToId.find(texture);
 
     if (isHandled != m_textureToId.cend()) {
-        std::cerr << "TextureManager::addTexture(): texture already exists"
+        std::cout << "[WARNING] TextureManager::addTexture(): texture already exists"
                   << std::endl;
         return nullptr;
     }

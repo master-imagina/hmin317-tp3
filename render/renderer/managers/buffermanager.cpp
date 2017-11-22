@@ -23,7 +23,7 @@ std::pair<GLBuffer *, GLBuffer *> BufferManager::addGeometry(Geometry *geom, GLW
     const auto isHandled = m_geomToBuffers.find(geom);
 
     if (isHandled != m_geomToBuffers.cend()) {
-        std::cerr << "BufferManager::addGeometry(): buffers already exist" << std::endl;
+        std::cout << "[WARNING] BufferManager::addGeometry(): buffers already exist" << std::endl;
         return {};
     }
 

@@ -17,7 +17,7 @@ GLShaderProgram *ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, G
     const auto isHandled = m_shaderProgramToId.find(shaderProgram);
 
     if (isHandled != m_shaderProgramToId.cend()) {
-        std::cerr << "ShaderManager::addShaderProgram(): shader program already exists"
+        std::cout << "[WARNING] ShaderManager::addShaderProgram(): shader program already exists"
                   << std::endl;
     }
 

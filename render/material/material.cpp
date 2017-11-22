@@ -71,7 +71,7 @@ ShaderParam *Material::addParam(const std::string &name, const QVariant &value)
     });
 
     if (paramFound != m_params.end()) {
-        std::cerr << "RenderPass : param \"" << name << "\" already exists"
+        std::cout << "[WARNING] RenderPass : param \"" << name << "\" already exists"
                   << std::endl;
         return nullptr;
     }

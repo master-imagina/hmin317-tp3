@@ -22,7 +22,7 @@ GLVao *VaoManager::addGeometry(Geometry *geom, GLWrapper &glWrapper)
     const auto isHandled = m_geomToVao.find(geom);
 
     if (isHandled != m_geomToVao.cend()) {
-        std::cerr << "VaoManager::addGeometry(): vao already exists" << std::endl;
+        std::cout << "[WARNING] VaoManager::addGeometry(): vao already exists" << std::endl;
         return nullptr;
     }
 
