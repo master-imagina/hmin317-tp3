@@ -1,10 +1,12 @@
 #include "assetmanagerview.h"
 
 #include <QAction>
+#include <QClipboard>
 #include <QDebug>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFileSystemModel>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QItemSelectionModel>
 #include <QLabel>
@@ -41,7 +43,8 @@ QImage unsupportedPreviewImg()
 PreviewWidget::PreviewWidget(const QString &name, QWidget *parent) :
     QWidget(parent),
     m_pixmapLabel(nullptr),
-    m_pathLabel(nullptr)
+    m_pathLabel(nullptr),
+    m_assetPath()
 {
     init(name);
 }
@@ -51,7 +54,8 @@ PreviewWidget::PreviewWidget(const QString &name,
                              QWidget *parent) :
     QWidget(parent),
     m_pixmapLabel(nullptr),
-    m_pathLabel(nullptr)
+    m_pathLabel(nullptr),
+    m_assetPath()
 {
     init(name);
 
@@ -69,6 +73,19 @@ void PreviewWidget::setImage(const QImage &img)
                                                           Qt::KeepAspectRatioByExpanding));
 
     m_pixmapLabel->setPixmap(previewPixmap);
+}
+
+void PreviewWidget::setAssetPath(const QString &path)
+{
+    if (m_assetPath != path) {
+        m_assetPath = path;
+    }
+}
+
+void PreviewWidget::mousePressEvent(QMouseEvent *)
+{
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    clipboard->setText(m_assetPath);
 }
 
 void PreviewWidget::init(const QString &name)
@@ -185,6 +202,12 @@ void AssetManagerView::setViewPath(const QString &dirPath)
             labelText.remove(0, filePath.lastIndexOf('/') + 1);
 
             auto *previewWidget = new PreviewWidget(labelText, m_folderView);
+
+            QString assetPath = dirPath.mid(dirPath.lastIndexOf('/') + 1);
+            assetPath.append("/" + labelText);
+
+            previewWidget->setAssetPath(assetPath);
+
             previewWidget->setImage(unsupportedPreviewImg());
 
             for (const QString &imgFormat : AssetManager::supportedImageFormats()) {

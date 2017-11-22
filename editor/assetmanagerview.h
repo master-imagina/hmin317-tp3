@@ -22,6 +22,10 @@ public:
     ~PreviewWidget() = default;
 
     void setImage(const QImage &img);
+    void setAssetPath(const QString &path);
+
+protected:
+    void mousePressEvent(QMouseEvent *) override;
 
 private:
     void init(const QString &name);
@@ -29,6 +33,7 @@ private:
 private:
     QLabel *m_pixmapLabel;
     QLabel *m_pathLabel;
+    QString m_assetPath;
 };
 
 
