@@ -45,6 +45,7 @@ public:
     explicit AssetManagerView(QWidget *parent = nullptr);
     ~AssetManagerView() = default;
 
+    QString projectPath() const;
     void setProjectPath(const QString &dirPath);
 
     void packBigFile();

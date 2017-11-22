@@ -149,6 +149,11 @@ AssetManagerView::AssetManagerView(QWidget *parent) :
     mainWidget->setStretchFactor(1, 20);
 }
 
+QString AssetManagerView::projectPath() const
+{
+    return m_currentFolderPath;
+}
+
 void AssetManagerView::setProjectPath(const QString &dirPath)
 {
     const QFileInfo dirInfos(dirPath);
@@ -203,7 +208,7 @@ void AssetManagerView::setViewPath(const QString &dirPath)
 
             auto *previewWidget = new PreviewWidget(labelText, m_folderView);
 
-            QString assetPath = dirPath.mid(dirPath.lastIndexOf('/') + 1);
+            QString assetPath = dirPath.mid(dirPath.lastIndexOf('/'));
             assetPath.append("/" + labelText);
 
             previewWidget->setAssetPath(assetPath);
