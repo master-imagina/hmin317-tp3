@@ -1,12 +1,14 @@
 #include "aabb.h"
 
+#include "render/geometry/geometry.h"
+
 
 AABoundingBox::AABoundingBox() :
     m_center(),
     m_radius()
 {}
 
-AABoundingBox::AABoundingBox(const std::vector<QVector3D> vertices) :
+AABoundingBox::AABoundingBox(const std::vector<Vertex> vertices) :
     m_center(),
     m_radius()
 {
@@ -48,7 +50,7 @@ std::array<QVector3D, 8> AABoundingBox::getCorners()
     return ret;
 }
 
-void AABoundingBox::processVertices(const std::vector<QVector3D> vertices)
+void AABoundingBox::processVertices(const std::vector<Vertex> vertices)
 {
     if (vertices.empty()) {
         m_center = QVector3D();
@@ -57,11 +59,11 @@ void AABoundingBox::processVertices(const std::vector<QVector3D> vertices)
         return;
     }
 
-    QVector3D min = vertices[0];
-    QVector3D max = vertices[0];
+    QVector3D min = vertices[0].position;
+    QVector3D max = vertices[0].position;
 
     for (int i = 1; i < vertices.size(); ++i) {
-        const QVector3D &p = vertices[i];
+        const QVector3D &p = vertices[i].position;
 
         const float px = p.x();
         const float py = p.y();

@@ -70,18 +70,13 @@ void Renderer::startNewFrame()
     m_gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::prepareDrawCommand(entityx::Entity entity)
+void Renderer::prepareDrawCommand(Geometry &geometry,
+                                  Material &material,
+                                  Transform &transform)
 {
-    // Get required components
-    auto geometry = entity.component<Geometry>();
-    auto material = entity.component<Material>();
-    auto transform = entity.component<Transform>();
-
-    assert (geometry && material && transform);
-
-    const DrawCommand cmd = createDrawCommand(*geometry.get(),
-                                              *material.get(),
-                                              *transform.get());
+    const DrawCommand cmd = createDrawCommand(geometry,
+                                              material,
+                                              transform);
 
     m_drawCommands.emplace_back(cmd);
 }
@@ -186,7 +181,7 @@ void Renderer::updateDirtyBuffers(DrawCommand &drawCmd)
         // Upload vertices
         GLBuffer *vertexGLBuffer = drawCmd.glVertexBuffer;
 
-        const std::vector<QVector3D> &vertices = geom.vertices;
+        const std::vector<Vertex> &vertices = geom.vertices;
 
         m_glWrapper.allocateBuffer(*vertexGLBuffer,
                                    vertices.size() * Geometry::vertexSize,

@@ -46,7 +46,10 @@ void ParticleSystem::liveParticles(entityx::Entity entity,
         geom.vertices.resize(count);
         geom.primitiveCount = count;
 
-        std::fill(geom.vertices.begin(), geom.vertices.end(), worldPos);
+        for (Vertex &vertex : geom.vertices) {
+            vertex.position = worldPos;
+        }
+
         std::fill(particleEffect.m_lifes.begin(), particleEffect.m_lifes.end(), particleEffect.maxLife());
 
         particleEffect.unsetDirty();
@@ -60,7 +63,7 @@ void ParticleSystem::liveParticles(entityx::Entity entity,
 
     for (int i = 0; i < particleEffect.m_lifes.size(); i++) {
         int &life = particleEffect.m_lifes[i];
-        QVector3D &particlePos = geom.vertices[i];
+        QVector3D &particlePos = geom.vertices[i].position;
 
         // Recycle particle
         if (life == 0) {

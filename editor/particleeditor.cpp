@@ -57,7 +57,7 @@ void ParticleEditor::initEditorScene()
 
     AABoundingBox gridBBox(gridGeom->vertices);
 
-    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
+    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, Geometry::vertexSize};
     gridGeom->vertexLayout.addAttribute(standardVertexAttrib);
 
     //  Terrain material

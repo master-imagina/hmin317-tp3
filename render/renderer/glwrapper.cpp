@@ -392,15 +392,23 @@ void GLWrapper::setupVaoForBufferAndShader(const GLShaderProgram &glProgram,
     bindBuffer(arrayBuffer);
 
     for (const VertexAttrib &attrib : vertexLayout.attributes()) {
-        const int location =
-                m_gl->glGetAttribLocation(glProgram.id, attrib.name.c_str());
+        const char *attribName = attrib.name.c_str();
+        const int location = m_gl->glGetAttribLocation(glProgram.id, attribName);
 
-        m_gl->glEnableVertexAttribArray(location);
-        m_gl->glVertexAttribPointer(location,
-                                    attrib.size,
-                                    static_cast<uint32>(attrib.type),
-                                    attrib.normalized, attrib.stride,
-                                    nullptr);
+        if (location > -1) {
+            m_gl->glEnableVertexAttribArray(location);
+            m_gl->glVertexAttribPointer(location,
+                                        attrib.size,
+                                        static_cast<uint32>(attrib.type),
+                                        attrib.normalized,
+                                        attrib.stride,
+                                        (void *) attrib.offset);
+        }
+        else {
+            std::cout << "[WARNING] GLWrapper: location "
+                      << attribName << " not found"
+                      << std::endl;
+        }
     }
 
     if (indexBuffer) {
@@ -554,9 +562,9 @@ void GLWrapper::setUniform(uint32 programId, const char *name, const QColor &val
 
     const float rawValue[4] {
         static_cast<float>(value.redF()),
-                static_cast<float>(value.greenF()),
-                static_cast<float>(value.blueF()),
-                static_cast<float>(value.alphaF())
+        static_cast<float>(value.greenF()),
+        static_cast<float>(value.blueF()),
+        static_cast<float>(value.alphaF())
     };
 
     m_gl->glUniform4fv(location, 1, rawValue);

@@ -32,8 +32,8 @@ Geometry grid(int size, float height)
             const float xCoord = vertexIndex % size;
             const float zCoord = std::floor(vertexIndex / static_cast<float>(size));
 
-            QVector3D &vertex = ret.vertices.at(vertexIndex);
-            vertex = {xCoord, height, zCoord};
+            Vertex &vertex = ret.vertices.at(vertexIndex);
+            vertex.position = {xCoord, height, zCoord};
 
             // ... and indices
             if (x == maxXZCoord || z == maxXZCoord) {

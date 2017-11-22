@@ -85,6 +85,7 @@ install(TARGETS enginecore LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 set(RENDER_HEADERS
     render/aabb.h
     render/camera.h
+    render/mesh.h
     render/rendersystem.h
     render/transform.h
     render/renderwidget.h
@@ -113,6 +114,7 @@ set(RENDER_HEADERS
 set(RENDER_SOURCES
     render/aabb.cpp
     render/camera.cpp
+    render/mesh.cpp
     render/rendersystem.cpp
     render/transform.cpp
     render/renderwidget.cpp
@@ -132,9 +134,9 @@ set(RENDER_SOURCES
     )
 
 add_library(enginerender SHARED ${RENDER_SOURCES} ${RENDER_HEADERS})
-target_include_directories(enginerender PRIVATE ${PROJECT_SOURCE_DIR})
+target_include_directories(enginerender PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_ASSIMP_INCLUDE_DIRS})
 target_compile_definitions(enginerender PRIVATE RENDER_LIBRARY=1)
-target_link_libraries(enginerender enginecore Qt5::Gui Qt5::Widgets entityx)
+target_link_libraries(enginerender enginecore Qt5::Gui Qt5::Widgets entityx assimp)
 
 install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
@@ -234,6 +236,11 @@ set(SEASONS_SOURCES
     lab/seasons/main.cpp
     lab/seasons/seasoncontroller.cpp
     )
+file(GLOB SEASONS_SHADERS
+    lab/seasons/data/shaders/*.vert
+    lab/seasons/data/shaders/*.geom
+    lab/seasons/data/shaders/*.frag
+    )
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data_seasons)
 file(COPY lab/seasons/data/images DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
@@ -243,7 +250,7 @@ file(INSTALL lab/seasons/data/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/data_
 file(COPY lab/seasons/data/shaders DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
 file(INSTALL lab/seasons/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
 
-add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS})
+add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(seasons editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 

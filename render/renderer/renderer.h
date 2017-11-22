@@ -30,7 +30,7 @@ public:
 
     void initialize();
     void startNewFrame();
-    void prepareDrawCommand(entityx::Entity entity);
+    void prepareDrawCommand(Geometry &geom, Material &material, Transform &transform);
     void render(Camera &camera, float dt);
 
     void cleanup();

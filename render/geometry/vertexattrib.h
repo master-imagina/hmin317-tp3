@@ -23,6 +23,7 @@ struct VertexAttrib
     Type type;
     bool normalized = false;
     int stride;
+    std::size_t offset = 0;
 };
 
 #endif // VERTEXATTRIB_H

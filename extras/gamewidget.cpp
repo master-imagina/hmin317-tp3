@@ -10,6 +10,7 @@
 #include "extras/particles/particlesystem.h"
 
 #include "render/rendersystem.h"
+#include "render/mesh.h"
 #include "render/transform.h"
 
 #include "render/geometry/geometry.h"
@@ -58,6 +59,7 @@ void GameWidget::initSystems()
     // Add system dependencies
     m_systemEngine.registerSystem<entityx::deps::Dependency<Geometry, Transform>>();
     m_systemEngine.registerSystem<entityx::deps::Dependency<ParticleEffect, Geometry, Material>>();
+    m_systemEngine.registerSystem<entityx::deps::Dependency<Mesh, Transform>>();
 
     // Add systems
     m_systemEngine.registerSystem<ParticleSystem>();

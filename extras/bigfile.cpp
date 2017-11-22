@@ -61,7 +61,8 @@ QByteArray BigFile::data(const std::string &entryPath) const
     const auto entryFound = m_entries.find(entryPath);
 
     if (entryFound == m_entries.end()) {
-        std::cerr << "BigFile::data(): entry " << entryPath << " not found"
+        std::cout << "[WARNING] BigFile::data(): entry "
+                  << entryPath << " not found"
                   << std::endl;
         return {};
     }
