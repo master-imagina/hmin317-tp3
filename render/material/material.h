@@ -42,4 +42,7 @@ private:
     uptr_vector<ShaderParam> m_params;
 };
 
+
+Material defaultMaterial();
+
 #endif // MATERIAL_H

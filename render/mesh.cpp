@@ -9,39 +9,57 @@
 #include "extras/assetmanager.h"
 
 
+////////////////////// Mesh //////////////////////
+
 Mesh::Mesh() :
-    m_path()
+    m_path(),
+    m_geometries()
 {}
 
 Mesh::Mesh(const std::string &path) :
-    m_path(path)
+    m_path(),
+    m_geometries()
 {
     setPath(path);
 }
 
-void Mesh::setPath(const std::string &path)
+std::string Mesh::path() const
 {
-    Assimp::Importer importer;
-
-    const QByteArray data = AssetManager::self()->bigFile().data(path);
-
-    const aiScene* scene =  importer.ReadFileFromMemory(data, data.size(),
-                                                        aiProcess_Triangulate |
-                                                        aiProcess_FlipUVs |
-                                                        aiProcess_CalcTangentSpace);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        std::cerr << "[ERROR] Assimp: " << importer.GetErrorString() << std::endl;
-        return;
-    }
-
-    // process ASSIMP's root node recursively
-    processNode(scene->mRootNode, scene);
+    return m_path;
 }
 
-std::vector<Geometry> &Mesh::geometries()
+void Mesh::setPath(const std::string &path)
 {
-    return m_geometries;
+    if (m_path != path) {
+        m_path = path;
+
+        Assimp::Importer importer;
+
+        const QByteArray data = AssetManager::self()->bigFile().data(path);
+
+        const aiScene* scene =  importer.ReadFileFromMemory(data, data.size(),
+                                                            aiProcess_Triangulate |
+                                                            aiProcess_FlipUVs |
+                                                            aiProcess_CalcTangentSpace);
+
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+            std::cerr << "[ERROR] Assimp: " << importer.GetErrorString() << std::endl;
+            return;
+        }
+
+        // process ASSIMP's root node recursively
+        processNode(scene->mRootNode, scene);
+    }
+}
+
+int Mesh::count() const
+{
+    return m_geometries.size();
+}
+
+Geometry &Mesh::geometry(int index)
+{
+    return m_geometries.at(index);
 }
 
 void Mesh::processNode(aiNode *node, const aiScene *scene)
@@ -64,11 +82,19 @@ Geometry Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
-        vertex.position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
-        vertex.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+        vertex.position = {mesh->mVertices[i].x,
+                           mesh->mVertices[i].y,
+                           mesh->mVertices[i].z};
+
+        if (mesh->mNormals) {
+            vertex.normal = {mesh->mNormals[i].x,
+                             mesh->mNormals[i].y,
+                             mesh->mNormals[i].z};
+        }
 
         if (mesh->mTextureCoords[0]) {
-            vertex.texCoords = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+            vertex.texCoords = {mesh->mTextureCoords[0][i].x,
+                                mesh->mTextureCoords[0][i].y};
         }
 
         ret.vertices[i] = vertex;
@@ -81,28 +107,6 @@ Geometry Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
             ret.indices.push_back(face.mIndices[j]);
         }
     }
-
-    // process materials
-    //    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-    // we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-    // as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER.
-    // Same applies to other texture as the following list summarizes:
-    // diffuse: texture_diffuseN
-    // specular: texture_specularN
-    // normal: texture_normalN
-
-    // 1. diffuse maps
-    //    vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-    //    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-    //    // 2. specular maps
-    //    vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-    //    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    //    // 3. normal maps
-    //    std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-    //    textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-    //    // 4. height maps
-    //    std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-    //    textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
     VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, Geometry::vertexSize};
     VertexAttrib standardNormalAttrib {"normal", 3, VertexAttrib::Type::Float, false, Geometry::vertexSize, offsetof(Vertex, normal)};

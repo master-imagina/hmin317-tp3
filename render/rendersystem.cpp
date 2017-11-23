@@ -3,6 +3,9 @@
 #include "render/geometry/geometry.h"
 
 #include "render/material/material.h"
+#include "render/material/renderpass.h"
+#include "render/material/shaderparam.h"
+#include "render/material/shaderutils.h"
 
 #include "render/renderer/renderer.h"
 
@@ -20,24 +23,33 @@ void RenderSystem::update(entityx::EntityManager &entities,
                           entityx::EventManager &events,
                           double dt)
 {
-//    m_surface->makeCurrent();
-
-    entities.each<Geometry, Material, Transform>(
+    entities.each<Geometry, Transform>(
                 [this] (entityx::Entity entity,
-                        Geometry &geom, Material &mat, Transform &transform) {
-        m_renderer->prepareDrawCommand(geom, mat, transform);
+                        Geometry &geom, Transform &transform) {
+        //TODO optimize that, why not having a component dependency from
+        //  Geometry to Material ?
+        if (!entity.has_component<Material>()) {
+            entity.assign<Material>(defaultMaterial());
+        }
+
+        m_renderer->prepareDrawCommand(geom,
+                                       *entity.component<Material>().get(),
+                                       transform);
     });
 
-    entities.each<Mesh, Material, Transform>(
+    entities.each<Mesh, Transform>(
                 [this] (entityx::Entity entity,
-                        Mesh &mesh, Material &mat, Transform &transform) {
-        for (Geometry &geom : mesh.geometries()) {
-            m_renderer->prepareDrawCommand(geom, mat, transform);
+                        Mesh &mesh, Transform &transform) {
+        for (int i = 0;i < mesh.count(); i++) {
+            if (!entity.has_component<Material>()) {
+                entity.assign<Material>(defaultMaterial());
+            }
+
+            m_renderer->prepareDrawCommand(mesh.geometry(i),
+                                           *entity.component<Material>().get(),
+                                           transform);
         }
     });
-
-//    m_surface->doneCurrent();
-
 
     m_surface->startNewFrame(dt);
 }

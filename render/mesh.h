@@ -15,12 +15,16 @@ struct Mesh
     Mesh();
     explicit Mesh(const std::string &path);
 
+    std::string path() const;
     void setPath(const std::string &path);
 
-    std::vector<Geometry> &geometries();
+    int count() const;
+
+    Geometry &geometry(int index);
 
 private:
     Geometry processMesh(aiMesh *mesh, const aiScene *scene);
+
     void processNode(aiNode *node, const aiScene *scene);
 
 private:

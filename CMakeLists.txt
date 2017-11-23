@@ -132,8 +132,16 @@ set(RENDER_SOURCES
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp
     )
+file(GLOB RENDER_SHADERS
+    render/shaders/*.vert
+    render/shaders/*.geom
+    render/shaders/*.frag)
 
-add_library(enginerender SHARED ${RENDER_SOURCES} ${RENDER_HEADERS})
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
+file(COPY render/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(INSTALL render/shaders DESTINATION ${ENGINESPW_INSTALL_PATH})
+
+add_library(enginerender SHARED ${RENDER_SOURCES} ${RENDER_HEADERS} ${RENDER_SHADERS})
 target_include_directories(enginerender PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_ASSIMP_INCLUDE_DIRS})
 target_compile_definitions(enginerender PRIVATE RENDER_LIBRARY=1)
 target_link_libraries(enginerender enginecore Qt5::Gui Qt5::Widgets entityx assimp)
