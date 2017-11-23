@@ -141,9 +141,9 @@ file(GLOB RENDER_SHADERS
     render/shaders/*.geom
     render/shaders/*.frag)
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/shaders)
-file(COPY render/shaders DESTINATION ${CMAKE_BINARY_DIR})
-file(INSTALL render/shaders DESTINATION ${ENGINESPW_INSTALL_PATH})
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/common/shaders)
+file(COPY render/shaders DESTINATION ${CMAKE_BINARY_DIR}/common)
+file(INSTALL render/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/common)
 
 add_library(enginerender SHARED ${RENDER_SOURCES} ${RENDER_HEADERS} ${RENDER_SHADERS})
 target_include_directories(enginerender PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_ASSIMP_INCLUDE_DIRS})
@@ -180,8 +180,8 @@ file(GLOB EXTRAS_SHADERS
     extras/shaders/*.geom
     extras/shaders/*.frag)
 
-file(COPY extras/shaders DESTINATION ${CMAKE_BINARY_DIR})
-file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_PATH})
+file(COPY extras/shaders DESTINATION ${CMAKE_BINARY_DIR}/common)
+file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/common)
 
 add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES} ${EXTRAS_SHADERS})
 target_include_directories(engineextras PRIVATE ${PROJECT_SOURCE_DIR})

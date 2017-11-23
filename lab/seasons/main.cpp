@@ -63,8 +63,8 @@ void initScene(Scene &scene)
 
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
-//    *terrainGeom.get() = heightmapToGeometry(AssetManager::self()->image("/images/heightmap-1.png"));
-    *terrainGeom.get() = grid(50);
+    *terrainGeom.get() = heightmapToGeometry(imageFromFile("images/heightmap-1.png"));
+//    *terrainGeom.get() = grid(50);
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
 
@@ -75,19 +75,19 @@ void initScene(Scene &scene)
     RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
     uptr<ShaderProgram> terrainShader =
             shaderProgramFromFile("shaders/terrain_heightmap.vert",
-                                  "shaders/terrain_wireframe.frag");
+                                  "shaders/terrain_heightmap.frag");
 
     terrainPass->setShaderProgram(std::move(terrainShader));
 
-//    const QVector3D terrainAABBCenter = terrainBoundingBox.center();
-//    const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
+    const QVector3D terrainAABBCenter = terrainBoundingBox.center();
+    const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
 
-//    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
-//    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
+    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
+    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
 
-//    terrainMaterial->setParam("minHeight", minHeight);
-//    terrainMaterial->setParam("maxHeight", maxHeight);
-//    terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
+    terrainMaterial->setParam("minHeight", minHeight);
+    terrainMaterial->setParam("maxHeight", maxHeight);
+    terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
 
     // Create particle effect
     entityx::Entity particleEntity = scene.createEntity();
@@ -130,7 +130,7 @@ void onSeasonChanged(Season season)
         break;
     }
 
-//    terrainColorParam->value = seasonColor;
+    terrainColorParam->value = seasonColor;
 
     particleMaterial->setParam("particleColor", seasonColor);
 

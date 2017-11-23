@@ -75,6 +75,33 @@ QByteArray BigFile::data(const std::string &entryPath) const
 
 ////////////////////// Functions //////////////////////
 
+namespace {
+
+void updateFilesPathsList(const QString &folderPath, QStringList &filesPaths)
+{
+    QDirIterator folderIt(folderPath, QDirIterator::Subdirectories);
+
+    while (folderIt.hasNext()) {
+        const QString filePath = folderIt.next();
+        const QFileInfo fileInfo(filePath);
+
+        if (fileInfo.isFile()) {
+            if (filesPaths.contains(filePath)) {
+                std::cout << "[WARNING] createBigFile: "
+                          << "duplicated entry for " << filePath.toStdString()
+                          << std::endl;
+            }
+            else {
+                filesPaths << filePath;
+            }
+        }
+    }
+
+}
+
+} // anon namespace
+
+
 void createBigFile(const std::string &folderPath,
                    const std::string &bigFilePath)
 {
@@ -82,18 +109,11 @@ void createBigFile(const std::string &folderPath,
 
     const QString qFolderPath = QString::fromStdString(folderPath);
 
-    QDirIterator folderIt(qFolderPath,
-                          QDirIterator::Subdirectories);
+    // Process common folder then main folder
+    updateFilesPathsList("common", filesPaths);
+    updateFilesPathsList(qFolderPath, filesPaths);
 
-    while (folderIt.hasNext()) {
-        const QString filePath = folderIt.next();
-        const QFileInfo fileInfo(filePath);
-
-        if (fileInfo.isFile()) {
-            filesPaths << filePath;
-        }
-    }
-
+    // Init big file on disk
     const int entryCount = filesPaths.size();
 
     QFile bigFileOnDisk(QString::fromStdString(bigFilePath));
