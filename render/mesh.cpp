@@ -4,9 +4,10 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
-#include "extras/assetmanager.h"
+#include "core/assetmanager.h"
+
+#include "render/renderassets.h"
 
 
 ////////////////////// Mesh //////////////////////
@@ -34,20 +35,12 @@ void Mesh::setPath(const std::string &path)
         m_path = path;
 
         Assimp::Importer importer;
+        const aiScene *scene = assimpSceneFromFile(path, importer);
 
-        const QByteArray data = AssetManager::self()->bigFile().data(path);
-
-        const aiScene* scene =  importer.ReadFileFromMemory(data, data.size(),
-                                                            aiProcess_Triangulate |
-                                                            aiProcess_FlipUVs |
-                                                            aiProcess_CalcTangentSpace);
-
-        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-            std::cerr << "[ERROR] Assimp: " << importer.GetErrorString() << std::endl;
+        if (!scene) {
             return;
         }
 
-        // process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);
     }
 }
@@ -65,7 +58,7 @@ Geometry &Mesh::geometry(int index)
 void Mesh::processNode(aiNode *node, const aiScene *scene)
 {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 
         m_geometries.push_back(processMesh(mesh, scene));
     }

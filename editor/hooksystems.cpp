@@ -6,6 +6,7 @@
 
 #include "extras/particles/particleeffect.h"
 
+#include "render/mesh.h"
 #include "render/transform.h"
 
 #include "render/geometry/geometry.h"
@@ -20,6 +21,7 @@ void registerHookSystems(SystemEngine &systemEngine,
     systemEngine.registerSystem<ComponentAddedHook<Geometry>>(componentView);
     systemEngine.registerSystem<ComponentAddedHook<Material>>(componentView);
     systemEngine.registerSystem<ComponentAddedHook<ParticleEffect>>(componentView);
+    systemEngine.registerSystem<ComponentAddedHook<Mesh>>(componentView);
 
     systemEngine.initialize();
 }

@@ -4,13 +4,14 @@
 
 #include "core/scene.h"
 
+#include "render/renderassets.h"
+
 #include "render/geometry/geometry.h"
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
 #include "render/material/shaderprogram.h"
-#include "render/material/shaderutils.h"
 #include "render/material/texture.h"
 
 #include "render/transform.h"

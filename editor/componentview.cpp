@@ -7,14 +7,18 @@
 
 #include "core/scene.h"
 
+#include "editor/projectmanager.h"
 #include "editor/sceneview.h"
 
 #include "editor/gui/layoututils.h"
 
 
-ComponentView::ComponentView(SceneView *sceneView, QWidget *parent) :
+ComponentView::ComponentView(SceneView *sceneView,
+                             ProjectManager *projectManager,
+                             QWidget *parent) :
     ScrollablePane(tr("Components"), parent),
     m_theSceneView(sceneView),
+    m_theProjectManager(projectManager),
     m_mainWidget(nullptr),
     m_mainLayout(nullptr),
     m_currentEntity(),
@@ -62,7 +66,8 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
             if (hasComponent) {
                 compUiHandler->createComponentEditor(m_currentEntity,
                                                      m_mainWidget,
-                                                     m_mainLayout);
+                                                     m_mainLayout,
+                                                     m_theProjectManager->currentProjectPath());
             }
         }
     }

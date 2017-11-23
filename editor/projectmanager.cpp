@@ -9,8 +9,15 @@
 #include <QFileInfo>
 #include <QUrl>
 
+#include "core/bigfile.h"
 
-QUrl projectsUrl()
+
+ProjectManager::ProjectManager(QObject *parent) :
+    QObject(parent),
+    m_currentProjectPath()
+{}
+
+QUrl ProjectManager::projectsUrl() const
 {
     const QUrl appUrl = QUrl::fromLocalFile(QCoreApplication::applicationDirPath() + "/");
     const QUrl ret = appUrl.resolved(QUrl("projects/"));
@@ -18,12 +25,33 @@ QUrl projectsUrl()
     return ret;
 }
 
-QString projectsPath()
+QString ProjectManager::projectsPath() const
 {
     return projectsUrl().toString(QUrl::PreferLocalFile);
 }
 
-QString createNewProject(const QString &projectName)
+QString ProjectManager::currentProjectPath() const
+{
+    return m_currentProjectPath;
+}
+
+QStringList ProjectManager::recentProjects() const
+{
+    QStringList ret;
+
+    QDirIterator projectsDirIt(projectsPath(),
+                              QDir::Dirs |
+                              QDir::NoDotAndDotDot |
+                              QDir::NoSymLinks);
+
+    while (projectsDirIt.hasNext()) {
+        ret << projectsDirIt.next();
+    }
+
+    return ret;
+}
+
+void ProjectManager::create(const QString &projectName)
 {
     const QUrl projectsDirUrl = projectsUrl();
 
@@ -59,21 +87,21 @@ QString createNewProject(const QString &projectName)
         }
     }
 
-    return projectPath;
+    m_currentProjectPath = projectPath;
+
+    Q_EMIT projectCreated(m_currentProjectPath);
 }
 
-QStringList recentProjects()
+void ProjectManager::load(const QString &path)
 {
-    QStringList ret;
+    m_currentProjectPath = path;
 
-    QDirIterator projectsDirIt(projectsPath(),
-                              QDir::Dirs |
-                              QDir::NoDotAndDotDot |
-                              QDir::NoSymLinks);
+    Q_EMIT projectLoaded(m_currentProjectPath);
+}
 
-    while (projectsDirIt.hasNext()) {
-        ret << projectsDirIt.next();
+void ProjectManager::build()
+{
+    if (!m_currentProjectPath.isNull()) {
+        createBigFile(m_currentProjectPath.toStdString(), "data.pak");
     }
-
-    return ret;
 }

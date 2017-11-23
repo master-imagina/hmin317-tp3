@@ -25,7 +25,8 @@ public:
 
     virtual void createComponentEditor(entityx::Entity entity,
                                        QWidget *parent,
-                                       QVBoxLayout *layout) = 0;
+                                       QVBoxLayout *layout,
+                                       const QString &projectPath) = 0;
 };
 
 

@@ -3,9 +3,10 @@
 #include <algorithm>
 #include <iostream>
 
+#include "render/renderassets.h"
+
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
-#include "render/material/shaderutils.h"
 
 
 ////////////////////// Material //////////////////////

@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "core/aliases_memory.h"
+
 
 struct ShaderProgram
 {
@@ -13,5 +15,9 @@ struct ShaderProgram
     std::string geometryShaderSource;
     std::string fragmentShaderSource;
 };
+
+uptr<ShaderProgram> shaderProgramFromSource(const std::string &vertShaderSource,
+                                            const std::string &geomShaderSource,
+                                            const std::string &fragShaderSource);
 
 #endif // SHADERPROGRAM_H

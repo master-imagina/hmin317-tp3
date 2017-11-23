@@ -14,6 +14,7 @@ class AssetManagerView;
 class ComponentView;
 class GameWidget;
 class PaneManager;
+class ProjectManager;
 
 
 class MainWindow : public QMainWindow
@@ -24,12 +25,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() = default;
 
-private Q_SLOTS:
-    void buildCurrentProject();
-
 private:
     void createMenus();
     void initPanes();
+    void createConnections();
 
     void createDefaultComponentEditorCreators(ComponentView *componentView);
 
@@ -38,6 +37,7 @@ private:
     QMenu *m_openViewPaneMenu;
 
     AssetManagerView *m_assetManagerView;
+    ProjectManager *m_projectManager;
 
     Scene m_scene;
     Camera m_camera;

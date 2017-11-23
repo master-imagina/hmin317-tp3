@@ -63,12 +63,16 @@ set(CMAKE_AUTORCC true)
 set(CORE_HEADERS
     core/aliases_int.h
     core/aliases_memory.h
+    core/assetmanager.h
+    core/bigfile.h
     core/gameloop.h
     core/log.h
     core/scene.h
     core/systemengine.h
     )
 set(CORE_SOURCES
+    core/assetmanager.cpp
+    core/bigfile.cpp
     core/gameloop.cpp
     core/scene.cpp
     core/systemengine.cpp
@@ -84,6 +88,7 @@ install(TARGETS enginecore LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 #  render
 set(RENDER_HEADERS
     render/aabb.h
+    render/renderassets.h
     render/camera.h
     render/mesh.h
     render/rendersystem.h
@@ -96,7 +101,6 @@ set(RENDER_HEADERS
     render/material/renderpass.h
     render/material/shaderparam.h
     render/material/shaderprogram.h
-    render/material/shaderutils.h
     render/material/texture.h
     render/renderer/managers/buffermanager.h
     render/renderer/managers/shadermanager.h
@@ -113,6 +117,7 @@ set(RENDER_HEADERS
     )
 set(RENDER_SOURCES
     render/aabb.cpp
+    render/renderassets.cpp
     render/camera.cpp
     render/mesh.cpp
     render/rendersystem.cpp
@@ -128,7 +133,6 @@ set(RENDER_SOURCES
     render/material/renderpass.cpp
     render/material/shaderparam.cpp
     render/material/shaderprogram.cpp
-    render/material/shaderutils.cpp
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp
     )
@@ -150,8 +154,6 @@ install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  extras
 set(EXTRAS_HEADERS
-    extras/assetmanager.h
-    extras/bigfile.h
     extras/cameraactions.h
     extras/cameracontroller.h
     extras/gamewidget.h
@@ -162,8 +164,6 @@ set(EXTRAS_HEADERS
     extras/particles/quick.h
     )
 set(EXTRAS_SOURCES
-    extras/assetmanager.cpp
-    extras/bigfile.cpp
     extras/cameraactions.cpp
     extras/cameracontroller.cpp
     extras/gamewidget.cpp

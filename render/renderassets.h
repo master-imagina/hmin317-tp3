@@ -1,9 +1,17 @@
-#ifndef SHADERUTILS_H
-#define SHADERUTILS_H
+#ifndef RENDERASSETS_H
+#define RENDERASSETS_H
+
+#include <QImage>
 
 #include "core/aliases_memory.h"
 
 #include "render/material/shaderprogram.h"
+
+struct aiScene;
+
+namespace Assimp {
+class Importer;
+} // namespace Assimp
 
 
 uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,
@@ -13,8 +21,8 @@ uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,
                                           const std::string &geomFilePath,
                                           const std::string &fragFilePath);
 
-uptr<ShaderProgram> shaderProgramFromSource(const std::string &vertShaderSource,
-                                            const std::string &geomShaderSource,
-                                            const std::string &fragShaderSource);
+QImage imageFromFile(const std::string &path);
 
-#endif // SHADERUTILS_H
+const aiScene *assimpSceneFromFile(const std::string &path, Assimp::Importer &importer);
+
+#endif // RENDERASSETS_H

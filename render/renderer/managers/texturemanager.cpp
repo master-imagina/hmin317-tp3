@@ -3,7 +3,9 @@
 #include <assert.h>
 #include <iostream>
 
-#include "extras/assetmanager.h"
+#include "core/assetmanager.h"
+
+#include "render/renderassets.h"
 
 #include "render/material/texture.h"
 
@@ -30,7 +32,7 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
     }
 
     // Read texture from file
-    QImage image = AssetManager::self()->image(texture.path);
+    QImage image = imageFromFile(texture.path);
 
     if (image.isNull()) {
         std::cerr << "TextureManager::addTexture(): "

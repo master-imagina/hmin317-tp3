@@ -11,6 +11,8 @@
 #include <QMenuBar>
 #include <QPushButton>
 
+#include "core/assetmanager.h"
+
 #include "extras/gamewidget.h"
 
 #include "editor/gui/fpswidgets.h"
@@ -30,10 +32,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_paneManager(nullptr),
     m_openViewPaneMenu(nullptr),
     m_assetManagerView(nullptr),
+    m_projectManager(nullptr),
     m_scene(),
     m_camera(),
     m_gameWidget(nullptr)
 {
+    m_projectManager = new ProjectManager(this);
+
     auto centralWidget = new QWidget(this);
     centralWidget->setFocusPolicy(Qt::StrongFocus);
 
@@ -53,11 +58,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     createMenus();
     initPanes();
-}
 
-void MainWindow::buildCurrentProject()
-{
-    m_assetManagerView->packBigFile();
+    createConnections();
 }
 
 void MainWindow::createMenus()
@@ -92,9 +94,7 @@ void MainWindow::createMenus()
 
         connect(createProjectDialog, &QDialog::accepted,
                 [this, projectNameLineEdit] {
-            const QString projectPath = createNewProject(projectNameLineEdit->text());
-
-            m_assetManagerView->setProjectPath(projectPath);
+            m_projectManager->create(projectNameLineEdit->text());
         });
 
         createProjectDialog->exec();
@@ -102,8 +102,9 @@ void MainWindow::createMenus()
 
     QMenu *recentProjectsMenu = fileMenu->addMenu(tr("Recent projects"));
 
-    for (const QString &projectPath : recentProjects()) {
-        const QString projectName = projectPath.mid(projectsPath().lastIndexOf(QDir::separator()) + 1);
+    for (const QString &projectPath : m_projectManager->recentProjects()) {
+        const QString projectName =
+                projectPath.mid(m_projectManager->projectsPath().lastIndexOf(QDir::separator()) + 1);
 
         QAction *openRecentAction = recentProjectsMenu->addAction(projectName);
         openRecentAction->setData(projectPath);
@@ -111,7 +112,7 @@ void MainWindow::createMenus()
 
     connect(recentProjectsMenu, &QMenu::triggered,
             [this] (QAction *action) {
-        m_assetManagerView->setProjectPath(action->data().toString());
+        m_projectManager->load(action->data().toString());
     });
 
     // Project menu
@@ -120,7 +121,7 @@ void MainWindow::createMenus()
     QAction *buildProjectAction = projectMenu->addAction(tr("Build"));
 
     connect(buildProjectAction, &QAction::triggered,
-            this, &MainWindow::buildCurrentProject);
+            m_projectManager, &ProjectManager::build);
 
     // View menu
     QMenu *viewMenu = menuBar->addMenu(tr("View"));
@@ -130,7 +131,7 @@ void MainWindow::createMenus()
 void MainWindow::initPanes()
 {
     auto *sceneView = new SceneView(m_scene, this);
-    auto *componentView = new ComponentView(sceneView, this);
+    auto *componentView = new ComponentView(sceneView, m_projectManager, this);
 
     auto *assetManagerPane = new QDockWidget(tr("Asset Manager"), this);
     m_assetManagerView = new AssetManagerView(assetManagerPane);
@@ -152,8 +153,18 @@ void MainWindow::initPanes()
     createDefaultComponentEditorCreators(componentView);
 }
 
+void MainWindow::createConnections()
+{
+    connect(m_projectManager, &ProjectManager::projectCreated,
+            m_assetManagerView, &AssetManagerView::setProjectPath);
+
+    connect(m_projectManager, &ProjectManager::projectLoaded,
+            m_assetManagerView, &AssetManagerView::setProjectPath);
+}
+
 void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentView)
 {
     componentView->registerComponentUiHandler<TransformCompUiHandler>();
     componentView->registerComponentUiHandler<ParticleEffectCompUiHandler>();
+    componentView->registerComponentUiHandler<MeshCompUiHandler>();
 }

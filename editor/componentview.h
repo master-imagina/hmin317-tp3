@@ -13,6 +13,7 @@
 class QMenu;
 class QVBoxLayout;
 
+class ProjectManager;
 class SceneView;
 
 
@@ -21,7 +22,8 @@ class ComponentView : public ScrollablePane
     Q_OBJECT
 
 public:
-    ComponentView(SceneView *sceneView, QWidget *parent = nullptr);
+    ComponentView(SceneView *sceneView, ProjectManager *projectManager,
+                  QWidget *parent = nullptr);
     ~ComponentView() = default;
 
     template <class Handler>
@@ -39,6 +41,7 @@ private:
 
 private:
     SceneView *m_theSceneView;
+    ProjectManager *m_theProjectManager;
 
     QWidget *m_mainWidget;
     QVBoxLayout *m_mainLayout;

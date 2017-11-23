@@ -3,6 +3,7 @@
 
 #include "icomponentuihandler.h"
 
+#include "render/mesh.h"
 #include "render/transform.h"
 
 #include "extras/particles/particleeffect.h"
@@ -17,7 +18,8 @@ public:
                             QAction *action) override;
     void createComponentEditor(entityx::Entity entity,
                                QWidget *parent,
-                               QVBoxLayout *layout) override;
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
 };
 
 
@@ -30,7 +32,21 @@ public:
                             QAction *action) override;
     void createComponentEditor(entityx::Entity entity,
                                QWidget *parent,
-                               QVBoxLayout *layout) override;
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
+};
+
+class MeshCompUiHandler : public TComponentUiHandler<Mesh>
+{
+public:
+    QString componentName() override { return "Mesh"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void createComponentEditor(entityx::Entity entity,
+                               QWidget *parent,
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
 };
 
 #endif // COMPONENUIHANDLERS_H

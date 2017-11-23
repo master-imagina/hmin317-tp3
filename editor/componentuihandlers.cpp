@@ -3,6 +3,8 @@
 #include <QAction>
 #include <QFormLayout>
 #include <QLabel>
+#include <QLineEdit>
+#include <QUrl>
 
 #include "editor/gui/advancedslider.h"
 #include "editor/gui/vec3edit.h"
@@ -23,14 +25,15 @@ void TransformCompUiHandler::configureAddAction(entityx::Entity &entity,
 
 void TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
                                                    QWidget *parent,
-                                                   QVBoxLayout *layout)
+                                                   QVBoxLayout *layout,
+                                                   const QString &)
 {
     Transform *comp = entity.component<Transform>().get();
 
     // Build UI
     auto *editorWidget = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel("Transform"));
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
     layout->insertWidget(layout->count() - 1, editorWidget);
 
 
@@ -86,14 +89,15 @@ void ParticleEffectCompUiHandler::configureAddAction(entityx::Entity &entity,
 
 void ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
                                                         QWidget *parent,
-                                                        QVBoxLayout *layout)
+                                                        QVBoxLayout *layout,
+                                                        const QString &)
 {
     ParticleEffect *comp = entity.component<ParticleEffect>().get();
 
     // Build UI
     auto *editorWidget = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel("Particle Effect"));
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
     layout->insertWidget(layout->count() - 1, editorWidget);
 
     auto *directionEditor = new Vec3DEdit(editorWidget);
@@ -165,5 +169,46 @@ void ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
         comp->setParticleSize(value);
         //FIXME
         //        m_particleMaterial->setParam("particleSize", (float)value);
+    });
+}
+
+
+////////////////////// MeshCompUiHandler //////////////////////
+
+void MeshCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                           QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<Mesh>();
+    });
+}
+
+void MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                              QWidget *parent,
+                                              QVBoxLayout *layout,
+                                              const QString &projectPath)
+{
+    Mesh *comp = entity.component<Mesh>().get();
+
+    // Build UI
+    auto *editorWidget = new QWidget(parent);
+
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
+    layout->insertWidget(layout->count() - 1, editorWidget);
+
+    auto *meshPathEditor = new QLineEdit(editorWidget);
+    meshPathEditor->setText(QString::fromStdString(comp->path()));
+
+    auto *editorLayout = new QFormLayout(editorWidget);
+    editorLayout->addRow("Path", meshPathEditor);
+
+    // Create connections
+    QObject::connect(meshPathEditor, &QLineEdit::editingFinished,
+                     [comp, meshPathEditor, projectPath] {
+        const QString assetRelativePath = meshPathEditor->text();
+        const QUrl assetUrl = QUrl(projectPath + "/").resolved(QUrl(assetRelativePath));
+
+        comp->setPath(assetUrl.toString().toStdString());
     });
 }

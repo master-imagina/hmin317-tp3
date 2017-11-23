@@ -15,7 +15,6 @@
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
 #include "render/material/shaderprogram.h"
-#include "render/material/shaderutils.h"
 #include "render/material/texture.h"
 
 #include "render/camera.h"

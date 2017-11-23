@@ -331,7 +331,7 @@ void GLWrapper::linkShaderProgram(const GLShaderProgram &glProgram)
             m_gl->glGetProgramInfoLog(glProgram.id, logSize, nullptr,
                                       logBuffer.data());
 
-            std::cerr << "[ERROR] Shader linking error :" << std::endl
+            std::cerr << "[ERROR] Shader linking error : "
                       << std::string(logBuffer.data())
                       << std::endl;
         }

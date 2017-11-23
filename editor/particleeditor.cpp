@@ -20,13 +20,13 @@
 #include "gui/vec3edit.h"
 
 #include "render/aabb.h"
+#include "render/renderassets.h"
 
 #include "render/geometry/geometry.h"
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
-#include "render/material/shaderutils.h"
 #include "render/material/texture.h"
 
 

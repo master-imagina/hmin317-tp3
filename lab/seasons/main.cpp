@@ -3,20 +3,23 @@
 #include <QFileInfo>
 #include <QSurfaceFormat>
 
+#include "core/assetmanager.h"
 #include "core/scene.h"
 
 #include "editor/gui/fpswidgets.h"
 
-#include "extras/assetmanager.h"
 #include "extras/cameraactions.h"
 #include "extras/gamewidget.h"
+#include "extras/grid.h"
 #include "extras/heightmap.h"
 
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/quick.h"
 
 #include "render/aabb.h"
+#include "render/renderassets.h"
 #include "render/camera.h"
+#include "render/mesh.h"
 #include "render/transform.h"
 
 #include "render/geometry/geometry.h"
@@ -24,7 +27,6 @@
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
-#include "render/material/shaderutils.h"
 #include "render/material/texture.h"
 
 #include "seasoncontroller.h"
@@ -61,31 +63,31 @@ void initScene(Scene &scene)
 
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
-    *terrainGeom.get() = heightmapToGeometry(AssetManager::self()->image("/images/heightmap-1.png"));
+//    *terrainGeom.get() = heightmapToGeometry(AssetManager::self()->image("/images/heightmap-1.png"));
+    *terrainGeom.get() = grid(50);
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
 
-    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, 0};
-    terrainGeom->vertexLayout.addAttribute(standardVertexAttrib);
+    terrainGeom->vertexLayout.addAttribute(defaultPositionAttrib());
 
     //  Terrain material
     auto terrainMaterial = terrainEntity.assign<Material>();
     RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
     uptr<ShaderProgram> terrainShader =
-            AssetManager::self()->shader("/shaders/terrain_heightmap.vert",
-                                         "",
-                                         "/shaders/terrain_heightmap.frag");
+            shaderProgramFromFile("shaders/terrain_heightmap.vert",
+                                  "shaders/terrain_wireframe.frag");
+
     terrainPass->setShaderProgram(std::move(terrainShader));
 
-    const QVector3D terrainAABBCenter = terrainBoundingBox.center();
-    const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
+//    const QVector3D terrainAABBCenter = terrainBoundingBox.center();
+//    const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
 
-    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
-    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
+//    const float minHeight = terrainAABBCenter.y() - terrainAABBRadius.y();
+//    const float maxHeight = terrainAABBCenter.y() + terrainAABBRadius.y();
 
-    terrainMaterial->setParam("minHeight", minHeight);
-    terrainMaterial->setParam("maxHeight", maxHeight);
-    terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
+//    terrainMaterial->setParam("minHeight", minHeight);
+//    terrainMaterial->setParam("maxHeight", maxHeight);
+//    terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
 
     // Create particle effect
     entityx::Entity particleEntity = scene.createEntity();
@@ -97,9 +99,13 @@ void initScene(Scene &scene)
     particleEffect = particleEntity.component<ParticleEffect>();
     particleMaterial = particleEntity.component<Material>();
 
+    // Create tree
+    entityx::Entity treeEntity = scene.createEntity();
+    auto treeMesh = treeEntity.assign<Mesh>("meshes/wintertree.ply");
 
     // Center camera above terrain
-    centerCameraOnBBox(camera, terrainBoundingBox);
+    AABoundingBox a(treeMesh->geometry(0).vertices);
+    centerCameraOnBBox(camera, a);
 }
 
 void onSeasonChanged(Season season)
@@ -124,7 +130,7 @@ void onSeasonChanged(Season season)
         break;
     }
 
-    terrainColorParam->value = seasonColor;
+//    terrainColorParam->value = seasonColor;
 
     particleMaterial->setParam("particleColor", seasonColor);
 
@@ -135,15 +141,15 @@ void onSeasonChanged(Season season)
 
     switch (season) {
     case Season::Autumn:
-        particleTexture.path = "/images/autumn_leaf.png";
+        particleTexture.path = "images/autumn_leaf.png";
         particleSize = 15.f;
         break;
     case Season::Winter:
-        particleTexture.path = "/images/winter_flake.png";
+        particleTexture.path = "images/winter_flake.png";
         particleSize = 10.f;
         break;
     case Season::Spring:
-        particleTexture.path = "/images/spring_leaf.png";
+        particleTexture.path = "images/spring_leaf.png";
         particleSize = 8.f;
         break;
     case Season::Summer:

@@ -108,7 +108,7 @@ void createBigFile(const std::string &folderPath,
 
     for (const QString &filePath : filesPaths) {
         QString entryPath = filePath;
-        entryPath.remove(qFolderPath);
+        entryPath.remove(qFolderPath + "/");
 
         const QFileInfo fileInfo(filePath);
         const qint64 fileSize = fileInfo.size();

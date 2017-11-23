@@ -17,13 +17,15 @@
 #include <QSplitter>
 #include <QTreeView>
 
+#include "core/assetmanager.h"
+
 #include "editor/gui/flowlayout.h"
 #include "editor/gui/layoututils.h"
 
-#include "extras/assetmanager.h"
-
 
 ////////////////////// Helpers //////////////////////
+
+namespace {
 
 QImage unsupportedPreviewImg()
 {
@@ -37,6 +39,14 @@ QImage unsupportedPreviewImg()
 
     return ret;
 }
+
+QStringList supportedImageFormats()
+{
+    return {"png", "jpg", "jpeg", "bmp"};
+}
+
+} // anon namespace
+
 
 ////////////////////// PreviewWidget //////////////////////
 
@@ -108,7 +118,6 @@ void PreviewWidget::init(const QString &name)
 
 AssetManagerView::AssetManagerView(QWidget *parent) :
     QMainWindow(parent),
-    m_currentFolderPath(),
     m_currentFolderLabel(nullptr),
     m_fileSystemView(nullptr),
     m_folderView(nullptr),
@@ -149,11 +158,6 @@ AssetManagerView::AssetManagerView(QWidget *parent) :
     mainWidget->setStretchFactor(1, 20);
 }
 
-QString AssetManagerView::projectPath() const
-{
-    return m_currentFolderPath;
-}
-
 void AssetManagerView::setProjectPath(const QString &dirPath)
 {
     const QFileInfo dirInfos(dirPath);
@@ -161,8 +165,6 @@ void AssetManagerView::setProjectPath(const QString &dirPath)
     if (!dirInfos.exists() || !dirInfos.isDir()) {
         return;
     }
-
-    m_currentFolderPath = dirPath;
 
     m_currentFolderLabel->setText(dirPath);
 
@@ -208,14 +210,14 @@ void AssetManagerView::setViewPath(const QString &dirPath)
 
             auto *previewWidget = new PreviewWidget(labelText, m_folderView);
 
-            QString assetPath = dirPath.mid(dirPath.lastIndexOf('/'));
+            QString assetPath = dirPath.mid(dirPath.lastIndexOf('/') + 1);
             assetPath.append("/" + labelText);
 
             previewWidget->setAssetPath(assetPath);
 
             previewWidget->setImage(unsupportedPreviewImg());
 
-            for (const QString &imgFormat : AssetManager::supportedImageFormats()) {
+            for (const QString &imgFormat : supportedImageFormats()) {
                 if (labelText.endsWith(imgFormat)) {
                     previewWidget->setImage(QImage(filePath));
                 }
@@ -223,12 +225,5 @@ void AssetManagerView::setViewPath(const QString &dirPath)
 
             m_folderViewLayout->addWidget(previewWidget);
         }
-    }
-}
-
-void AssetManagerView::packBigFile()
-{
-    if (!m_currentFolderPath.isNull()) {
-        createBigFile(m_currentFolderPath.toStdString(), "data.pak");
     }
 }

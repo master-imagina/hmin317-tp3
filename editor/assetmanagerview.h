@@ -5,7 +5,6 @@
 
 #include <QMainWindow>
 
-class BigFile;
 class FlowLayout;
 
 class QFileSystemModel;
@@ -48,14 +47,10 @@ public:
     QString projectPath() const;
     void setProjectPath(const QString &dirPath);
 
-    void packBigFile();
-
 private:
     void setViewPath(const QString &dirPath);
 
 private:
-    QString m_currentFolderPath;
-
     QLabel *m_currentFolderLabel;
     QTreeView *m_fileSystemView;
     QFileSystemModel *m_fileSystemModel;
