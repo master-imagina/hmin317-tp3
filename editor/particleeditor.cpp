@@ -54,11 +54,7 @@ void ParticleEditor::initEditorScene()
     //  Grid geometry
     auto gridGeom = gridEntity.assign<Geometry>();
     *gridGeom.get() = grid(50);
-
-    AABoundingBox gridBBox(gridGeom->vertices);
-
-    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, Geometry::vertexSize};
-    gridGeom->vertexLayout.addAttribute(standardVertexAttrib);
+    gridGeom->vertexLayout.addAttribute(defaultPositionAttrib());
 
     //  Terrain material
     auto gridMaterial = gridEntity.assign<Material>();
@@ -69,6 +65,8 @@ void ParticleEditor::initEditorScene()
     terrainPass->setShaderProgram(std::move(terrainShader));
 
     // Create particle effect
+    AABoundingBox gridBBox(gridGeom->vertices);
+
     entityx::Entity particleEntity = m_scene.createEntity();
     createParticleEffect(particleEntity, {0, 0, 0}, {0, 1, 0},
                          50, 100, gridBBox.radius().z(),

@@ -42,8 +42,7 @@ void createParticleEffect(entityx::Entity entity,
     effect->setParticleSize(size);
 
     entityx::ComponentHandle<Geometry> geom = entity.component<Geometry>();
-    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, Geometry::vertexSize};
-    geom->vertexLayout.addAttribute(standardVertexAttrib);
+    geom->vertexLayout.addAttribute(defaultPositionAttrib());
 
     uptr<ShaderProgram> shaderProgram = shaderProgramFromFile(
                 "shaders/particle.vert",

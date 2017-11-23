@@ -108,13 +108,9 @@ Geometry Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
         }
     }
 
-    VertexAttrib standardVertexAttrib {"vertexPos", 3, VertexAttrib::Type::Float, false, Geometry::vertexSize};
-    VertexAttrib standardNormalAttrib {"normal", 3, VertexAttrib::Type::Float, false, Geometry::vertexSize, offsetof(Vertex, normal)};
-    VertexAttrib standardTexCoordsAttrib {"texCoords", 2, VertexAttrib::Type::Float, false, Geometry::vertexSize, offsetof(Vertex, texCoords)};
-
-    ret.vertexLayout.addAttribute(standardVertexAttrib);
-    ret.vertexLayout.addAttribute(standardNormalAttrib);
-    ret.vertexLayout.addAttribute(standardTexCoordsAttrib);
+    ret.vertexLayout.addAttribute(defaultPositionAttrib());
+    ret.vertexLayout.addAttribute(defaultNormalAttrib());
+    ret.vertexLayout.addAttribute(defaultTexCoordsAttrib());
 
     ret.primitiveType = Geometry::Triangles;
     ret.primitiveCount = mesh->mNumFaces;

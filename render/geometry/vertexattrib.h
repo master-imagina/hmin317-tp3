@@ -26,4 +26,13 @@ struct VertexAttrib
     std::size_t offset = 0;
 };
 
+
+std::string defaultPositionAttribName();
+std::string defaultNormalAttribName();
+std::string defaultTexCoordsAttribName();
+
+VertexAttrib defaultPositionAttrib();
+VertexAttrib defaultNormalAttrib();
+VertexAttrib defaultTexCoordsAttrib();
+
 #endif // VERTEXATTRIB_H
