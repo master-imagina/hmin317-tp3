@@ -7,6 +7,9 @@
 
 
 uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,
+                                          const std::string &fragFilePath);
+
+uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,
                                           const std::string &geomFilePath,
                                           const std::string &fragFilePath);
 

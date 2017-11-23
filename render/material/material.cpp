@@ -147,7 +147,6 @@ Material defaultMaterial()
     RenderPass *basePass = ret.addRenderPass("base");
     uptr<ShaderProgram> shader =
             shaderProgramFromFile("shaders/default.vert",
-                                  "",
                                   "shaders/default.frag");
 
     basePass->setShaderProgram(std::move(shader));

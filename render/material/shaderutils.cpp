@@ -27,6 +27,16 @@ void readShaderFromFile(const std::string &filePath, std::string &sourceCode)
 
 } // anon namespace
 
+uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,
+                                          const std::string &fragFilePath)
+{
+    auto ret = std::make_unique<ShaderProgram>();
+
+    readShaderFromFile(vertFilePath, ret->vertexShaderSource);
+    readShaderFromFile(fragFilePath, ret->fragmentShaderSource);
+
+    return ret;
+}
 
 uptr<ShaderProgram> shaderProgramFromFile(const std::string &vertFilePath,
                                           const std::string &geomFilePath,
