@@ -5,6 +5,8 @@
 
 #include <QVector3D>
 
+class QDataStream;
+
 
 class ParticleEffect
 {
@@ -55,5 +57,9 @@ public:
     //TODO preallocate
     std::vector<int> m_lifes;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const ParticleEffect &effect);
+QDataStream &operator>>(QDataStream &os, ParticleEffect &effect);
 
 #endif // PARTICLEEFFECT_H

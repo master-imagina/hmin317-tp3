@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <QDataStream>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 
@@ -112,4 +114,18 @@ Geometry Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
     ret.isDirty = true;
 
     return ret;
+}
+
+
+QDataStream &operator<<(QDataStream &os, const Mesh &mesh)
+{
+    os << QString::fromStdString(mesh.path());
+}
+
+QDataStream &operator>>(QDataStream &os, Mesh &mesh)
+{
+    QString path;
+    os >> path;
+
+    mesh.setPath(path.toStdString());
 }

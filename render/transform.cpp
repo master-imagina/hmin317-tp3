@@ -1,5 +1,6 @@
 #include "transform.h"
 
+#include <QDataStream>
 #include <QQuaternion>
 
 
@@ -76,4 +77,27 @@ QMatrix4x4 Transform::matrix()
     }
 
     return m_matrix;
+}
+
+
+QDataStream &operator<<(QDataStream &os, const Transform &transform)
+{
+    os << transform.translate()
+       << transform.rotation()
+       << transform.scale();
+}
+
+QDataStream &operator>>(QDataStream &os, Transform &transform)
+{
+    QVector3D position;
+    QVector3D rotation;
+    QVector3D scale;
+
+    os >> position;
+    os >> rotation;
+    os >> scale;
+
+    transform.setTranslate(position);
+    transform.setRotation(rotation);
+    transform.setScale(scale);
 }

@@ -1,5 +1,7 @@
 #include "particleeffect.h"
 
+#include <QDataStream>
+
 
 ParticleEffect::ParticleEffect() :
     m_isDirty(true),
@@ -125,4 +127,43 @@ void ParticleEffect::resetCount()
     m_lifes.resize(m_count, m_maxLife);
 
     setDirty();
+}
+
+
+QDataStream &operator<<(QDataStream &os, const ParticleEffect &effect)
+{
+    os << effect.count()
+       << effect.maxLife()
+       << effect.radius()
+       << effect.direction()
+       << effect.speed()
+       << effect.particleSize()
+       << effect.spawnRate();
+}
+
+QDataStream &operator>>(QDataStream &os, ParticleEffect &effect)
+{
+    int count = 0;
+    int maxLife = 0;
+    float radius = 0.f;
+    QVector3D direction;
+    float speed = 0.f;
+    float particleSize = 0.f;
+    int spawnRate = 0;
+
+    os >> count;
+    os >> maxLife;
+    os >> radius;
+    os >> direction;
+    os >> speed;
+    os >> particleSize;
+    os >> spawnRate;
+
+    effect.setCount(count);
+    effect.setMaxLife(maxLife);
+    effect.setRadius(radius);
+    effect.setDirection(direction);
+    effect.setSpeed(speed);
+    effect.setParticleSize(particleSize);
+    effect.setSpawnRate(spawnRate);
 }

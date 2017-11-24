@@ -4,6 +4,8 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 
+class QDataStream;
+
 
 class Transform
 {
@@ -31,5 +33,9 @@ private:
 
     bool m_isMatrixDirty;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const Transform &transform);
+QDataStream &operator>>(QDataStream &os, Transform &transform);
 
 #endif // TRANSFORM_H

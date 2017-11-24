@@ -17,12 +17,18 @@ public:
 
     entityx::Entity createEntity();
 
-/* consider private */
+    std::vector<entityx::Entity> entityCache() const;
+    std::size_t count() const;
+
+    /* consider private */
     entityx::EventManager events;
     entityx::EntityManager entities;
 
 Q_SIGNALS:
     void entityAdded(entityx::Entity entity);
+
+private:
+    std::vector<entityx::Entity> m_entityCache;
 };
 
 #endif // SCENE_H

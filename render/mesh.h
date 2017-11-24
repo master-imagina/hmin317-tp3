@@ -5,6 +5,8 @@
 
 #include "render/geometry/geometry.h"
 
+class QDataStream;
+
 struct aiMesh;
 struct aiNode;
 struct aiScene;
@@ -32,5 +34,9 @@ private:
 
     std::vector<Geometry> m_geometries;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const Mesh &mesh);
+QDataStream &operator>>(QDataStream &os, Mesh &mesh);
 
 #endif // MESH_H

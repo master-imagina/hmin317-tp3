@@ -162,6 +162,7 @@ set(EXTRAS_HEADERS
     extras/particles/particleeffect.h
     extras/particles/particlesystem.h
     extras/particles/quick.h
+    extras/serialization.h
     )
 set(EXTRAS_SOURCES
     extras/cameraactions.cpp
@@ -172,6 +173,7 @@ set(EXTRAS_SOURCES
     extras/particles/particleeffect.cpp
     extras/particles/particlesystem.cpp
     extras/particles/quick.cpp
+    extras/serialization.cpp
     )
 set(EXTRAS_RESOURCES
     )
