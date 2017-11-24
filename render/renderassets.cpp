@@ -22,7 +22,9 @@ void readShaderFromFile(const std::string &filePath, std::string &sourceCode)
     AssetManager *assetManager = AssetManager::self();
 
     if (assetManager->bigFile().entryCount() == 0) {
-        QFile file(QString::fromStdString(filePath));
+        const QString assetPath = assetManager->pathFor(QString::fromStdString(filePath));
+
+        QFile file(assetPath);
 
         if (!file.open(QFile::ReadOnly)) {
             std::cerr << "[ERROR] shaderProgramFromFile() : "
@@ -72,7 +74,9 @@ QImage imageFromFile(const std::string &path)
     AssetManager *assetManager = AssetManager::self();
 
     if (assetManager->bigFile().entryCount() == 0) {
-        const bool loaded = ret.load(QString::fromStdString(path));
+        const QString assetPath = assetManager->pathFor(QString::fromStdString(path));
+
+        const bool loaded = ret.load(assetPath);
 
         if (!loaded) {
             std::cerr << "[ERROR] imageFromFile() : "
