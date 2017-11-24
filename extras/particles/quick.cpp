@@ -20,27 +20,24 @@
 
 
 void createParticleEffect(entityx::Entity entity,
-                          const QVector3D &worldPos,
                           const QVector3D &direction,
                           int count,
                           int maxLife,
                           float radius,
                           float speed,
-                          float size)
+                          float size,
+                          int spawnRate)
 {
     // /!\ Assume the system engine has the following component dependency
     // ParticleEffect -> Geometry, Material
     entityx::ComponentHandle<ParticleEffect> effect = entity.assign<ParticleEffect>();
-
-    entityx::ComponentHandle<Transform> transform = entity.component<Transform>();
-    transform->setTranslate(worldPos);
-
     effect->setDirection(direction);
     effect->setCount(count);
     effect->setMaxLife(maxLife);
     effect->setRadius(radius);
     effect->setSpeed(speed);
     effect->setParticleSize(size);
+    effect->setSpawnRate(spawnRate);
 
     entityx::ComponentHandle<Geometry> geom = entity.component<Geometry>();
     geom->vertexLayout.addAttribute(defaultPositionAttrib());

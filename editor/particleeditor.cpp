@@ -67,7 +67,7 @@ void ParticleEditor::initEditorScene()
     AABoundingBox gridBBox(gridGeom->vertices);
 
     entityx::Entity particleEntity = m_scene.createEntity();
-    createParticleEffect(particleEntity, {0, 0, 0}, {0, 1, 0},
+    createParticleEffect(particleEntity, {0, 1, 0},
                          50, 100, gridBBox.radius().z(),
                          0.4f, 4.f);
 

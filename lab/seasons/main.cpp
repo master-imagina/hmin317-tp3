@@ -92,9 +92,11 @@ void initScene(Scene &scene)
     // Create particle effect
     entityx::Entity particleEntity = scene.createEntity();
 
-    createParticleEffect(particleEntity, {0, 400, 0}, {0, -1, 0},
+    createParticleEffect(particleEntity, {0, -1, 0},
                          50, 300, terrainBoundingBox.radius().z(),
                          0.1f, 4.f);
+
+    particleEntity.component<Transform>()->setTranslate({0, 400, 0});
 
     particleEffect = particleEntity.component<ParticleEffect>();
     particleMaterial = particleEntity.component<Material>();
