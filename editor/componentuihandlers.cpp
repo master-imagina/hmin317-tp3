@@ -206,9 +206,6 @@ void MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
     // Create connections
     QObject::connect(meshPathEditor, &QLineEdit::editingFinished,
                      [comp, meshPathEditor, projectPath] {
-        const QString assetRelativePath = meshPathEditor->text();
-        const QUrl assetUrl = QUrl(projectPath + "/").resolved(QUrl(assetRelativePath));
-
-        comp->setPath(assetUrl.toString().toStdString());
+        comp->setPath(meshPathEditor->text().toStdString());
     });
 }

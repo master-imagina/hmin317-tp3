@@ -166,6 +166,8 @@ void AssetManagerView::setProjectPath(const QString &dirPath)
         return;
     }
 
+    AssetManager::self()->setSearchPath(dirPath);
+
     m_currentFolderLabel->setText(dirPath);
 
     if (!m_fileSystemView->model()) {

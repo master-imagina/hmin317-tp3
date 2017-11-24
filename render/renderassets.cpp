@@ -98,7 +98,9 @@ const aiScene *assimpSceneFromFile(const std::string &path,
             aiProcess_CalcTangentSpace;
 
     if (assetManager->bigFile().entryCount() == 0) {
-        const aiScene *ret = importer.ReadFile(path, pFlags);
+        const QString assetPath = assetManager->pathFor(QString::fromStdString(path));
+
+        const aiScene *ret = importer.ReadFile(assetPath.toStdString(), pFlags);
 
         if (!ret || ret->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !ret->mRootNode) {
             std::cerr << "[ERROR] Assimp: " << importer.GetErrorString() << std::endl;
