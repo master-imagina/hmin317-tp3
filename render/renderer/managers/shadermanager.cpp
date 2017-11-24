@@ -8,8 +8,7 @@
 
 
 ShaderManager::ShaderManager() :
-    m_shaderProgramToId(),
-    m_shaderPrograms()
+    m_shaderProgramToId()
 {}
 
 GLShaderProgram *ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, GLWrapper &glWrapper)
@@ -27,9 +26,7 @@ GLShaderProgram *ShaderManager::addShaderProgram(ShaderProgram *shaderProgram, G
     // Create GL shader program
     glWrapper.createShaderProgram(*ret, *shaderProgram);
 
-    m_shaderPrograms.emplace_back(std::move(glProgram));
-
-    m_shaderProgramToId.insert({shaderProgram, ret});
+    m_shaderProgramToId.emplace(shaderProgram, std::move(glProgram));
 
     return ret;
 }
@@ -43,12 +40,12 @@ bool ShaderManager::isAllocated(ShaderProgram *shaderProgram) const
 
 GLShaderProgram *ShaderManager::get(ShaderProgram *shaderProgram) const
 {
-    const auto shaderProgramFound = m_shaderProgramToId.find(shaderProgram);
+    auto shaderProgramFound = m_shaderProgramToId.find(shaderProgram);
 
     GLShaderProgram *ret = nullptr;
 
     if (shaderProgramFound != m_shaderProgramToId.end()) {
-        ret = shaderProgramFound->second;
+        ret = shaderProgramFound->second.get();
     }
 
     return ret;
@@ -56,7 +53,7 @@ GLShaderProgram *ShaderManager::get(ShaderProgram *shaderProgram) const
 
 void ShaderManager::cleanup(GLWrapper &glWrapper)
 {
-    for (auto &program : m_shaderPrograms) {
-        glWrapper.destroyShaderProgram(*program.get());
+    for (auto &programAndGlId : m_shaderProgramToId) {
+        glWrapper.destroyShaderProgram(*programAndGlId.second.get());
     }
 }

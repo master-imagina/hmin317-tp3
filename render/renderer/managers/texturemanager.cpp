@@ -45,7 +45,6 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
 
     auto glTexture = std::make_unique<GLTexture>();
     GLTexture *ret = glTexture.get();
-    m_textures.emplace_back(std::move(glTexture));
 
     switch (image.pixelFormat().channelCount()) {
     case 1:
@@ -68,7 +67,7 @@ GLTexture *TextureManager::addTexture(const Texture2D &texture, GLWrapper &glWra
     glWrapper.createTexture2D(*ret);
     glWrapper.allocateTexture2D(*ret, ret->params, image.constBits());
 
-    m_textureToId.insert({texture, ret});
+    m_textureToId.emplace(texture, std::move(glTexture));
 
     return ret;
 }
@@ -87,7 +86,7 @@ GLTexture *TextureManager::get(const Texture2D &texture) const
     GLTexture * ret = nullptr;
 
     if (textureFound != m_textureToId.end()) {
-        ret = textureFound->second;
+        ret = textureFound->second.get();
     }
 
     return ret;
@@ -95,7 +94,6 @@ GLTexture *TextureManager::get(const Texture2D &texture) const
 
 void TextureManager::cleanup(GLWrapper &glWrapper)
 {
-    for (auto &texture : m_textures) {
-        glWrapper.destroyTexture2D(*texture.get());
-    }
-}
+    for (auto &textureAndGlId : m_textureToId) {
+        glWrapper.destroyTexture2D(*textureAndGlId.second.get());
+    }}

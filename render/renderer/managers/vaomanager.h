@@ -25,8 +25,7 @@ public:
     void cleanup(GLWrapper &glWrapper);
 
 private:
-    uptr_vector<GLVao> m_vaos;
-    std::unordered_map<Geometry *, GLVao *> m_geomToVao;
+    std::unordered_map<Geometry *, uptr<GLVao>> m_geomToVao;
 };
 
 #endif // VAOMANAGER_H

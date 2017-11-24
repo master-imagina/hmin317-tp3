@@ -25,8 +25,7 @@ public:
     void cleanup(GLWrapper &glWrapper);
 
 private:
-    uptr_vector<GLShaderProgram> m_shaderPrograms;
-    std::unordered_map<ShaderProgram *, GLShaderProgram *> m_shaderProgramToId;
+    std::unordered_map<ShaderProgram *, uptr<GLShaderProgram>> m_shaderProgramToId;
 };
 
 #endif // SHADERMANAGER_H

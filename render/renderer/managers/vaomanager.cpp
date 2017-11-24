@@ -11,7 +11,6 @@
 int VaoManager::RESERVE_VAO_COUNT = 64;
 
 VaoManager::VaoManager() :
-    m_vaos(),
     m_geomToVao()
 {
     m_geomToVao.reserve(RESERVE_VAO_COUNT);
@@ -32,9 +31,7 @@ GLVao *VaoManager::addGeometry(Geometry *geom, GLWrapper &glWrapper)
     // Create GL VAO
     glWrapper.createVao(*ret);
 
-    m_vaos.emplace_back(std::move(glVao));
-
-    m_geomToVao.insert({geom, ret});
+    m_geomToVao.emplace(geom, std::move(glVao));
 
     return ret;
 }
@@ -53,7 +50,7 @@ GLVao *VaoManager::get(Geometry *geom) const
     GLVao *ret = nullptr;
 
     if (geomFound != m_geomToVao.end()) {
-        ret = geomFound->second;
+        ret = geomFound->second.get();
     }
 
     return ret;
@@ -61,7 +58,7 @@ GLVao *VaoManager::get(Geometry *geom) const
 
 void VaoManager::cleanup(GLWrapper &glWrapper)
 {
-    for (auto &vao : m_vaos) {
-        glWrapper.destroyVao(*vao.get());
+    for (auto &vaoAndGlId : m_geomToVao) {
+        glWrapper.destroyVao(*vaoAndGlId.second.get());
     }
 }

@@ -27,8 +27,7 @@ public:
     void cleanup(GLWrapper &glWrapper);
 
 private:
-    uptr_vector<GLTexture> m_textures;
-    std::unordered_map<Texture2D, GLTexture *> m_textureToId;
+    std::unordered_map<Texture2D, uptr<GLTexture>> m_textureToId;
 };
 
 #endif // TEXTUREMANAGER_H
