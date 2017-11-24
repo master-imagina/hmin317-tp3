@@ -90,6 +90,7 @@ set(RENDER_HEADERS
     render/aabb.h
     render/renderassets.h
     render/camera.h
+    render/light.h
     render/mesh.h
     render/rendersystem.h
     render/transform.h
@@ -97,6 +98,7 @@ set(RENDER_HEADERS
     render/geometry/geometry.h
     render/geometry/vertexattrib.h
     render/geometry/vertexlayout.h
+    render/material/builtins.h
     render/material/material.h
     render/material/renderpass.h
     render/material/shaderparam.h
@@ -129,6 +131,7 @@ set(RENDER_SOURCES
     render/renderer/managers/shadermanager.cpp
     render/renderer/managers/texturemanager.cpp
     render/renderer/managers/vaomanager.cpp
+    render/material/builtins.cpp
     render/material/material.cpp
     render/material/renderpass.cpp
     render/material/shaderparam.cpp

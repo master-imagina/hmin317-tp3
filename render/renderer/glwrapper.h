@@ -51,7 +51,7 @@ public:
     void sendActiveCameraUniforms(const GLShaderProgram &glProgram,
                                   const QMatrix4x4 &worldMatrix,
                                   const QMatrix4x4 &viewMatrix,
-                                  const QMatrix4x4 &projectionMatrix);
+                                  const QMatrix4x4 &projectionMatrix, const QVector3D &cameraPos);
     void sendTransformUniform(const GLShaderProgram &glProgram,
                               const QMatrix4x4 &modelMatrix);
     void sendTextureUniforms(const GLShaderProgram &glProgram,

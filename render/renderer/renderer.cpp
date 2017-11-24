@@ -250,7 +250,8 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
         m_glWrapper.sendActiveCameraUniforms(*glProgram,
                                              camera.worldMatrix(),
                                              camera.viewMatrix(),
-                                             camera.projectionMatrix());
+                                             camera.projectionMatrix(),
+                                             camera.eyePos());
 
         m_glWrapper.sendTransformUniform(*glProgram, drawCmd.transform.matrix());
 

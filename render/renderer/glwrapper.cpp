@@ -210,7 +210,8 @@ void GLWrapper::sendUniforms(const GLShaderProgram &glProgram,
 void GLWrapper::sendActiveCameraUniforms(const GLShaderProgram &glProgram,
                                          const QMatrix4x4 &worldMatrix,
                                          const QMatrix4x4 &viewMatrix,
-                                         const QMatrix4x4 &projectionMatrix)
+                                         const QMatrix4x4 &projectionMatrix,
+                                         const QVector3D &cameraPos)
 {
     bindShaderProgram(glProgram);
 
@@ -233,6 +234,13 @@ void GLWrapper::sendActiveCameraUniforms(const GLShaderProgram &glProgram,
 
     if (location != -1) {
         m_gl->glUniformMatrix4fv(location, 1, false, projectionMatrix.constData());
+    }
+
+    // Send camera pos
+    location = m_gl->glGetUniformLocation(glProgram.id, "cameraPos");
+
+    if (location != -1) {
+        m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&cameraPos));
     }
 
     releaseShaderProgram(glProgram);
