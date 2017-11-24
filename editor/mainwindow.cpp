@@ -2,9 +2,11 @@
 
 #include <QApplication>
 #include <QBoxLayout>
+#include <QDataStream>
 #include <QDebug>
 #include <QDialog>
 #include <QDir>
+#include <QFile>
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QMenu>
@@ -14,6 +16,7 @@
 #include "core/assetmanager.h"
 
 #include "extras/gamewidget.h"
+#include "extras/serialization.h"
 
 #include "editor/gui/fpswidgets.h"
 
@@ -113,6 +116,43 @@ void MainWindow::createMenus()
     connect(recentProjectsMenu, &QMenu::triggered,
             [this] (QAction *action) {
         m_projectManager->load(action->data().toString());
+
+        const QUrl projectFileUrl =
+                QUrl(m_projectManager->currentProjectPath() + "/")
+                .resolved(QUrl(m_projectManager->currentProjectName()));
+
+        QFile projectFile(projectFileUrl.toString());
+
+        if (!projectFile.open(QIODevice::ReadOnly)) {
+            std::cerr << "[EDITOR - ERROR] << can't load project file"
+                      << std::endl;
+        }
+
+        QDataStream dataStream(&projectFile);
+        dataStream >> m_scene;
+    });
+
+    QAction *saveProjectAction = fileMenu->addAction(tr("Save project"));
+    saveProjectAction->setShortcut(QKeySequence("Ctrl+S"));
+
+    connect(saveProjectAction, &QAction::triggered,
+            [this] {
+        if (!m_projectManager->hasOpenedProject()) {
+            return;
+        }
+
+        const QUrl projectFileUrl =
+                QUrl(m_projectManager->currentProjectPath() + "/")
+                .resolved(QUrl(m_projectManager->currentProjectName()));
+
+        QFile projectFile(projectFileUrl.toString());
+        if (!projectFile.open(QIODevice::WriteOnly)) {
+            std::cerr << "[EDITOR - ERROR] << can't save project file"
+                      << std::endl;
+        }
+
+        QDataStream dataStream(&projectFile);
+        dataStream << m_scene;
     });
 
     // Project menu

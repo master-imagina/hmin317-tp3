@@ -17,8 +17,11 @@ public:
 
     QUrl projectsUrl() const;
     QString projectsPath() const;
+    QString currentProjectName() const;
     QString currentProjectPath() const;
     QStringList recentProjects() const;
+
+    bool hasOpenedProject() const;
 
     void create(const QString &path);
     void load(const QString &path);
@@ -30,6 +33,7 @@ Q_SIGNALS:
     void projectLoaded(const QString &path);
 
 private:
+    QString m_currentProjectName;
     QString m_currentProjectPath;
 };
 

@@ -14,6 +14,7 @@
 
 ProjectManager::ProjectManager(QObject *parent) :
     QObject(parent),
+    m_currentProjectName(),
     m_currentProjectPath()
 {}
 
@@ -28,6 +29,11 @@ QUrl ProjectManager::projectsUrl() const
 QString ProjectManager::projectsPath() const
 {
     return projectsUrl().toString(QUrl::PreferLocalFile);
+}
+
+QString ProjectManager::currentProjectName() const
+{
+    return m_currentProjectName;
 }
 
 QString ProjectManager::currentProjectPath() const
@@ -51,8 +57,13 @@ QStringList ProjectManager::recentProjects() const
     return ret;
 }
 
-void ProjectManager::create(const QString &projectName)
+bool ProjectManager::hasOpenedProject() const
 {
+    return !m_currentProjectName.isNull();
+}
+
+void ProjectManager::create(const QString &projectName)
+{    
     const QUrl projectsDirUrl = projectsUrl();
 
     // Create projects folder if needed
@@ -87,6 +98,7 @@ void ProjectManager::create(const QString &projectName)
         }
     }
 
+    m_currentProjectName = projectName;
     m_currentProjectPath = projectPath;
 
     Q_EMIT projectCreated(m_currentProjectPath);
@@ -94,6 +106,7 @@ void ProjectManager::create(const QString &projectName)
 
 void ProjectManager::load(const QString &path)
 {
+    m_currentProjectName = path.mid(path.lastIndexOf('/') + 1);
     m_currentProjectPath = path;
 
     Q_EMIT projectLoaded(m_currentProjectPath);
