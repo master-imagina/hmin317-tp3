@@ -121,6 +121,7 @@ set(RENDER_SOURCES
     render/aabb.cpp
     render/renderassets.cpp
     render/camera.cpp
+    render/light.cpp
     render/mesh.cpp
     render/rendersystem.cpp
     render/transform.cpp

@@ -5,6 +5,7 @@
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/quick.h"
 
+#include "render/light.h"
 #include "render/mesh.h"
 #include "render/transform.h"
 
@@ -27,6 +28,10 @@ QDataStream &operator<<(QDataStream &os, const Scene &scene)
         if (entity.has_component<ParticleEffect>()) {
             os << QString("particleeffect");
             os << *entity.component<ParticleEffect>().get();
+        }
+        if (entity.has_component<Light>()) {
+            os << QString("light");
+            os << *entity.component<Light>().get();
         }
         //TODO handle materials
 
@@ -75,6 +80,12 @@ QDataStream &operator>>(QDataStream &os, Scene &scene)
                                      particleEffect.speed(),
                                      particleEffect.particleSize(),
                                      particleEffect.spawnRate());
+            }
+            else if (componentType == "light") {
+                Light light;
+                os >> light;
+
+                entity.assign<Light>(light);
             }
 
             os >> endEntityFlag;
