@@ -10,6 +10,21 @@
 #include "render/renderassets.h"
 
 
+Material defaultMaterial()
+{
+    Material ret;
+    ret.setParam("color", QColor(Qt::white));
+
+    RenderPass *basePass = ret.addRenderPass("base");
+    uptr<ShaderProgram> shader =
+            shaderProgramFromFile("builtins/shaders/default.vert",
+                                  "builtins/shaders/default.frag");
+
+    basePass->setShaderProgram(std::move(shader));
+
+    return ret;
+}
+
 Material phongMaterial()
 {
     Material ret;
@@ -21,10 +36,10 @@ Material phongMaterial()
 
     basePass->setShaderProgram(std::move(shader));
 
-    ret.setParam("material.ka", QVector3D(1.f, 0.5f, 0.31f));
-    ret.setParam("material.kd", QVector3D(1.f, 0.5f, 0.31f));
-    ret.setParam("material.ks", QVector3D(0.5f, 0.5f, 0.5f));
-    ret.setParam("material.shininess", 32.f);
+    ret.setParam("ka", QColor::fromRgbF(1.f, 0.5f, 0.31f));
+    ret.setParam("kd", QColor::fromRgbF(1.f, 0.5f, 0.31f));
+    ret.setParam("ks", QColor::fromRgbF(0.5f, 0.5f, 0.5f));
+    ret.setParam("shininess", 32.f);
 
     return ret;
 }
