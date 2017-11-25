@@ -35,11 +35,11 @@ ColorEditor::ColorEditor(QWidget *parent) :
 
 QColor ColorEditor::value() const
 {
-    return {
+    return QColor::fromHsv(
         m_hueSlider->value(),
         m_saturationSlider->value(),
         m_valueSlider->value()
-    };
+    );
 }
 
 void ColorEditor::setValue(const QColor &color)
