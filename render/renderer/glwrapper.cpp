@@ -276,7 +276,7 @@ void GLWrapper::sendLightUniforms(const GLShaderProgram &glProgram,
         location = m_gl->glGetUniformLocation(glProgram.id, "light.color");
 
         if (location != -1) {
-            const QVector3D data {light.color.redF(), light.color.greenF(), light.color.blueF()};
+            const QVector3D data {(float)light.color.redF(), (float)light.color.greenF(), (float)light.color.blueF()};
             m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&data));
         }
     }

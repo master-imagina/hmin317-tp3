@@ -12,6 +12,73 @@
 
 #include "extras/particles/quick.h"
 
+#include "render/material/renderpass.h"
+#include "render/material/shaderparam.h"
+#include "render/material/shaderprogram.h"
+
+
+////////////////////// Helpers //////////////////////
+
+namespace {
+
+QWidget *createParamEditor(ShaderParam &param, QWidget *parent)
+{
+    const QVariant oldValue = param.value;
+    const int paramType = oldValue.userType();
+
+    QWidget *ret = nullptr;
+
+    if (paramType == QMetaType::Int) {
+        auto *editor = new ValuedSlider(Qt::Horizontal, parent);
+        editor->setValue(param.value.toInt());
+
+        QObject::connect(editor, &ValuedSlider::valueChanged,
+                         [&param] (int value) { param.value = value; });
+
+        ret = editor;
+    }
+    else if (paramType == QMetaType::Float) {
+        //FIXME
+        auto *editor = new ValuedSlider(Qt::Horizontal, parent);
+        editor->setValue(param.value.toInt());
+
+        QObject::connect(editor, &ValuedSlider::valueChanged,
+                         [&param] (int value) { param.value = static_cast<float>(value); });
+
+        ret = editor;
+    }
+    else if (paramType == QMetaType::QVector3D) {
+        auto *editor = new Vec3DEdit(parent);
+        editor->setValue(param.value.value<QVector3D>());
+
+        QObject::connect(editor, &Vec3DEdit::valueChanged,
+                         [&param] (const QVector3D &value) { param.value = value; });
+
+        ret = editor;
+    }
+    else if (paramType == QMetaType::QColor) {
+        auto *editor = new ColorEditor(parent);
+        editor->setValue(param.value.value<QColor>());
+
+        QObject::connect(editor, &ColorEditor::valueChanged,
+                         [&param] (const QColor &value) { param.value = value; });
+
+        ret = editor;
+    }
+
+    // Check type support
+    if (!ret) {
+        std::cout << "[EDITOR - WARNING] createParamEditor(): "
+                  << "unsupported parameter type ("
+                  << QMetaType::typeName(paramType) << ")"
+                  << std::endl;
+    }
+
+    return ret;
+}
+
+} // anon namespace
+
 
 ////////////////////// TransformCompUiHandler //////////////////////
 
@@ -247,4 +314,38 @@ void LightCompUiHandler::createComponentEditor(entityx::Entity entity,
                      [comp, lightColorEditor] {
         comp->color = lightColorEditor->value();
     });
+}
+
+
+////////////////////// MaterialCompUiHandler //////////////////////
+
+void MaterialCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                               QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<Material>();
+    });
+}
+
+void MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                  QWidget *parent,
+                                                  QVBoxLayout *layout,
+                                                  const QString &projectPath)
+{
+    Material *comp = entity.component<Material>().get();
+
+    // Build UI
+    auto *editorWidget = new QWidget(parent);
+
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
+    layout->insertWidget(layout->count() - 1, editorWidget);
+
+    auto *editorLayout = new QFormLayout(editorWidget);
+
+    for (uptr<ShaderParam> &param : comp->params()) {
+        QWidget *paramEditor = createParamEditor(*param.get(), editorWidget);
+
+        editorLayout->addRow(QString::fromStdString(param->name), paramEditor);
+    }
 }

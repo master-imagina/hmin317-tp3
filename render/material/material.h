@@ -34,6 +34,7 @@ public:
     void removeParam(ShaderParam *param);
 
     const uptr_vector<ShaderParam> &params() const;
+    uptr_vector<ShaderParam> &params();
 
     void clearParams();
 
@@ -41,8 +42,5 @@ private:
     uptr_vector<RenderPass> m_passes;
     uptr_vector<ShaderParam> m_params;
 };
-
-
-Material defaultMaterial();
 
 #endif // MATERIAL_H

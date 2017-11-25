@@ -7,6 +7,8 @@
 #include "render/mesh.h"
 #include "render/transform.h"
 
+#include "render/material/material.h"
+
 #include "extras/particles/particleeffect.h"
 
 
@@ -54,6 +56,19 @@ class LightCompUiHandler : public TComponentUiHandler<Light>
 {
 public:
     QString componentName() override { return "Light"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void createComponentEditor(entityx::Entity entity,
+                               QWidget *parent,
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
+};
+
+class MaterialCompUiHandler : public TComponentUiHandler<Material>
+{
+public:
+    QString componentName() override { return "Material"; }
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;

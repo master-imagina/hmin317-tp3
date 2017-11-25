@@ -133,24 +133,12 @@ const uptr_vector<ShaderParam> &Material::params() const
     return m_params;
 }
 
+uptr_vector<ShaderParam> &Material::params()
+{
+    return m_params;
+}
+
 void Material::clearParams()
 {
     m_params.clear();
-}
-
-
-////////////////////// Functions //////////////////////
-
-Material defaultMaterial()
-{
-    Material ret;
-
-    RenderPass *basePass = ret.addRenderPass("base");
-    uptr<ShaderProgram> shader =
-            shaderProgramFromFile("builtins/shaders/default.vert",
-                                  "builtins/shaders/default.frag");
-
-    basePass->setShaderProgram(std::move(shader));
-
-    return ret;
 }

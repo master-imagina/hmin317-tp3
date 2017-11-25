@@ -34,6 +34,8 @@ template <class Component>
 class TComponentUiHandler : public IComponentUiHandler
 {
 public:
+    using ComponentType = Component;
+
     bool hasComponent(entityx::Entity entity) override final
     {
         return entity.has_component<Component>();
