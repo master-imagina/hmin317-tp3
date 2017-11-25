@@ -3,6 +3,7 @@
 
 #include "icomponentuihandler.h"
 
+#include "render/light.h"
 #include "render/mesh.h"
 #include "render/transform.h"
 
@@ -40,6 +41,19 @@ class MeshCompUiHandler : public TComponentUiHandler<Mesh>
 {
 public:
     QString componentName() override { return "Mesh"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void createComponentEditor(entityx::Entity entity,
+                               QWidget *parent,
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
+};
+
+class LightCompUiHandler : public TComponentUiHandler<Light>
+{
+public:
+    QString componentName() override { return "Light"; }
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;

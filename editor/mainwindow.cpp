@@ -207,4 +207,5 @@ void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentVi
     componentView->registerComponentUiHandler<TransformCompUiHandler>();
     componentView->registerComponentUiHandler<ParticleEffectCompUiHandler>();
     componentView->registerComponentUiHandler<MeshCompUiHandler>();
+    componentView->registerComponentUiHandler<LightCompUiHandler>();
 }

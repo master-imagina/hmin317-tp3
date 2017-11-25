@@ -7,6 +7,7 @@
 #include <QUrl>
 
 #include "editor/gui/advancedslider.h"
+#include "editor/gui/coloreditor/coloreditor.h"
 #include "editor/gui/vec3edit.h"
 
 #include "extras/particles/quick.h"
@@ -207,5 +208,43 @@ void MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
     QObject::connect(meshPathEditor, &QLineEdit::editingFinished,
                      [comp, meshPathEditor, projectPath] {
         comp->setPath(meshPathEditor->text().toStdString());
+    });
+}
+
+
+////////////////////// LightCompUiHandler //////////////////////
+
+void LightCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                            QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<Light>();
+    });
+}
+
+void LightCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                               QWidget *parent,
+                                               QVBoxLayout *layout,
+                                               const QString &)
+{
+    Light *comp = entity.component<Light>().get();
+
+    // Build UI
+    auto *editorWidget = new QWidget(parent);
+
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
+    layout->insertWidget(layout->count() - 1, editorWidget);
+
+    auto *lightColorEditor = new ColorEditor(editorWidget);
+    lightColorEditor->setValue(comp->color);
+
+    auto *editorLayout = new QFormLayout(editorWidget);
+    editorLayout->addRow("Color", lightColorEditor);
+
+    // Create connections
+    QObject::connect(lightColorEditor, &ColorEditor::valueChanged,
+                     [comp, lightColorEditor] {
+        comp->color = lightColorEditor->value();
     });
 }
