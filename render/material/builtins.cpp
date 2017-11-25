@@ -16,8 +16,8 @@ Material phongMaterial()
 
     RenderPass *basePass = ret.addRenderPass("base");
     uptr<ShaderProgram> shader =
-            shaderProgramFromFile("common/shaders/phong.vert",
-                                  "common/shaders/phong.frag");
+            shaderProgramFromFile("builtins/shaders/phong.vert",
+                                  "builtins/shaders/phong.frag");
 
     basePass->setShaderProgram(std::move(shader));
 

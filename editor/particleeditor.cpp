@@ -59,8 +59,8 @@ void ParticleEditor::initEditorScene()
     //  Terrain material
     auto gridMaterial = gridEntity.assign<Material>();
     RenderPass *terrainPass = gridMaterial->addRenderPass("base");
-    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("common/shaders/terrain_heightmap.vert",
-                                                              "common/shaders/terrain_wireframe.frag");
+    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("builtins/shaders/terrain_heightmap.vert",
+                                                              "builtins/shaders/terrain_wireframe.frag");
     terrainPass->setShaderProgram(std::move(terrainShader));
 
     // Create particle effect

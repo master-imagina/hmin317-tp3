@@ -109,8 +109,8 @@ void createBigFile(const std::string &folderPath,
 
     const QString qFolderPath = QString::fromStdString(folderPath);
 
-    // Process common folder then main folder
-    updateFilesPathsList("common", filesPaths);
+    // Process builtins folder then main folder
+    updateFilesPathsList("builtins", filesPaths);
     updateFilesPathsList(qFolderPath, filesPaths);
 
     // Init big file on disk
