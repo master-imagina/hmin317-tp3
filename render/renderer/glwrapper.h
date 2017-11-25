@@ -10,6 +10,8 @@
 #include "glvao.h"
 #include "openglversion.h"
 
+#include "render/light.h"
+
 class DrawCommand;
 class ShaderParam;
 class ShaderProgram;
@@ -48,12 +50,14 @@ public:
     void destroyShaderProgram(const GLShaderProgram &glProgram);
 
     void sendUniforms(const GLShaderProgram &glProgram, const std::vector<ShaderParam *> &params);
+
     void sendActiveCameraUniforms(const GLShaderProgram &glProgram,
                                   const QMatrix4x4 &worldMatrix,
                                   const QMatrix4x4 &viewMatrix,
                                   const QMatrix4x4 &projectionMatrix, const QVector3D &cameraPos);
     void sendTransformUniform(const GLShaderProgram &glProgram,
                               const QMatrix4x4 &modelMatrix);
+    void sendLightUniforms(const GLShaderProgram &glProgram, const std::vector<Light> &lights);
     void sendTextureUniforms(const GLShaderProgram &glProgram,
                              const std::vector<ShaderParam *> &textures,
                              TextureManager &textureManager);

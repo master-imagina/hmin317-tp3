@@ -26,8 +26,5 @@ Material phongMaterial()
     ret.setParam("material.ks", QVector3D(0.5f, 0.5f, 0.5f));
     ret.setParam("material.shininess", 32.f);
 
-    ret.setParam("light.pos", QVector3D());
-    ret.setParam("light.color", QVector3D(1.f, 0.f, 0.f));
-
     return ret;
 }

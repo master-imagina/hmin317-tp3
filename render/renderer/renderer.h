@@ -10,6 +10,9 @@
 #include "glwrapper.h"
 #include "openglversion.h"
 
+#include "render/light.h"
+
+
 class Camera;
 class Geometry;
 class Material;
@@ -35,6 +38,9 @@ public:
 
     void cleanup();
 
+    //TODO Ugly, get rid of it
+    void addLight(const Light &light);
+
 private:
     DrawCommand createDrawCommand(Geometry &geometry,
                                   Material &material,
@@ -59,6 +65,7 @@ private:
     std::vector<DrawCommand> m_drawCommands;
     std::vector<ShaderParam *> m_currentPassParams;
     std::vector<ShaderParam *> m_activeTextures;
+    std::vector<Light> m_currentLights;
 };
 
 #endif // RENDERER_H

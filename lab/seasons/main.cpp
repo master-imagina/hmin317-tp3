@@ -19,11 +19,13 @@
 #include "render/aabb.h"
 #include "render/renderassets.h"
 #include "render/camera.h"
+#include "render/light.h"
 #include "render/mesh.h"
 #include "render/transform.h"
 
 #include "render/geometry/geometry.h"
 
+#include "render/material/builtins.h"
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
@@ -104,6 +106,13 @@ void initScene(Scene &scene)
     // Create tree
     entityx::Entity treeEntity = scene.createEntity();
     auto treeMesh = treeEntity.assign<Mesh>("meshes/wintertree.ply");
+
+    treeEntity.assign<Material>(phongMaterial());
+
+    // Create light
+    entityx::Entity lightEntity = scene.createEntity();
+    lightEntity.assign<Light>();
+    lightEntity.component<Light>()->color = QColor(Qt::red);
 
     // Center camera above terrain
     AABoundingBox a(treeMesh->geometry(0).vertices);

@@ -32,7 +32,8 @@ Renderer::Renderer() :
     m_glWrapper(),
     m_drawCommands(),
     m_currentPassParams(),
-    m_activeTextures()
+    m_activeTextures(),
+    m_currentLights()
 {}
 
 Renderer::~Renderer()
@@ -95,6 +96,7 @@ void Renderer::render(Camera &camera, float dt)
     m_glWrapper.draw(m_drawCommands);
 
     m_drawCommands.clear();
+    m_currentLights.clear();
 
 
     m_glWrapper.checkForErrors();
@@ -113,6 +115,11 @@ void Renderer::cleanup()
 
 
     m_glWrapper.checkForErrors();
+}
+
+void Renderer::addLight(const Light &light)
+{
+    m_currentLights.emplace_back(light);
 }
 
 DrawCommand Renderer::createDrawCommand(Geometry &geometry,
@@ -215,7 +222,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
     Material &material = drawCmd.material;
 
     for (const uptr<ShaderParam> &materialParam : material.params()) {
-        m_currentPassParams.push_back(materialParam.get());
+        m_currentPassParams.emplace_back(materialParam.get());
     }
 
     const uptr_vector<RenderPass> &passes = material.renderPasses();
@@ -229,7 +236,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
             ShaderParam *overridingParam = material.param(passParam->name);
 
             if (!overridingParam) {
-                m_currentPassParams.push_back(passParam.get());
+                m_currentPassParams.emplace_back(passParam.get());
             }
         }
 
@@ -238,14 +245,17 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
             if (param->value.userType() == qMetaTypeId<Texture2D>()) {
                 auto texture = param->value.value<Texture2D>();
                 if (!texture.path.empty()) {
-                    m_activeTextures.push_back(param);
+                    m_activeTextures.emplace_back(param);
                 }
 
                 textureUnitCounter++;
             }
         }
 
+
         m_glWrapper.sendTextureUniforms(*glProgram, m_activeTextures, m_textureManager);
+
+        m_glWrapper.sendLightUniforms(*glProgram, m_currentLights);
 
         m_glWrapper.sendActiveCameraUniforms(*glProgram,
                                              camera.worldMatrix(),

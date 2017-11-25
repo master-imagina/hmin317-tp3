@@ -261,6 +261,29 @@ void GLWrapper::sendTransformUniform(const GLShaderProgram &glProgram,
     releaseShaderProgram(glProgram);
 }
 
+void GLWrapper::sendLightUniforms(const GLShaderProgram &glProgram,
+                                  const std::vector<Light> &lights)
+{
+    bindShaderProgram(glProgram);
+
+    for (const Light &light : lights) {
+        int location = m_gl->glGetUniformLocation(glProgram.id, "light.pos");
+
+        if (location != -1) {
+            m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&light.pos));
+        }
+
+        location = m_gl->glGetUniformLocation(glProgram.id, "light.color");
+
+        if (location != -1) {
+            const QVector3D data {light.color.redF(), light.color.greenF(), light.color.blueF()};
+            m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&data));
+        }
+    }
+
+    releaseShaderProgram(glProgram);
+}
+
 void GLWrapper::sendTextureUniforms(const GLShaderProgram &glProgram,
                                     const std::vector<ShaderParam *> &textureParams,
                                     TextureManager &textureManager)

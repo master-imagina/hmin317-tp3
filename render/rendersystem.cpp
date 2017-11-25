@@ -8,6 +8,7 @@
 
 #include "render/renderer/renderer.h"
 
+#include "render/light.h"
 #include "render/mesh.h"
 #include "render/renderwidget.h"
 #include "render/transform.h"
@@ -22,6 +23,15 @@ void RenderSystem::update(entityx::EntityManager &entities,
                           entityx::EventManager &events,
                           double dt)
 {
+    // Gather lights
+    entities.each<Light, Transform>(
+                [this] (entityx::Entity entity, Light &light, Transform &transform) {
+        light.pos = transform.translate();
+
+        m_renderer->addLight(light);
+    });
+
+    // Prepare draw commands
     entities.each<Geometry, Transform>(
                 [this] (entityx::Entity entity,
                         Geometry &geom, Transform &transform) {
@@ -50,5 +60,6 @@ void RenderSystem::update(entityx::EntityManager &entities,
         }
     });
 
+    // Render
     m_surface->startNewFrame(dt);
 }
