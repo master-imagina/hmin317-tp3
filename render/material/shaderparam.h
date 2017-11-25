@@ -3,6 +3,8 @@
 
 #include <QVariant>
 
+class QDataStream;
+
 
 struct ShaderParam
 {
@@ -13,5 +15,9 @@ struct ShaderParam
     std::string name;
     QVariant value;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const ShaderParam &param);
+QDataStream &operator>>(QDataStream &os, ShaderParam &param);
 
 #endif // SHADERPARAM_H

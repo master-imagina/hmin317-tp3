@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "core/aliases_memory.h"
+class QDataStream;
 
 
 struct ShaderProgram
@@ -16,8 +16,8 @@ struct ShaderProgram
     std::string fragmentShaderSource;
 };
 
-uptr<ShaderProgram> shaderProgramFromSource(const std::string &vertShaderSource,
-                                            const std::string &geomShaderSource,
-                                            const std::string &fragShaderSource);
+
+QDataStream &operator<<(QDataStream &os, const ShaderProgram &program);
+QDataStream &operator>>(QDataStream &os, ShaderProgram &program);
 
 #endif // SHADERPROGRAM_H

@@ -42,15 +42,15 @@ void createParticleEffect(entityx::Entity entity,
     entityx::ComponentHandle<Geometry> geom = entity.component<Geometry>();
     geom->vertexLayout.addAttribute(defaultPositionAttrib());
 
-    uptr<ShaderProgram> shaderProgram = shaderProgramFromFile(
+    ShaderProgram shaderProgram = shaderProgramFromFile(
                 "builtins/shaders/particle.vert",
                 "builtins/shaders/particle.geom",
                 "builtins/shaders/particle.frag"
                 );
 
     entityx::ComponentHandle<Material> material = entity.component<Material>();
-    RenderPass *basePass = material->addRenderPass("base");
-    basePass->setShaderProgram(std::move(shaderProgram));
+    RenderPass &basePass = material->addRenderPass("base");
+    basePass.setShaderProgram(std::move(shaderProgram));
 
     material->setParam("particleColor", QColor(Qt::red));
     material->setParam("particleSize", size);

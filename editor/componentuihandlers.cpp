@@ -343,9 +343,9 @@ void MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
 
     auto *editorLayout = new QFormLayout(editorWidget);
 
-    for (uptr<ShaderParam> &param : comp->params()) {
-        QWidget *paramEditor = createParamEditor(*param.get(), editorWidget);
+    for (ShaderParam &param : comp->params()) {
+        QWidget *paramEditor = createParamEditor(param, editorWidget);
 
-        editorLayout->addRow(QString::fromStdString(param->name), paramEditor);
+        editorLayout->addRow(QString::fromStdString(param.name), paramEditor);
     }
 }

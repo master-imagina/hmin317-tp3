@@ -74,12 +74,12 @@ void initScene(Scene &scene)
 
     //  Terrain material
     auto terrainMaterial = terrainEntity.assign<Material>();
-    RenderPass *terrainPass = terrainMaterial->addRenderPass("base");
-    uptr<ShaderProgram> terrainShader =
+    RenderPass &terrainPass = terrainMaterial->addRenderPass("base");
+    ShaderProgram terrainShader =
             shaderProgramFromFile("shaders/terrain_heightmap.vert",
                                   "shaders/terrain_heightmap.frag");
 
-    terrainPass->setShaderProgram(std::move(terrainShader));
+    terrainPass.setShaderProgram(terrainShader);
 
     const QVector3D terrainAABBCenter = terrainBoundingBox.center();
     const QVector3D terrainAABBRadius = terrainBoundingBox.radius();
@@ -89,7 +89,7 @@ void initScene(Scene &scene)
 
     terrainMaterial->setParam("minHeight", minHeight);
     terrainMaterial->setParam("maxHeight", maxHeight);
-    terrainColorParam = terrainMaterial->addParam("terrainColor", QColor());
+    terrainColorParam = &terrainMaterial->addParam("terrainColor", QColor());
 
     // Create particle effect
     entityx::Entity particleEntity = scene.createEntity();

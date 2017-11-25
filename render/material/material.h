@@ -6,7 +6,7 @@
 
 #include <QVariant>
 
-#include "core/aliases_memory.h"
+class QDataStream;
 
 class RenderPass;
 class ShaderParam;
@@ -23,24 +23,29 @@ public:
 
     Material();
 
-    RenderPass *addRenderPass(const std::string &name);
+    RenderPass &addRenderPass(const std::string &name);
     void removeRenderPass(RenderPass *renderPass);
 
-    const uptr_vector<RenderPass> &renderPasses() const;
+    const std::vector<RenderPass> &renderPasses() const;
+    std::vector<RenderPass> &renderPasses();
 
-    ShaderParam *addParam(const std::string &name, const QVariant &value);
+    ShaderParam &addParam(const std::string &name, const QVariant &value);
     ShaderParam *param(const std::string &name);
     void setParam(const std::string &name, const QVariant &value);
     void removeParam(ShaderParam *param);
 
-    const uptr_vector<ShaderParam> &params() const;
-    uptr_vector<ShaderParam> &params();
+    const std::vector<ShaderParam> &params() const;
+    std::vector<ShaderParam> &params();
 
     void clearParams();
 
 private:
-    uptr_vector<RenderPass> m_passes;
-    uptr_vector<ShaderParam> m_params;
+    std::vector<RenderPass> m_passes;
+    std::vector<ShaderParam> m_params;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const Material &material);
+QDataStream &operator>>(QDataStream &os, Material &material);
 
 #endif // MATERIAL_H

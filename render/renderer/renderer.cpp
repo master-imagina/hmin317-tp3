@@ -133,7 +133,7 @@ DrawCommand Renderer::createDrawCommand(Geometry &geometry,
 
     //FIXME Handle other passes
     GLShaderProgram *glProgram =
-            m_shaderManager.get(material.renderPasses()[0]->shaderProgram());
+            m_shaderManager.get(&material.renderPasses()[0].shaderProgram());
 
     // Create draw command
     const DrawCommand ret {
@@ -161,7 +161,7 @@ void Renderer::createGLResources(Geometry &geom, Material &material, DrawCommand
     assert (gpuBuffers.first);
 
     // Generate shader program
-    ShaderProgram *shaderProgram = material.renderPasses()[0]->shaderProgram();
+    ShaderProgram *shaderProgram = &material.renderPasses()[0].shaderProgram();
     GLShaderProgram *glProgram = m_shaderManager.get(shaderProgram);
 
     if (!glProgram) {
@@ -221,22 +221,20 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
     // Note that material parameters override pass parameters
     Material &material = drawCmd.material;
 
-    for (const uptr<ShaderParam> &materialParam : material.params()) {
-        m_currentPassParams.emplace_back(materialParam.get());
+    for (ShaderParam &materialParam : material.params()) {
+        m_currentPassParams.emplace_back(&materialParam);
     }
 
-    const uptr_vector<RenderPass> &passes = material.renderPasses();
+    std::vector<RenderPass> &passes = material.renderPasses();
 
-    for (const uptr<RenderPass> &pass : passes) {
-        assert (pass);
+    for (RenderPass &pass : passes) {
+        GLShaderProgram *glProgram = m_shaderManager.get(&pass.shaderProgram());
 
-        GLShaderProgram *glProgram = m_shaderManager.get(pass->shaderProgram());
-
-        for (const uptr<ShaderParam> &passParam : pass->params()) {
-            ShaderParam *overridingParam = material.param(passParam->name);
+        for (ShaderParam &passParam : pass.params()) {
+            ShaderParam *overridingParam = material.param(passParam.name);
 
             if (!overridingParam) {
-                m_currentPassParams.emplace_back(passParam.get());
+                m_currentPassParams.emplace_back(&passParam);
             }
         }
 

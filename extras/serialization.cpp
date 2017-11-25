@@ -9,6 +9,11 @@
 #include "render/mesh.h"
 #include "render/transform.h"
 
+#include "render/material/material.h"
+#include "render/material/renderpass.h"
+#include "render/material/shaderparam.h"
+#include "render/material/shaderprogram.h"
+
 
 QDataStream &operator<<(QDataStream &os, const Scene &scene)
 {
@@ -33,7 +38,10 @@ QDataStream &operator<<(QDataStream &os, const Scene &scene)
             os << QString("light");
             os << *entity.component<Light>().get();
         }
-        //TODO handle materials
+        if (entity.has_component<Material>()) {
+            os << QString("material");
+            os << *entity.component<Material>().get();
+        }
 
         os << QString("endentity");
     }
@@ -86,6 +94,12 @@ QDataStream &operator>>(QDataStream &os, Scene &scene)
                 os >> light;
 
                 entity.assign<Light>(light);
+            }
+            else if (componentType == "material") {
+                Material material;
+                os >> material;
+
+                entity.assign<Material>(material);
             }
 
             os >> endEntityFlag;

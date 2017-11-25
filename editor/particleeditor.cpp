@@ -58,10 +58,10 @@ void ParticleEditor::initEditorScene()
 
     //  Terrain material
     auto gridMaterial = gridEntity.assign<Material>();
-    RenderPass *terrainPass = gridMaterial->addRenderPass("base");
-    uptr<ShaderProgram> terrainShader = shaderProgramFromFile("builtins/shaders/terrain_heightmap.vert",
-                                                              "builtins/shaders/terrain_wireframe.frag");
-    terrainPass->setShaderProgram(std::move(terrainShader));
+    RenderPass &terrainPass = gridMaterial->addRenderPass("base");
+    ShaderProgram terrainShader = shaderProgramFromFile("builtins/shaders/terrain_heightmap.vert",
+                                                        "builtins/shaders/terrain_wireframe.frag");
+    terrainPass.setShaderProgram(terrainShader);
 
     // Create particle effect
     AABoundingBox gridBBox(gridGeom->vertices);

@@ -15,12 +15,12 @@ Material defaultMaterial()
     Material ret;
     ret.setParam("color", QColor(Qt::white));
 
-    RenderPass *basePass = ret.addRenderPass("base");
-    uptr<ShaderProgram> shader =
+    RenderPass &basePass = ret.addRenderPass("base");
+    ShaderProgram shader =
             shaderProgramFromFile("builtins/shaders/default.vert",
                                   "builtins/shaders/default.frag");
 
-    basePass->setShaderProgram(std::move(shader));
+    basePass.setShaderProgram(shader);
 
     return ret;
 }
@@ -29,12 +29,12 @@ Material phongMaterial()
 {
     Material ret;
 
-    RenderPass *basePass = ret.addRenderPass("base");
-    uptr<ShaderProgram> shader =
+    RenderPass &basePass = ret.addRenderPass("base");
+    ShaderProgram shader =
             shaderProgramFromFile("builtins/shaders/phong.vert",
                                   "builtins/shaders/phong.frag");
 
-    basePass->setShaderProgram(std::move(shader));
+    basePass.setShaderProgram(std::move(shader));
 
     ret.setParam("ka", QColor::fromRgbF(1.f, 0.5f, 0.31f));
     ret.setParam("kd", QColor::fromRgbF(1.f, 0.5f, 0.31f));

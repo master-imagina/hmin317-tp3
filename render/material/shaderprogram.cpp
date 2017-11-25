@@ -1,7 +1,7 @@
 #include "shaderprogram.h"
 
+#include <QDataStream>
 
-////////////////////// ShaderProgram //////////////////////
 
 ShaderProgram::ShaderProgram() :
     vertexShaderSource(),
@@ -15,15 +15,24 @@ ShaderProgram::~ShaderProgram()
 
 ////////////////////// Functions //////////////////////
 
-uptr<ShaderProgram> shaderProgramFromSource(const std::string &vertShaderSource,
-                                            const std::string &geomShaderSource,
-                                            const std::string &fragShaderSource)
+QDataStream &operator<<(QDataStream &os, const ShaderProgram &program)
 {
-    auto ret = std::make_unique<ShaderProgram>();
+    os << QString::fromStdString(program.vertexShaderSource);
+    os << QString::fromStdString(program.geometryShaderSource);
+    os << QString::fromStdString(program.fragmentShaderSource);
+}
 
-    ret->vertexShaderSource = vertShaderSource;
-    ret->geometryShaderSource = geomShaderSource;
-    ret->fragmentShaderSource = fragShaderSource;
+QDataStream &operator>>(QDataStream &os, ShaderProgram &program)
+{
+    QString vertexShaderSource;
+    QString geometryShaderSource;
+    QString fragmentShaderSource;
 
-    return ret;
+    os >> vertexShaderSource;
+    os >> geometryShaderSource;
+    os >> fragmentShaderSource;
+
+    program.vertexShaderSource = vertexShaderSource.toStdString();
+    program.geometryShaderSource = geometryShaderSource.toStdString();
+    program.fragmentShaderSource = fragmentShaderSource.toStdString();
 }

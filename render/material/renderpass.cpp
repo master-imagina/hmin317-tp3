@@ -3,23 +3,26 @@
 #include <algorithm>
 #include <iostream>
 
-#include "shaderparam.h"
-#include "shaderprogram.h"
+#include <QDataStream>
 
 
 int RenderPass::RESERVE_PARAM_COUNT = 8;
 
+
+RenderPass::RenderPass() :
+    m_name(),
+    m_shaderProgram(),
+    m_params()
+{
+    init();
+}
 
 RenderPass::RenderPass(const std::string &name) :
     m_name(name),
     m_shaderProgram(),
     m_params()
 {
-    if (RESERVE_PARAM_COUNT > MAX_PARAM_COUNT) {
-        RESERVE_PARAM_COUNT = MAX_PARAM_COUNT;
-    }
-
-    m_params.reserve(RESERVE_PARAM_COUNT);
+    init();
 }
 
 RenderPass::~RenderPass()
@@ -37,45 +40,45 @@ void RenderPass::setName(const std::string &name)
     }
 }
 
-ShaderProgram *RenderPass::shaderProgram() const
+ShaderProgram &RenderPass::shaderProgram()
 {
-    return m_shaderProgram.get();
+    return m_shaderProgram;
 }
 
-void RenderPass::setShaderProgram(uptr<ShaderProgram> &&program)
+const ShaderProgram &RenderPass::shaderProgram() const
 {
-    if (m_shaderProgram.get() != program.get()) {
-        m_shaderProgram = std::move(program);
-    }
+    return m_shaderProgram;
 }
 
-ShaderParam *RenderPass::addParam(const std::string &name, const QVariant &value)
+void RenderPass::setShaderProgram(const ShaderProgram &program)
+{
+    m_shaderProgram = program;
+}
+
+ShaderParam &RenderPass::addParam(const std::string &name, const QVariant &value)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                  [name] (const uptr<ShaderParam> &param) {
-        return param->name == name;
+                                  [name] (const ShaderParam &param) {
+        return param.name == name;
     });
 
     if (paramFound != m_params.end()) {
         std::cout << "[WARNING] RenderPass: param \"" << name << "\" already exists"
                   << std::endl;
-        return nullptr;
+        return *paramFound;
     }
 
     // Create the shader param and return a handle to it
-    auto param = std::make_unique<ShaderParam>(name, value);
-    ShaderParam *ret = param.get();
+    ShaderParam param {name, value};
 
-    m_params.emplace_back(std::move(param));
-
-    return ret;
+    return *m_params.insert(m_params.end(), param);
 }
 
 ShaderParam *RenderPass::param(const std::string &name)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                  [name] (const uptr<ShaderParam> &param) {
-        return param->name == name;
+                                  [name] (const ShaderParam &param) {
+        return param.name == name;
     });
 
     if (paramFound == m_params.end()) {
@@ -84,21 +87,21 @@ ShaderParam *RenderPass::param(const std::string &name)
         return nullptr;
     }
 
-    return paramFound->get();
+    return &*paramFound;
 }
 
 void RenderPass::setParam(const std::string &name, const QVariant &value)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                  [name] (const uptr<ShaderParam> &param) {
-        return param->name == name;
+                                  [name] (const ShaderParam &param) {
+        return param.name == name;
     });
 
     if (paramFound == m_params.end()) {
         addParam(name, value);
     }
     else {
-        (*paramFound)->value = value;
+        (*paramFound).value = value;
     }
 }
 
@@ -106,13 +109,17 @@ void RenderPass::removeParam(ShaderParam *param)
 {
     m_params.erase(std::remove_if(m_params.begin(), m_params.end(),
                                   [param]
-                                  (const uptr<ShaderParam> &p) {
-                        return p.get() == param;
-                   }),
-                   m_params.end());
+                                  (const ShaderParam &p) {
+                        return &p == param;
+    }), m_params.end());
 }
 
-const uptr_vector<ShaderParam> &RenderPass::params() const
+const std::vector<ShaderParam> &RenderPass::params() const
+{
+    return m_params;
+}
+
+std::vector<ShaderParam> &RenderPass::params()
 {
     return m_params;
 }
@@ -120,4 +127,49 @@ const uptr_vector<ShaderParam> &RenderPass::params() const
 void RenderPass::clearParams()
 {
     m_params.clear();
+}
+
+void RenderPass::init()
+{
+    if (RESERVE_PARAM_COUNT > MAX_PARAM_COUNT) {
+        RESERVE_PARAM_COUNT = MAX_PARAM_COUNT;
+    }
+
+    m_params.reserve(RESERVE_PARAM_COUNT);
+}
+
+
+////////////////////// Functions //////////////////////
+
+QDataStream &operator<<(QDataStream &os, const RenderPass &pass)
+{
+    os << QString::fromStdString(pass.name());
+
+    os << pass.shaderProgram();
+
+    const std::vector<ShaderParam> &params = pass.params();
+
+    os << (int) params.size();
+
+    for (const ShaderParam &param : params) {
+        os << param;
+    }
+}
+
+QDataStream &operator>>(QDataStream &os, RenderPass &pass)
+{
+    QString passName;
+    os >> passName;
+
+    os >> pass.shaderProgram();
+
+    int paramCount = 0;
+    os >> paramCount;
+
+    for (int i = 0; i < paramCount; i++) {
+        ShaderParam param;
+        os >> param;
+
+        pass.addParam(param.name, param.value);
+    }
 }
