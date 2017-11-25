@@ -49,7 +49,8 @@ void checkUniformFound(uint32 location, const char *name)
 
 ////////////////////// GLWrapper //////////////////////
 
-GLWrapper::GLWrapper()
+GLWrapper::GLWrapper() :
+    m_gl(nullptr)
 {}
 
 GLWrapper::~GLWrapper()
