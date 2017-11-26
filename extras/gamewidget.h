@@ -11,13 +11,12 @@
 #include "render/renderwidget.h"
 
 class CameraController;
-class Scene;
 
 
 class GameWidget : public RenderWidget
 {
 public:
-    explicit GameWidget(Scene &scene, QWidget *parent = nullptr);
+    GameWidget(Scene &scene, QWidget *parent = nullptr);
 
     GameLoop *gameLoop() const;
 

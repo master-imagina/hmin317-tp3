@@ -20,6 +20,7 @@
 #include "gui/vec3edit.h"
 
 #include "render/aabb.h"
+#include "render/camera.h"
 #include "render/renderassets.h"
 
 #include "render/geometry/geometry.h"
@@ -34,12 +35,13 @@
 ParticleEditor::ParticleEditor(QWidget *parent) :
     QWidget(parent),
     m_scene(),
-    m_camera(),
     m_gameWidget(nullptr),
     m_particleEffect(),
     m_particleMaterial()
 {
     initEditorScene();
+    m_gameWidget->systemEngine().configure();
+
     initGui();
 }
 
@@ -47,6 +49,10 @@ void ParticleEditor::initEditorScene()
 {
     m_gameWidget = new GameWidget(m_scene, this);
     m_gameWidget->setObjectName("Particle Editor Viewport");
+
+    // Create main camera entity
+    entityx::Entity mainCameraEntity = m_scene.createEntity();
+    auto camera = mainCameraEntity.assign<Camera>();
 
     // Create particle scene
     entityx::Entity gridEntity = m_scene.createEntity();
@@ -75,14 +81,13 @@ void ParticleEditor::initEditorScene()
     m_particleMaterial = particleEntity.component<Material>();
 
     // Center camera above terrain
-    centerCameraOnBBox(m_camera, gridBBox);
+    centerCameraOnBBox(*camera.get(), gridBBox);
 }
 
 void ParticleEditor::initGui()
 {
     m_gameWidget->setMinimumSize(200, 100);
     m_gameWidget->setFocusPolicy(Qt::StrongFocus);
-    m_gameWidget->setCamera(&m_camera);
 
     createFpsLabel(m_gameWidget->gameLoop(), m_gameWidget);
 

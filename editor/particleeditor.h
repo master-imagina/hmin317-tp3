@@ -11,8 +11,6 @@
 
 #include "render/material/material.h"
 
-#include "render/camera.h"
-
 
 class GameWidget;
 
@@ -28,7 +26,6 @@ private:
 
 private:
     Scene m_scene;
-    Camera m_camera;
 
     GameWidget *m_gameWidget;
 

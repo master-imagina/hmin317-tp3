@@ -29,6 +29,8 @@
 #include "editor/projectmanager.h"
 #include "editor/sceneview.h"
 
+#include "render/camera.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -37,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_assetManagerView(nullptr),
     m_projectManager(nullptr),
     m_scene(),
-    m_camera(),
     m_gameWidget(nullptr)
 {
     m_projectManager = new ProjectManager(this);
@@ -47,10 +48,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setCentralWidget(centralWidget);
 
+    entityx::Entity mainCameraEntity = m_scene.createEntity();
+    mainCameraEntity.assign<Camera>();
+
     m_gameWidget = new GameWidget(m_scene, centralWidget);
     m_gameWidget->setObjectName("Editor Main Viewport");
     m_gameWidget->setFocusPolicy(Qt::StrongFocus);
-    m_gameWidget->setCamera(&m_camera);
+    m_gameWidget->systemEngine().configure();
 
     auto centralLayout = new QVBoxLayout(centralWidget);
     centralLayout->setMargin(0);

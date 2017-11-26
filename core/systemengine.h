@@ -24,7 +24,7 @@ public:
         m_systemManager.update<T>(dt);
     }
 
-    void initialize();
+    void configure();
 
 private:
     Scene &m_scene;

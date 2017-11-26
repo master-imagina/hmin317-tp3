@@ -25,5 +25,5 @@ void registerHookSystems(SystemEngine &systemEngine,
     systemEngine.registerSystem<ComponentAddedHook<Mesh>>(componentView);
     systemEngine.registerSystem<ComponentAddedHook<Light>>(componentView);
 
-    systemEngine.initialize();
+    systemEngine.configure();
 }

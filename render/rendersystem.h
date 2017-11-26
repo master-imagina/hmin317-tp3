@@ -12,6 +12,9 @@ class RenderSystem : public entityx::System<RenderSystem>
 public:
     explicit RenderSystem(RenderWidget *surface);
 
+    void configure(entityx::EntityManager &entities,
+                   entityx::EventManager &events) override;
+
     void update(entityx::EntityManager &entities,
                 entityx::EventManager &events,
                 double dt) override;

@@ -36,12 +36,12 @@
 
 // Global attributes
 
-Camera camera;
 
 AABoundingBox terrainBoundingBox;
 
 ShaderParam *terrainColorParam;
 
+entityx::ComponentHandle<Camera> camera;
 entityx::ComponentHandle<ParticleEffect> particleEffect;
 entityx::ComponentHandle<Material> particleMaterial;
 
@@ -58,7 +58,8 @@ void fetchBigFile()
 
 void initScene(Scene &scene)
 {
-    camera.setEyePos({8, 20, 8});
+    entityx::Entity mainCameraEntity = scene.createEntity();
+    camera = mainCameraEntity.assign<Camera>();
 
     // Create terrain
     entityx::Entity terrainEntity = scene.createEntity();
@@ -116,7 +117,7 @@ void initScene(Scene &scene)
 
     // Center camera above terrain
     AABoundingBox a(treeMesh->geometry(0).vertices);
-    centerCameraOnBBox(camera, a);
+    centerCameraOnBBox(*camera.get(), a);
 }
 
 void onSeasonChanged(Season season)
@@ -192,19 +193,17 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName("Seasons");
 
-    // Create scene
+    // Create game widget and scene
     Scene scene;
-
-    // Create game widget
     GameWidget gameWidget(scene);
+
+    initScene(scene);
+    gameWidget.systemEngine().configure();
+
+    // Show game widget
     gameWidget.setMinimumSize(640, 400);
     createFpsLabel(gameWidget.gameLoop(), &gameWidget);
 
-    // Populate scene
-    initScene(scene);
-
-    // Show game widget
-    gameWidget.setCamera(&camera);
     gameWidget.show();
 
     // Glue the seasons logic

@@ -18,7 +18,6 @@
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
 
 #include "render/renderer/renderer.h"
 
@@ -67,14 +66,13 @@ void GameWidget::initSystems()
     m_systemEngine.registerSystem<ParticleSystem>();
     m_systemEngine.registerSystem<RenderSystem>(this);
 
-    m_systemEngine.initialize();
+    m_systemEngine.configure();
 }
 
 void GameWidget::iterateGameLoop(float dt)
 {
     m_cameraController->updateCamera(m_camera, dt);
 
-    // Render
     m_systemEngine.update<ParticleSystem>(dt);
     m_systemEngine.update<RenderSystem>(dt);
 }
