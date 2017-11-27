@@ -8,6 +8,8 @@
 
 #include "editor/panemanager.h"
 
+#include "render/camera.h"
+
 class AssetManagerView;
 class ComponentView;
 class GameWidget;
@@ -37,6 +39,7 @@ private:
     AssetManagerView *m_assetManagerView;
     ProjectManager *m_projectManager;
 
+    Camera m_freeCamera;
     Scene m_scene;
     GameWidget *m_gameWidget;
 };

@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_openViewPaneMenu(nullptr),
     m_assetManagerView(nullptr),
     m_projectManager(nullptr),
+    m_freeCamera(),
     m_scene(),
     m_gameWidget(nullptr)
 {
@@ -48,13 +49,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setCentralWidget(centralWidget);
 
-    entityx::Entity mainCameraEntity = m_scene.createEntity();
-    mainCameraEntity.assign<Camera>();
-
     m_gameWidget = new GameWidget(m_scene, centralWidget);
     m_gameWidget->setObjectName("Editor Main Viewport");
     m_gameWidget->setFocusPolicy(Qt::StrongFocus);
     m_gameWidget->systemEngine().configure();
+
+    m_gameWidget->setCamera(&m_freeCamera);
 
     auto centralLayout = new QVBoxLayout(centralWidget);
     centralLayout->setMargin(0);
