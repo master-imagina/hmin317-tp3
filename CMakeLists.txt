@@ -156,6 +156,27 @@ target_link_libraries(enginerender enginecore Qt5::Gui Qt5::Widgets entityx assi
 
 install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
+#  input
+set(INPUT_HEADERS
+    input/actionsystem.h
+    input/eventhook.h
+    input/frameaction.h
+    input/inputsystem.h
+    input/keyboard.h
+    )
+set(INPUT_SOURCES
+    input/actionsystem.cpp
+    input/eventhook.cpp
+    input/inputsystem.cpp
+    )
+
+add_library(engineinput SHARED ${INPUT_SOURCES} ${INPUT_HEADERS})
+target_include_directories(engineinput PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_definitions(engineinput PRIVATE INPUT_LIBRARY=1)
+target_link_libraries(engineinput enginecore Qt5::Core entityx)
+
+install(TARGETS engineinput LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
+
 #  extras
 set(EXTRAS_HEADERS
     extras/cameraactions.h
@@ -192,7 +213,7 @@ file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/builtins)
 add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES} ${EXTRAS_SHADERS})
 target_include_directories(engineextras PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(engineextras PRIVATE EXTRAS_LIBRARY=1)
-target_link_libraries(engineextras enginecore enginerender Qt5::Core Qt5::Gui entityx)
+target_link_libraries(engineextras enginecore enginerender engineinput Qt5::Core Qt5::Gui entityx)
 
 install(TARGETS engineextras LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 

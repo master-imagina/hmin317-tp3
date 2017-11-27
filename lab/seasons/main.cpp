@@ -9,12 +9,16 @@
 #include "editor/gui/fpswidgets.h"
 
 #include "extras/cameraactions.h"
+#include "extras/cameracontroller.h"
 #include "extras/gamewidget.h"
 #include "extras/grid.h"
 #include "extras/heightmap.h"
 
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/quick.h"
+
+#include "input/frameaction.h"
+#include "input/keyboard.h"
 
 #include "render/aabb.h"
 #include "render/renderassets.h"
@@ -35,8 +39,6 @@
 
 
 // Global attributes
-
-
 AABoundingBox terrainBoundingBox;
 
 ShaderParam *terrainColorParam;
@@ -55,11 +57,11 @@ void fetchBigFile()
     AssetManager::self()->loadBigFile(bigFileName);
 }
 
-
 void initScene(Scene &scene)
 {
     entityx::Entity mainCameraEntity = scene.createEntity();
-    camera = mainCameraEntity.assign<Camera>();
+    createCameraController(mainCameraEntity);
+    camera = mainCameraEntity.component<Camera>();
 
     // Create terrain
     entityx::Entity terrainEntity = scene.createEntity();
@@ -67,7 +69,6 @@ void initScene(Scene &scene)
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
     *terrainGeom.get() = heightmapToGeometry(imageFromFile("images/heightmap-1.png"));
-//    *terrainGeom.get() = grid(50);
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
 

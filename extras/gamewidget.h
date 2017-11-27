@@ -10,8 +10,6 @@
 
 #include "render/renderwidget.h"
 
-class CameraController;
-
 
 class GameWidget : public RenderWidget
 {
@@ -35,8 +33,6 @@ private:
     SystemEngine m_systemEngine;
 
     GameLoop *m_gameLoop;
-
-    CameraController *m_cameraController;
 };
 
 #endif // GAMEWIDGET_H

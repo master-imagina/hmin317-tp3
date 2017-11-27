@@ -6,14 +6,14 @@
 class CameraController;
 
 
-class CameraControllerControls : public QWidget
-{
-public:
-    explicit CameraControllerControls(CameraController *controller,
-                                      QWidget *parent = nullptr);
+//class CameraControllerControls : public QWidget
+//{
+//public:
+//    explicit CameraControllerControls(CameraController *controller,
+//                                      QWidget *parent = nullptr);
 
-private:
-    CameraController *m_controller;
-};
+//private:
+//    CameraController *m_controller;
+//};
 
 #endif // CAMERACONTROLLERCONTROLS_H

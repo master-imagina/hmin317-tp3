@@ -4,10 +4,11 @@
 
 #include "core/scene.h"
 
-#include "extras/cameracontroller.h"
-
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/particlesystem.h"
+
+#include "input/actionsystem.h"
+#include "input/inputsystem.h"
 
 #include "render/light.h"
 #include "render/mesh.h"
@@ -26,11 +27,8 @@ GameWidget::GameWidget(Scene &scene, QWidget *parent) :
     RenderWidget(parent),
     m_initialized(false),
     m_systemEngine(scene),
-    m_gameLoop(new GameLoop(60, this)),
-    m_cameraController(new CameraController(this))
+    m_gameLoop(new GameLoop(60, this))
 {
-    installEventFilter(m_cameraController);
-
     initSystems();
 }
 
@@ -63,6 +61,8 @@ void GameWidget::initSystems()
     m_systemEngine.registerSystem<entityx::deps::Dependency<Light, Transform>>();
 
     // Add systems
+    m_systemEngine.registerSystem<InputSystem>(this);
+    m_systemEngine.registerSystem<ActionSystem>();
     m_systemEngine.registerSystem<ParticleSystem>();
     m_systemEngine.registerSystem<RenderSystem>(this);
 
@@ -71,8 +71,8 @@ void GameWidget::initSystems()
 
 void GameWidget::iterateGameLoop(float dt)
 {
-    m_cameraController->updateCamera(m_camera, dt);
-
+    m_systemEngine.update<InputSystem>(dt);
+    m_systemEngine.update<ActionSystem>(dt);
     m_systemEngine.update<ParticleSystem>(dt);
     m_systemEngine.update<RenderSystem>(dt);
 }
