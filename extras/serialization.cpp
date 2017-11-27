@@ -5,6 +5,7 @@
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/quick.h"
 
+#include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
 #include "render/transform.h"
@@ -41,6 +42,10 @@ QDataStream &operator<<(QDataStream &os, const Scene &scene)
         if (entity.has_component<Material>()) {
             os << QString("material");
             os << *entity.component<Material>().get();
+        }
+        if (entity.has_component<Camera>()) {
+            os << QString("camera");
+            os << *entity.component<Camera>().get();
         }
 
         os << QString("endentity");
@@ -100,6 +105,12 @@ QDataStream &operator>>(QDataStream &os, Scene &scene)
                 os >> material;
 
                 entity.assign<Material>(material);
+            }
+            else if (componentType == "camera") {
+                Camera camera;
+                os >> camera;
+
+                entity.assign<Camera>(camera);
             }
 
             os >> endEntityFlag;

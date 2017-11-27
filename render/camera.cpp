@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include <QDataStream>
+
 
 Camera::Camera() :
     m_eyePos(),
@@ -129,4 +131,34 @@ void Camera::setProjectionMatrixDirty()
 {
     m_isProjectionMatrixDirty = true;
     m_isWorldMatrixDirty = true;
+}
+
+
+////////////////////// Functions //////////////////////
+
+
+QDataStream &operator<<(QDataStream &os, const Camera &camera)
+{
+    os << camera.eyePos()
+       << camera.targetPos()
+       << camera.upVector()
+       << camera.aspectRatio();
+}
+
+QDataStream &operator>>(QDataStream &os, Camera &camera)
+{
+    QVector3D eyePos;
+    QVector3D targetPos;
+    QVector3D upVector;
+    float aspectRatio = 0.f;
+
+    os >> eyePos;
+    os >> targetPos;
+    os >> upVector;
+    os >> aspectRatio;
+
+    camera.setEyePos(eyePos);
+    camera.setTargetPos(targetPos);
+    camera.setUpVector(upVector);
+    camera.setAspectRatio(aspectRatio);
 }

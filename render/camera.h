@@ -5,6 +5,9 @@
 #include <QVector2D>
 #include <QVector3D>
 
+class QDataStream;
+
+
 class Camera
 {
 public:
@@ -14,11 +17,11 @@ public:
     QVector3D eyePos() const;
     void setEyePos(const QVector3D &eyePos);
 
-    QVector3D upVector() const;
-    void setUpVector(const QVector3D &upVector);
-
     QVector3D targetPos() const;
     void setTargetPos(const QVector3D &targetPos);
+
+    QVector3D upVector() const;
+    void setUpVector(const QVector3D &upVector);
 
     QVector3D viewVector() const;
     QVector3D rightVector() const;
@@ -49,5 +52,10 @@ private:
     QMatrix4x4 m_projectionMatrix;
     QMatrix4x4 m_worldMatrix;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const Camera &camera);
+QDataStream &operator>>(QDataStream &os, Camera &camera);
+
 
 #endif // CAMERA_H
