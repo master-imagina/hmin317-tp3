@@ -1,6 +1,7 @@
 #include "componentuihandlers.h"
 
 #include <QAction>
+#include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -348,4 +349,51 @@ void MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
 
         editorLayout->addRow(QString::fromStdString(param.name), paramEditor);
     }
+}
+
+
+////////////////////// CameraCompUiHandler //////////////////////
+
+void CameraCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                             QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<Camera>();
+    });
+}
+
+void CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                QWidget *parent,
+                                                QVBoxLayout *layout,
+                                                const QString &projectPath)
+{
+    Camera *comp = entity.component<Camera>().get();
+
+    // Build UI
+    auto *editorWidget = new QWidget(parent);
+
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
+    layout->insertWidget(layout->count() - 1, editorWidget);
+
+    auto *eyePosEditor = new Vec3DEdit(editorWidget);
+    eyePosEditor->setValue(comp->eyePos());
+
+    QObject::connect(eyePosEditor, &Vec3DEdit::valueChanged,
+                     [comp] (const QVector3D &value) {
+        comp->setEyePos(value);
+    });
+
+    auto *targetPosEditor = new Vec3DEdit(editorWidget);
+    targetPosEditor->setValue(comp->targetPos());
+
+    QObject::connect(targetPosEditor, &Vec3DEdit::valueChanged,
+                     [comp] (const QVector3D &value) {
+        comp->setTargetPos(value);
+    });
+
+
+    auto *editorLayout = new QFormLayout(editorWidget);
+    editorLayout->addRow("Eye Pos", eyePosEditor);
+    editorLayout->addRow("Target Pos", targetPosEditor);
 }

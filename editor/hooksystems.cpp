@@ -6,6 +6,7 @@
 
 #include "extras/particles/particleeffect.h"
 
+#include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
 #include "render/transform.h"
@@ -24,6 +25,7 @@ void registerHookSystems(SystemEngine &systemEngine,
     systemEngine.registerSystem<ComponentAddedHook<ParticleEffect>>(componentView);
     systemEngine.registerSystem<ComponentAddedHook<Mesh>>(componentView);
     systemEngine.registerSystem<ComponentAddedHook<Light>>(componentView);
+    systemEngine.registerSystem<ComponentAddedHook<Camera>>(componentView);
 
     systemEngine.configure();
 }

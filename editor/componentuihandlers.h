@@ -3,6 +3,7 @@
 
 #include "icomponentuihandler.h"
 
+#include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
 #include "render/transform.h"
@@ -69,6 +70,19 @@ class MaterialCompUiHandler : public TComponentUiHandler<Material>
 {
 public:
     QString componentName() override { return "Material"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void createComponentEditor(entityx::Entity entity,
+                               QWidget *parent,
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
+};
+
+class CameraCompUiHandler : public TComponentUiHandler<Camera>
+{
+public:
+    QString componentName() override { return "Camera"; }
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
