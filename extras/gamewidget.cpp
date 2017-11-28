@@ -7,7 +7,6 @@
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/particlesystem.h"
 
-#include "input/actionsystem.h"
 #include "input/inputsystem.h"
 
 #include "render/light.h"
@@ -21,6 +20,8 @@
 #include "render/material/renderpass.h"
 
 #include "render/renderer/renderer.h"
+
+#include "script/actionsystem.h"
 
 
 GameWidget::GameWidget(Scene &scene, QWidget *parent) :

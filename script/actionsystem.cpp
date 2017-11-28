@@ -1,6 +1,6 @@
 #include "actionsystem.h"
 
-#include "input/frameaction.h"
+#include "script/frameaction.h"
 
 
 void ActionSystem::update(entityx::EntityManager &entities,

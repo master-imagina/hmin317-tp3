@@ -1,9 +1,10 @@
 #include "cameracontroller.h"
 
-#include "input/frameaction.h"
 #include "input/keyboard.h"
 
 #include "render/camera.h"
+
+#include "script/frameaction.h"
 
 
 namespace {

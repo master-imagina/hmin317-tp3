@@ -17,7 +17,6 @@
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/quick.h"
 
-#include "input/frameaction.h"
 #include "input/keyboard.h"
 
 #include "render/aabb.h"

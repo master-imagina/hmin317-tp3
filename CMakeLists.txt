@@ -158,14 +158,11 @@ install(TARGETS enginerender LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  input
 set(INPUT_HEADERS
-    input/actionsystem.h
     input/eventhook.h
-    input/frameaction.h
     input/inputsystem.h
     input/keyboard.h
     )
 set(INPUT_SOURCES
-    input/actionsystem.cpp
     input/eventhook.cpp
     input/inputsystem.cpp
     )
@@ -173,9 +170,25 @@ set(INPUT_SOURCES
 add_library(engineinput SHARED ${INPUT_SOURCES} ${INPUT_HEADERS})
 target_include_directories(engineinput PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(engineinput PRIVATE INPUT_LIBRARY=1)
-target_link_libraries(engineinput enginecore Qt5::Core entityx)
+target_link_libraries(engineinput Qt5::Core Qt5::Gui entityx)
 
 install(TARGETS engineinput LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
+
+#  script
+set(SCRIPT_HEADERS
+    script/actionsystem.h
+    script/frameaction.h
+    )
+set(SCRIPT_SOURCES
+    script/actionsystem.cpp
+    )
+
+add_library(enginescript SHARED ${SCRIPT_SOURCES} ${SCRIPT_HEADERS})
+target_include_directories(enginescript PRIVATE ${PROJECT_SOURCE_DIR})
+target_compile_definitions(enginescript PRIVATE SCRIPT_LIBRARY=1)
+target_link_libraries(enginescript Qt5::Core entityx)
+
+install(TARGETS enginescript LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  extras
 set(EXTRAS_HEADERS
@@ -213,7 +226,7 @@ file(INSTALL extras/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/builtins)
 add_library(engineextras SHARED ${EXTRAS_SOURCES} ${EXTRAS_HEADERS} ${EXTRAS_RESOURCES} ${EXTRAS_SHADERS})
 target_include_directories(engineextras PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(engineextras PRIVATE EXTRAS_LIBRARY=1)
-target_link_libraries(engineextras enginecore enginerender engineinput Qt5::Core Qt5::Gui entityx)
+target_link_libraries(engineextras enginecore enginerender engineinput enginescript Qt5::Core Qt5::Gui entityx)
 
 install(TARGETS engineextras LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
@@ -287,7 +300,7 @@ file(INSTALL lab/seasons/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data
 
 add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(seasons editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
+target_link_libraries(seasons enginescript engineinput editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
 install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
 
@@ -328,6 +341,6 @@ file(INSTALL editor/res/images DESTINATION ${ENGINESPW_INSTALL_PATH})
 
 add_executable(editor ${EDITOR_SOURCES} ${EDITOR_HEADERS} ${EDITOR_RESOURCES})
 target_include_directories(editor PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(editor editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
+target_link_libraries(editor enginescript engineinput editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
 install(TARGETS editor RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
