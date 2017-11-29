@@ -4,9 +4,6 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-#include "extras/cameracontroller.h"
-
-
 //CameraControllerControls::CameraControllerControls(CameraController *controller,
 //                                                   QWidget *parent) :
 //    QWidget(parent),

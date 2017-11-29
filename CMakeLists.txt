@@ -35,16 +35,9 @@ foreach(format ${ENABLED_ASSIMP_FORMATS})
     set(ASSIMP_BUILD_${format}_IMPORTER true CACHE BOOL "" FORCE)
 endforeach(format)
 
-#  Retrieve include directories
-set(3RDPARTY_ASSIMP_INCLUDE_DIRS
-    3rdparty/assimp-4.0.1/include
-    ${PROJECT_BINARY_DIR}/3rdparty/assimp-4.0.1/include
-    )
-
-
 # C++
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_EMIT")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DQT_NO_EMIT -Wno-deprecated-declarations")
 
 
 # Subdirs
@@ -149,6 +142,11 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/builtins/shaders)
 file(COPY render/shaders DESTINATION ${CMAKE_BINARY_DIR}/builtins)
 file(INSTALL render/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/builtins)
 
+set(3RDPARTY_ASSIMP_INCLUDE_DIRS
+    3rdparty/assimp-4.0.1/include
+    ${PROJECT_BINARY_DIR}/3rdparty/assimp-4.0.1/include
+    )
+
 add_library(enginerender SHARED ${RENDER_SOURCES} ${RENDER_HEADERS} ${RENDER_SHADERS})
 target_include_directories(enginerender PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_ASSIMP_INCLUDE_DIRS})
 target_compile_definitions(enginerender PRIVATE RENDER_LIBRARY=1)
@@ -175,25 +173,32 @@ target_link_libraries(engineinput Qt5::Core Qt5::Gui entityx)
 install(TARGETS engineinput LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  script
+set(3RDPARTY_LUA_INCLUDE_DIRS
+    ${PROJECT_BINARY_DIR}/3rdparty/lua-5.3.4/include/
+    )
+
 set(SCRIPT_HEADERS
-    script/actionsystem.h
-    script/frameaction.h
+    script/api.h
+    script/script.h
+    script/scriptassets.h
+    script/scriptsystem.h
     )
 set(SCRIPT_SOURCES
-    script/actionsystem.cpp
+    script/api.cpp
+    script/scriptsystem.cpp
+    script/scriptassets.cpp
     )
 
 add_library(enginescript SHARED ${SCRIPT_SOURCES} ${SCRIPT_HEADERS})
-target_include_directories(enginescript PRIVATE ${PROJECT_SOURCE_DIR})
+target_include_directories(enginescript PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_LUA_INCLUDE_DIRS})
 target_compile_definitions(enginescript PRIVATE SCRIPT_LIBRARY=1)
-target_link_libraries(enginescript Qt5::Core entityx)
+target_link_libraries(enginescript enginecore enginerender Qt5::Core entityx lua)
 
 install(TARGETS enginescript LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  extras
 set(EXTRAS_HEADERS
     extras/cameraactions.h
-    extras/cameracontroller.h
     extras/gamewidget.h
     extras/grid.h
     extras/heightmap.h
@@ -204,7 +209,6 @@ set(EXTRAS_HEADERS
     )
 set(EXTRAS_SOURCES
     extras/cameraactions.cpp
-    extras/cameracontroller.cpp
     extras/gamewidget.cpp
     extras/grid.cpp
     extras/heightmap.cpp
@@ -297,6 +301,8 @@ file(COPY lab/seasons/data/meshes DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
 file(INSTALL lab/seasons/data/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
 file(COPY lab/seasons/data/shaders DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
 file(INSTALL lab/seasons/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
+file(COPY lab/seasons/data/scripts DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/scripts DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
 
 add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})

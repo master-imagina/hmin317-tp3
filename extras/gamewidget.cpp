@@ -21,7 +21,7 @@
 
 #include "render/renderer/renderer.h"
 
-#include "script/actionsystem.h"
+#include "script/scriptsystem.h"
 
 
 GameWidget::GameWidget(Scene &scene, QWidget *parent) :
@@ -63,7 +63,7 @@ void GameWidget::initSystems()
 
     // Add systems
     m_systemEngine.registerSystem<InputSystem>(this);
-    m_systemEngine.registerSystem<ActionSystem>();
+    m_systemEngine.registerSystem<ScriptSystem>();
     m_systemEngine.registerSystem<ParticleSystem>();
     m_systemEngine.registerSystem<RenderSystem>(this);
 
@@ -73,7 +73,7 @@ void GameWidget::initSystems()
 void GameWidget::iterateGameLoop(float dt)
 {
     m_systemEngine.update<InputSystem>(dt);
-    m_systemEngine.update<ActionSystem>(dt);
+    m_systemEngine.update<ScriptSystem>(dt);
     m_systemEngine.update<ParticleSystem>(dt);
     m_systemEngine.update<RenderSystem>(dt);
 }

@@ -9,7 +9,6 @@
 #include "editor/gui/fpswidgets.h"
 
 #include "extras/cameraactions.h"
-#include "extras/cameracontroller.h"
 #include "extras/gamewidget.h"
 #include "extras/grid.h"
 #include "extras/heightmap.h"
@@ -33,6 +32,9 @@
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
 #include "render/material/texture.h"
+
+#include "script/script.h"
+#include "script/scriptassets.h"
 
 #include "seasoncontroller.h"
 
@@ -59,8 +61,9 @@ void fetchBigFile()
 void initScene(Scene &scene)
 {
     entityx::Entity mainCameraEntity = scene.createEntity();
-    createCameraController(mainCameraEntity);
-    camera = mainCameraEntity.component<Camera>();
+    camera = mainCameraEntity.assign<Camera>();
+    mainCameraEntity.assign<Script>(scriptFromFile("scripts/free_camera.lua"));
+    mainCameraEntity.assign<Keyboard>();
 
     // Create terrain
     entityx::Entity terrainEntity = scene.createEntity();

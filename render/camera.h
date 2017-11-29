@@ -57,5 +57,4 @@ private:
 QDataStream &operator<<(QDataStream &os, const Camera &camera);
 QDataStream &operator>>(QDataStream &os, Camera &camera);
 
-
 #endif // CAMERA_H
