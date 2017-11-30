@@ -6,8 +6,9 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 
+#include "editor/gui/gamewidget.h"
+
 #include "extras/cameraactions.h"
-#include "extras/gamewidget.h"
 #include "extras/grid.h"
 
 #include "extras/particles/quick.h"

@@ -15,10 +15,10 @@
 
 #include "core/assetmanager.h"
 
-#include "extras/gamewidget.h"
 #include "extras/serialization.h"
 
 #include "editor/gui/fpswidgets.h"
+#include "editor/gui/gamewidget.h"
 
 #include "editor/assetmanagerview.h"
 #include "editor/componentuihandlers.h"

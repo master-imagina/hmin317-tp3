@@ -6,10 +6,10 @@
 #include "core/assetmanager.h"
 #include "core/scene.h"
 
+#include "editor/gui/gamewidget.h"
 #include "editor/gui/fpswidgets.h"
 
 #include "extras/cameraactions.h"
-#include "extras/gamewidget.h"
 #include "extras/grid.h"
 #include "extras/heightmap.h"
 

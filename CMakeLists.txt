@@ -203,7 +203,6 @@ install(TARGETS enginescript LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 #  extras
 set(EXTRAS_HEADERS
     extras/cameraactions.h
-    extras/gamewidget.h
     extras/grid.h
     extras/heightmap.h
     extras/particles/particleeffect.h
@@ -213,7 +212,6 @@ set(EXTRAS_HEADERS
     )
 set(EXTRAS_SOURCES
     extras/cameraactions.cpp
-    extras/gamewidget.cpp
     extras/grid.cpp
     extras/heightmap.cpp
     extras/particles/particleeffect.cpp
@@ -248,6 +246,7 @@ set(EDITORGUI_HEADERS
     editor/gui/dragtoolbutton.h
     editor/gui/flowlayout.h
     editor/gui/fpswidgets.h
+    editor/gui/gamewidget.h
     editor/gui/layoututils.h
     editor/gui/pane.h
     editor/gui/urledit.h
@@ -263,6 +262,7 @@ set(EDITORGUI_SOURCES
     editor/gui/dragtoolbutton.cpp
     editor/gui/flowlayout.cpp
     editor/gui/fpswidgets.cpp
+    editor/gui/gamewidget.cpp
     editor/gui/layoututils.cpp
     editor/gui/pane.cpp
     editor/gui/urledit.cpp
@@ -283,38 +283,6 @@ install(TARGETS editorgui LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 # RPath
 set(CMAKE_INSTALL_RPATH "lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-#  seasons
-set(SEASONS_HEADERS
-    lab/seasons/seasoncontroller.h
-    )
-set(SEASONS_SOURCES
-    lab/seasons/main.cpp
-    lab/seasons/seasoncontroller.cpp
-    )
-file(GLOB SEASONS_SHADERS
-    lab/seasons/data/shaders/*.vert
-    lab/seasons/data/shaders/*.geom
-    lab/seasons/data/shaders/*.frag
-    )
-file(GLOB SEASONS_SCRIPTS
-    lab/seasons/data/scripts/*.lua)
-
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data_seasons)
-file(COPY lab/seasons/data/images DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
-file(INSTALL lab/seasons/data/images DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
-file(COPY lab/seasons/data/meshes DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
-file(INSTALL lab/seasons/data/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
-file(COPY lab/seasons/data/shaders DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
-file(INSTALL lab/seasons/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
-file(COPY lab/seasons/data/scripts DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
-file(INSTALL lab/seasons/data/scripts DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
-
-add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS} ${SEASONS_SCRIPTS})
-target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
-target_link_libraries(seasons enginescript engineinput editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
-
-install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
 
 #  editor
 set(EDITOR_HEADERS
@@ -356,3 +324,35 @@ target_include_directories(editor PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(editor enginescript engineinput editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
 install(TARGETS editor RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
+
+#  seasons
+set(SEASONS_HEADERS
+    lab/seasons/seasoncontroller.h
+    )
+set(SEASONS_SOURCES
+    lab/seasons/main.cpp
+    lab/seasons/seasoncontroller.cpp
+    )
+file(GLOB SEASONS_SHADERS
+    lab/seasons/data/shaders/*.vert
+    lab/seasons/data/shaders/*.geom
+    lab/seasons/data/shaders/*.frag
+    )
+file(GLOB SEASONS_SCRIPTS
+    lab/seasons/data/scripts/*.lua)
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data_seasons)
+file(COPY lab/seasons/data/images DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/images DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
+file(COPY lab/seasons/data/meshes DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
+file(COPY lab/seasons/data/shaders DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
+file(COPY lab/seasons/data/scripts DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
+file(INSTALL lab/seasons/data/scripts DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
+
+add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS} ${SEASONS_SCRIPTS})
+target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(seasons enginescript engineinput editorgui engineextras enginerender enginecore editorgui Qt5::Widgets entityx)
+
+install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
