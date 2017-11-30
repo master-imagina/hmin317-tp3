@@ -99,19 +99,38 @@ void initScene(Scene &scene)
     entityx::Entity particleEntity = scene.createEntity();
 
     createParticleEffect(particleEntity, {0, -1, 0},
-                         50, 300, terrainBoundingBox.radius().z(),
-                         0.1f, 4.f);
-
-    particleEntity.component<Transform>()->setTranslate({0, 400, 0});
+                         240, 100, terrainBoundingBox.radius().z(),
+                         0.3f, 4.f);
+    particleEntity.component<Transform>()->setTranslate({0, maxHeight * 2, 0});
 
     particleEffect = particleEntity.component<ParticleEffect>();
+    particleEffect->setSpawnRate(2);
+
     particleMaterial = particleEntity.component<Material>();
 
     // Create tree
     entityx::Entity treeEntity = scene.createEntity();
-    auto treeMesh = treeEntity.assign<Mesh>("meshes/wintertree.ply");
+    treeEntity.assign<Mesh>("meshes/wintertree.ply");
+    auto treeTransform = treeEntity.component<Transform>();
+    treeTransform->setTranslate({300, -500, 0});
+    treeTransform->setScale({100, 100, 100});
+    treeTransform->setRotation({-90, 0, 0});
 
-    treeEntity.assign<Material>(phongMaterial());
+    entityx::Entity treeEntity2 = scene.createEntity();
+    treeEntity2.assign<Mesh>("meshes/springtree.ply");
+    auto treeTransform2 = treeEntity2.component<Transform>();
+    treeTransform2->setTranslate({500, -350, 0});
+    treeTransform2->setScale({80, 80, 80});
+    treeTransform2->setRotation({-85, 0, 0});
+
+    entityx::Entity treeEntity3 = scene.createEntity();
+    treeEntity3.assign<Mesh>("meshes/autumntree.ply");
+    auto treeTransform3 = treeEntity3.component<Transform>();
+    treeTransform3->setTranslate({400, -680, 110});
+    treeTransform3->setScale({90, 90, 90});
+    treeTransform3->setRotation({-74, 5, 3});
+
+//    treeEntity.assign<Material>(phongMaterial());
 
     // Create light
     entityx::Entity lightEntity = scene.createEntity();
@@ -119,7 +138,7 @@ void initScene(Scene &scene)
     lightEntity.component<Light>()->color = QColor(Qt::red);
 
     // Center camera above terrain
-    AABoundingBox a(treeMesh->geometry(0).vertices);
+    AABoundingBox a(terrainGeom->vertices);
     centerCameraOnBBox(*camera.get(), a);
 }
 
@@ -134,25 +153,21 @@ void onSeasonChanged(Season season)
     switch (season) {
     case Season::Autumn:
         seasonColor = QColor(244, 183, 51);
-
         particleTexture.path = "images/autumn_leaf.png";
         particleSize = 15.f;
         break;
     case Season::Winter:
         seasonColor = Qt::white;
-
         particleTexture.path = "images/winter_flake.png";
         particleSize = 10.f;
         break;
     case Season::Spring:
         seasonColor = Qt::green;
-
         particleTexture.path = "images/spring_leaf.png";
         particleSize = 8.f;
         break;
     case Season::Summer:
         seasonColor = Qt::yellow;
-
         textureFlag = 0.f;
         break;
     default:
@@ -162,7 +177,6 @@ void onSeasonChanged(Season season)
     terrainColorParam->value = seasonColor;
 
     particleMaterial->setParam("particleColor", seasonColor);
-
     particleMaterial->setParam("particleTexture", QVariant::fromValue(particleTexture));
     particleMaterial->setParam("textureFlag", textureFlag);
     particleMaterial->setParam("particleSize", particleSize);

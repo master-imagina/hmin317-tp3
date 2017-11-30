@@ -69,9 +69,9 @@ QMatrix4x4 Transform::matrix()
     if (m_isMatrixDirty) {
         m_matrix.setToIdentity();
 
-        m_matrix.scale(m_scaleFactors);
         m_matrix.rotate(QQuaternion::fromEulerAngles(m_rotateAngles));
         m_matrix.translate(m_translateVec);
+        m_matrix.scale(m_scaleFactors);
 
         m_isMatrixDirty = false;
     }
