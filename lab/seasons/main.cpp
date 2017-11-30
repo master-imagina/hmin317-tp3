@@ -125,21 +125,35 @@ void initScene(Scene &scene)
 
 void onSeasonChanged(Season season)
 {
-    // Set season color
     QColor seasonColor;
+
+    Texture2D particleTexture;
+    float textureFlag = 1.f;
+    float particleSize = 1.f;
 
     switch (season) {
     case Season::Autumn:
         seasonColor = QColor(244, 183, 51);
+
+        particleTexture.path = "images/autumn_leaf.png";
+        particleSize = 15.f;
         break;
     case Season::Winter:
         seasonColor = Qt::white;
+
+        particleTexture.path = "images/winter_flake.png";
+        particleSize = 10.f;
         break;
     case Season::Spring:
         seasonColor = Qt::green;
+
+        particleTexture.path = "images/spring_leaf.png";
+        particleSize = 8.f;
         break;
     case Season::Summer:
         seasonColor = Qt::yellow;
+
+        textureFlag = 0.f;
         break;
     default:
         break;
@@ -148,31 +162,6 @@ void onSeasonChanged(Season season)
     terrainColorParam->value = seasonColor;
 
     particleMaterial->setParam("particleColor", seasonColor);
-
-    // Set season texture
-    Texture2D particleTexture;
-    float textureFlag = 1.f;
-    float particleSize = 1.f;
-
-    switch (season) {
-    case Season::Autumn:
-        particleTexture.path = "images/autumn_leaf.png";
-        particleSize = 15.f;
-        break;
-    case Season::Winter:
-        particleTexture.path = "images/winter_flake.png";
-        particleSize = 10.f;
-        break;
-    case Season::Spring:
-        particleTexture.path = "images/spring_leaf.png";
-        particleSize = 8.f;
-        break;
-    case Season::Summer:
-        textureFlag = 0.f;
-        break;
-    default:
-        break;
-    }
 
     particleMaterial->setParam("particleTexture", QVariant::fromValue(particleTexture));
     particleMaterial->setParam("textureFlag", textureFlag);
