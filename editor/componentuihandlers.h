@@ -3,6 +3,8 @@
 
 #include "icomponentuihandler.h"
 
+#include "input/keyboard.h"
+
 #include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
@@ -11,6 +13,8 @@
 #include "render/material/material.h"
 
 #include "extras/particles/particleeffect.h"
+
+#include "script/script.h"
 
 
 class TransformCompUiHandler : public TComponentUiHandler<Transform>
@@ -83,6 +87,32 @@ class CameraCompUiHandler : public TComponentUiHandler<Camera>
 {
 public:
     QString componentName() override { return "Camera"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void createComponentEditor(entityx::Entity entity,
+                               QWidget *parent,
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
+};
+
+class KeyboardCompUiHandler : public TComponentUiHandler<Keyboard>
+{
+public:
+    QString componentName() override { return "Keyboard"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void createComponentEditor(entityx::Entity entity,
+                               QWidget *parent,
+                               QVBoxLayout *layout,
+                               const QString &projectPath) override;
+};
+
+class ScriptCompUiHandler : public TComponentUiHandler<Script>
+{
+public:
+    QString componentName() override { return "Script"; }
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;

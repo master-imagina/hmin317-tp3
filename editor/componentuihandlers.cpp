@@ -17,6 +17,8 @@
 #include "render/material/shaderparam.h"
 #include "render/material/shaderprogram.h"
 
+#include "script/scriptassets.h"
+
 
 ////////////////////// Helpers //////////////////////
 
@@ -274,7 +276,7 @@ void MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
 
     // Create connections
     QObject::connect(meshPathEditor, &QLineEdit::editingFinished,
-                     [comp, meshPathEditor, projectPath] {
+                     [comp, meshPathEditor] {
         comp->setPath(meshPathEditor->text().toStdString());
     });
 }
@@ -396,4 +398,68 @@ void CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
     auto *editorLayout = new QFormLayout(editorWidget);
     editorLayout->addRow("Eye Pos", eyePosEditor);
     editorLayout->addRow("Target Pos", targetPosEditor);
+}
+
+
+////////////////////// KeyboardCompUiHandler //////////////////////
+
+void KeyboardCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                               QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<Keyboard>();
+    });
+}
+
+void KeyboardCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                  QWidget *parent,
+                                                  QVBoxLayout *layout,
+                                                  const QString &projectPath)
+{
+    Keyboard *comp = entity.component<Keyboard>().get();
+
+    // Build UI
+    auto *editorWidget = new QWidget(parent);
+
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
+    layout->insertWidget(layout->count() - 1, editorWidget);
+}
+
+
+////////////////////// ScriptCompUiHandler //////////////////////
+
+void ScriptCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                             QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<Script>();
+    });
+}
+
+void ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                QWidget *parent,
+                                                QVBoxLayout *layout,
+                                                const QString &projectPath)
+{
+    Script *comp = entity.component<Script>().get();
+
+    // Build UI
+    auto *editorWidget = new QWidget(parent);
+
+    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
+    layout->insertWidget(layout->count() - 1, editorWidget);
+
+    auto *scriptPathEditor = new QLineEdit(editorWidget);
+    scriptPathEditor->setText(QString::fromStdString(comp->path));
+
+    auto *editorLayout = new QFormLayout(editorWidget);
+    editorLayout->addRow("Path", scriptPathEditor);
+
+    // Create connections
+    QObject::connect(scriptPathEditor, &QLineEdit::editingFinished,
+                     [comp, scriptPathEditor] {
+        *comp = scriptFromFile(scriptPathEditor->text().toStdString());
+    });
 }

@@ -185,6 +185,7 @@ set(SCRIPT_HEADERS
     )
 set(SCRIPT_SOURCES
     script/api.cpp
+    script/script.cpp
     script/scriptsystem.cpp
     script/scriptassets.cpp
     )
@@ -193,7 +194,10 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/builtins/scripts)
 file(COPY script/scripts DESTINATION ${CMAKE_BINARY_DIR}/builtins)
 file(INSTALL script/scripts DESTINATION ${ENGINESPW_INSTALL_PATH}/builtins)
 
-add_library(enginescript SHARED ${SCRIPT_SOURCES} ${SCRIPT_HEADERS})
+file(GLOB SCRIPTS_BUILTINS
+    script/scripts/*.lua)
+
+add_library(enginescript SHARED ${SCRIPT_SOURCES} ${SCRIPT_HEADERS} ${SCRIPTS_BUILTINS})
 target_include_directories(enginescript PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_LUA_INCLUDE_DIRS})
 target_compile_definitions(enginescript PRIVATE SCRIPT_LIBRARY=1)
 target_link_libraries(enginescript enginecore enginerender Qt5::Core entityx lua)

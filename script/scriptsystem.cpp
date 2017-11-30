@@ -44,11 +44,13 @@ void ScriptSystem::update(entityx::EntityManager &entities,
 {
     entities.each<Script>(
                 [this, dt] (entityx::Entity entity, Script &script) {
-        const int lscript = luaL_dostring(m_luaState, script.sourceCode.constData());
+        if (!script.path.empty()) {
+            const int lscript = luaL_dostring(m_luaState, script.sourceCode.constData());
 
-        luaReportErrors(m_luaState, lscript);
+            luaReportErrors(m_luaState, lscript);
 
-        luabridge::LuaRef updateHandler = luabridge::getGlobal(m_luaState, "update");
-        updateHandler(entity, (float) dt);
+            luabridge::LuaRef updateHandler = luabridge::getGlobal(m_luaState, "update");
+            updateHandler(entity, (float) dt);
+        }
     });
 }

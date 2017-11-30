@@ -5,6 +5,8 @@
 #include "extras/particles/particleeffect.h"
 #include "extras/particles/quick.h"
 
+#include "input/keyboard.h"
+
 #include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
@@ -14,6 +16,9 @@
 #include "render/material/renderpass.h"
 #include "render/material/shaderparam.h"
 #include "render/material/shaderprogram.h"
+
+#include "script/script.h"
+#include "script/scriptassets.h"
 
 
 QDataStream &operator<<(QDataStream &os, const Scene &scene)
@@ -46,6 +51,13 @@ QDataStream &operator<<(QDataStream &os, const Scene &scene)
         if (entity.has_component<Camera>()) {
             os << QString("camera");
             os << *entity.component<Camera>().get();
+        }
+        if (entity.has_component<Keyboard>()) {
+            os << QString("keyboard");
+        }
+        if (entity.has_component<Script>()) {
+            os << QString("script");
+            os << *entity.component<Script>().get();
         }
 
         os << QString("endentity");
@@ -111,6 +123,15 @@ QDataStream &operator>>(QDataStream &os, Scene &scene)
                 os >> camera;
 
                 entity.assign<Camera>(camera);
+            }
+            else if (componentType == "keyboard") {
+                entity.assign<Keyboard>();
+            }
+            else if (componentType == "script") {
+                Script script;
+                os >> script;
+
+                entity.assign<Script>(scriptFromFile(script.path));
             }
 
             os >> endEntityFlag;

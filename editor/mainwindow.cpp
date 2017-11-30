@@ -214,4 +214,6 @@ void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentVi
     componentView->registerComponentUiHandler<LightCompUiHandler>();
     componentView->registerComponentUiHandler<MaterialCompUiHandler>();
     componentView->registerComponentUiHandler<CameraCompUiHandler>();
+    componentView->registerComponentUiHandler<KeyboardCompUiHandler>();
+    componentView->registerComponentUiHandler<ScriptCompUiHandler>();
 }
