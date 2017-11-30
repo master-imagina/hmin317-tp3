@@ -189,6 +189,10 @@ set(SCRIPT_SOURCES
     script/scriptassets.cpp
     )
 
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/builtins/scripts)
+file(COPY script/scripts DESTINATION ${CMAKE_BINARY_DIR}/builtins)
+file(INSTALL script/scripts DESTINATION ${ENGINESPW_INSTALL_PATH}/builtins)
+
 add_library(enginescript SHARED ${SCRIPT_SOURCES} ${SCRIPT_HEADERS})
 target_include_directories(enginescript PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_LUA_INCLUDE_DIRS})
 target_compile_definitions(enginescript PRIVATE SCRIPT_LIBRARY=1)
@@ -293,6 +297,8 @@ file(GLOB SEASONS_SHADERS
     lab/seasons/data/shaders/*.geom
     lab/seasons/data/shaders/*.frag
     )
+file(GLOB SEASONS_SCRIPTS
+    lab/seasons/data/scripts/*.lua)
 
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data_seasons)
 file(COPY lab/seasons/data/images DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
@@ -304,7 +310,7 @@ file(INSTALL lab/seasons/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data
 file(COPY lab/seasons/data/scripts DESTINATION ${CMAKE_BINARY_DIR}/data_seasons)
 file(INSTALL lab/seasons/data/scripts DESTINATION ${ENGINESPW_INSTALL_PATH}/data_seasons)
 
-add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS})
+add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS} ${SEASONS_SCRIPTS})
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(seasons enginescript engineinput editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 

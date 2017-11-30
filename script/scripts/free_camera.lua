@@ -39,8 +39,7 @@ function update(entity, dt)
         speed = speed * 4.
     end
     
-    local dtFactor = dt / 1000.
-    local moveAmount = dtFactor * speed
+    local moveAmount = dt / 1000. * speed
 
     local moveDirection = computeDirectionFromKeys(keyboard, camera)
 

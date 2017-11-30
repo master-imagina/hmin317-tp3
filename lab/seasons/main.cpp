@@ -62,7 +62,7 @@ void initScene(Scene &scene)
 {
     entityx::Entity mainCameraEntity = scene.createEntity();
     camera = mainCameraEntity.assign<Camera>();
-    mainCameraEntity.assign<Script>(scriptFromFile("scripts/free_camera.lua"));
+    mainCameraEntity.assign<Script>(scriptFromFile("builtins/scripts/free_camera.lua"));
     mainCameraEntity.assign<Keyboard>();
 
     // Create terrain
