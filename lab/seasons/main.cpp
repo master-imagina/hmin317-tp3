@@ -70,7 +70,7 @@ void initScene(Scene &scene)
 
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>();
-    *terrainGeom.get() = heightmapToGeometry(imageFromFile("images/heightmap-1.png"));
+    *terrainGeom.get() = heightmapToGeometry(imageFromFile("images/dunes.jpg"));
 
     terrainBoundingBox.processVertices(terrainGeom->vertices);
 
