@@ -134,9 +134,9 @@ est conservée dans le bigfile.
 
 La structure d'un bigfile est la suivante :
 - nombre d'entrées dans le bigfile
-- pour chaque entrée
+- pour chaque entrée, 
     chemin de l'entrée + index de départ dans le bigfile + taille de l'entrée
-- pour chaque entrée
+- pour chaque entrée, 
     description binaire du fichier
 
 
