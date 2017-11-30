@@ -112,21 +112,21 @@ void initScene(Scene &scene)
     entityx::Entity treeEntity = scene.createEntity();
     treeEntity.assign<Mesh>("meshes/wintertree.ply");
     auto treeTransform = treeEntity.component<Transform>();
-    treeTransform->setTranslate({300, -500, 0});
+    treeTransform->setTranslate(terrainAABBCenter);
     treeTransform->setScale({100, 100, 100});
     treeTransform->setRotation({-90, 0, 0});
 
     entityx::Entity treeEntity2 = scene.createEntity();
     treeEntity2.assign<Mesh>("meshes/springtree.ply");
     auto treeTransform2 = treeEntity2.component<Transform>();
-    treeTransform2->setTranslate({500, -350, 0});
+    treeTransform2->setTranslate(terrainAABBCenter + QVector3D(100, 0, 200));
     treeTransform2->setScale({80, 80, 80});
     treeTransform2->setRotation({-85, 0, 0});
 
     entityx::Entity treeEntity3 = scene.createEntity();
     treeEntity3.assign<Mesh>("meshes/autumntree.ply");
     auto treeTransform3 = treeEntity3.component<Transform>();
-    treeTransform3->setTranslate({400, -680, 110});
+    treeTransform3->setTranslate(terrainAABBCenter +  QVector3D(140, 0, 50));
     treeTransform3->setScale({90, 90, 90});
     treeTransform3->setRotation({-74, 5, 3});
 
