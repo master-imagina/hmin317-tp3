@@ -30,7 +30,7 @@ CameraControls::CameraControls(Camera *camera, QWidget *parent) :
 
     connect(dragBtn, &DragToolButton::mouseDragged,
             [this] (float dx, float dy) {
-        truckCamera(*m_camera, -dx * m_linearSpeed, dy * m_linearSpeed);
+        truckCamera(*m_camera, -dx * m_linearSpeed, dy * m_linearSpeed, 1.f, 1000.f);
     });
 
     // Move forward/backward button

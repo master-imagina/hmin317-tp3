@@ -16,6 +16,8 @@ extern "C" {
 
 #include "render/camera.h"
 
+#include "extras/cameraactions.h"
+
 
 namespace {
 
@@ -153,6 +155,11 @@ void exposeEngineAPI(lua_State *lState)
             .addFunction("viewVector", &Camera::viewVector)
             .addFunction("rightVector", &Camera::rightVector)
         .endClass();
+
+    luabridge::getGlobalNamespace(lState)
+        .beginNamespace("CameraActions")
+            .addFunction("move", &moveCamera)
+        .endNamespace();
 
     luabridge::getGlobalNamespace(lState)
         .addFunction("getComponentCamera", &getComponentCamera)

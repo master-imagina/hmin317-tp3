@@ -28,10 +28,13 @@ void centerCameraOnBBox(Camera &camera, const AABoundingBox &aabb)
     camera.setTargetPos({aabbCenter.x(), 0.f, aabbCenter.z()});
 }
 
-void moveCamera(Camera &camera, const QVector3D &amount)
+void moveCamera(Camera &camera, const QVector3D &direction, float speed, float dt)
 {
-    camera.setEyePos(camera.eyePos() + amount);
-    camera.setTargetPos(camera.targetPos() + amount);
+    const float moveAmount = dt / 1000. * speed;
+    const QVector3D offset = direction * moveAmount;
+
+    camera.setEyePos(camera.eyePos() + offset);
+    camera.setTargetPos(camera.targetPos() + offset);
 }
 
 void moveCameraForward(Camera &camera, float offset)
@@ -42,10 +45,10 @@ void moveCameraForward(Camera &camera, float offset)
     camera.setTargetPos(camera.targetPos() + moveAmount);
 }
 
-void truckCamera(Camera &camera, float dx, float dy)
+void truckCamera(Camera &camera, float dx, float dy, float speed, float dt)
 {
     const QVector3D amountX = camera.rightVector() * dx;
     const QVector3D amountY = camera.upVector() * dy;
 
-    moveCamera(camera, amountX + amountY);
+    moveCamera(camera, amountX + amountY, speed, dt);
 }
