@@ -2,6 +2,7 @@
 
 #include <QBoxLayout>
 #include <QDebug>
+#include <QLabel>
 #include <QMenu>
 #include <QToolButton>
 
@@ -42,7 +43,6 @@ ComponentView::ComponentView(SceneView *sceneView,
     m_mainLayout->addWidget(addComponentBtn);
     m_mainLayout->addStretch();
 
-
     createConnections();
 }
 
@@ -64,10 +64,19 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
             const bool hasComponent = compUiHandler->hasComponent(m_currentEntity);
 
             if (hasComponent) {
-                compUiHandler->createComponentEditor(m_currentEntity,
-                                                     m_mainWidget,
-                                                     m_mainLayout,
-                                                     m_theProjectManager->currentProjectPath());
+                auto *compEditorPlaceholder = new QWidget(m_mainWidget);
+
+                QWidget *compEditor =
+                        compUiHandler->createComponentEditor(m_currentEntity,
+                                                             compEditorPlaceholder,
+                                                             m_theProjectManager->currentProjectPath());
+
+                auto *compEditorPlaceholderLayout = new QVBoxLayout(compEditorPlaceholder);
+                compEditorPlaceholderLayout->setMargin(0);
+                compEditorPlaceholderLayout->addWidget(new QLabel(compUiHandler->componentName()));
+                compEditorPlaceholderLayout->addWidget(compEditor);
+
+                m_mainLayout->insertWidget(m_mainLayout->count() - 1, compEditorPlaceholder);
             }
         }
     }

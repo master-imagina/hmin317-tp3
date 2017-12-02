@@ -94,19 +94,14 @@ void TransformCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                                   QWidget *parent,
-                                                   QVBoxLayout *layout,
-                                                   const QString &)
+QWidget *TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                       QWidget *parent,
+                                                       const QString &)
 {
     Transform *comp = entity.component<Transform>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
-
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
-
+    auto *ret = new QWidget(parent);
 
     auto *translateEditor = new Vec3DEdit(parent);
     translateEditor->setValue(comp->translate());
@@ -124,7 +119,7 @@ void TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
     scaleEditor->setZMin(1.);
     scaleEditor->setValue(comp->scale());
 
-    auto *editorLayout = new QFormLayout(editorWidget);
+    auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Translation", translateEditor);
     editorLayout->addRow("Rotation", rotateEditor);
     editorLayout->addRow("Scale", scaleEditor);
@@ -144,6 +139,8 @@ void TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
                      [comp] (const QVector3D &value) {
         comp->setScale(value);
     });
+
+    return ret;
 }
 
 
@@ -158,20 +155,16 @@ void ParticleEffectCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                                        QWidget *parent,
-                                                        QVBoxLayout *layout,
-                                                        const QString &)
+QWidget *ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                            QWidget *parent,
+                                                            const QString &)
 {
     ParticleEffect *comp = entity.component<ParticleEffect>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
+    auto *ret = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
-
-    auto *directionEditor = new Vec3DEdit(editorWidget);
+    auto *directionEditor = new Vec3DEdit(ret);
     directionEditor->setXMin(-1.f);
     directionEditor->setYMin(-1.f);
     directionEditor->setZMin(-1.f);
@@ -180,23 +173,23 @@ void ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
     directionEditor->setZMax(1.f);
     directionEditor->setStepSize(0.1f);
     directionEditor->setValue(comp->direction());
-    auto *countSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
+    auto *countSlider = new ValuedSlider(Qt::Horizontal, ret);
     countSlider->setMaximum(500);
     countSlider->setValue(comp->count());
-    auto *spawnRateSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
+    auto *spawnRateSlider = new ValuedSlider(Qt::Horizontal, ret);
     spawnRateSlider->setMinimum(1);
     spawnRateSlider->setMaximum(100);
     spawnRateSlider->setValue(comp->spawnRate());
-    auto *maxLifeSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
+    auto *maxLifeSlider = new ValuedSlider(Qt::Horizontal, ret);
     maxLifeSlider->setValue(comp->maxLife());
-    auto *radiusSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
+    auto *radiusSlider = new ValuedSlider(Qt::Horizontal, ret);
     radiusSlider->setValue(comp->radius());
-    auto *speedSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
+    auto *speedSlider = new ValuedSlider(Qt::Horizontal, ret);
     speedSlider->setValue(comp->speed());
-    auto *particleSizeSlider = new ValuedSlider(Qt::Horizontal, editorWidget);
+    auto *particleSizeSlider = new ValuedSlider(Qt::Horizontal, ret);
     particleSizeSlider->setValue(comp->particleSize());
 
-    auto *editorLayout = new QFormLayout(editorWidget);
+    auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Direction", directionEditor);
     editorLayout->addRow("Count", countSlider);
     editorLayout->addRow("Spawn Rate", spawnRateSlider);
@@ -241,6 +234,8 @@ void ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
         //FIXME
         //        m_particleMaterial->setParam("particleSize", (float)value);
     });
+
+    return ret;
 }
 
 
@@ -255,23 +250,19 @@ void MeshCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                              QWidget *parent,
-                                              QVBoxLayout *layout,
-                                              const QString &projectPath)
+QWidget *MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                  QWidget *parent,
+                                                  const QString &projectPath)
 {
     Mesh *comp = entity.component<Mesh>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
+    auto *ret = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
-
-    auto *meshPathEditor = new QLineEdit(editorWidget);
+    auto *meshPathEditor = new QLineEdit(ret);
     meshPathEditor->setText(QString::fromStdString(comp->path()));
 
-    auto *editorLayout = new QFormLayout(editorWidget);
+    auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Path", meshPathEditor);
 
     // Create connections
@@ -279,6 +270,8 @@ void MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
                      [comp, meshPathEditor] {
         comp->setPath(meshPathEditor->text().toStdString());
     });
+
+    return ret;
 }
 
 
@@ -293,23 +286,19 @@ void LightCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void LightCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                               QWidget *parent,
-                                               QVBoxLayout *layout,
-                                               const QString &)
+QWidget *LightCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                   QWidget *parent,
+                                                   const QString &)
 {
     Light *comp = entity.component<Light>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
+    auto *ret = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
-
-    auto *lightColorEditor = new ColorEditor(editorWidget);
+    auto *lightColorEditor = new ColorEditor(ret);
     lightColorEditor->setValue(comp->color);
 
-    auto *editorLayout = new QFormLayout(editorWidget);
+    auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Color", lightColorEditor);
 
     // Create connections
@@ -317,6 +306,8 @@ void LightCompUiHandler::createComponentEditor(entityx::Entity entity,
                      [comp, lightColorEditor] {
         comp->color = lightColorEditor->value();
     });
+
+    return ret;
 }
 
 
@@ -331,26 +322,24 @@ void MaterialCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                                  QWidget *parent,
-                                                  QVBoxLayout *layout,
-                                                  const QString &projectPath)
+QWidget *MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                      QWidget *parent,
+                                                      const QString &projectPath)
 {
     Material *comp = entity.component<Material>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
+    auto *ret = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
-
-    auto *editorLayout = new QFormLayout(editorWidget);
+    auto *editorLayout = new QFormLayout(ret);
 
     for (ShaderParam &param : comp->params()) {
-        QWidget *paramEditor = createParamEditor(param, editorWidget);
+        QWidget *paramEditor = createParamEditor(param, ret);
 
         editorLayout->addRow(QString::fromStdString(param.name), paramEditor);
     }
+
+    return ret;
 }
 
 
@@ -365,20 +354,16 @@ void CameraCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                                QWidget *parent,
-                                                QVBoxLayout *layout,
-                                                const QString &projectPath)
+QWidget *CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                    QWidget *parent,
+                                                    const QString &projectPath)
 {
     Camera *comp = entity.component<Camera>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
+    auto *ret = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
-
-    auto *eyePosEditor = new Vec3DEdit(editorWidget);
+    auto *eyePosEditor = new Vec3DEdit(ret);
     eyePosEditor->setValue(comp->eyePos());
 
     QObject::connect(eyePosEditor, &Vec3DEdit::valueChanged,
@@ -386,7 +371,7 @@ void CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
         comp->setEyePos(value);
     });
 
-    auto *targetPosEditor = new Vec3DEdit(editorWidget);
+    auto *targetPosEditor = new Vec3DEdit(ret);
     targetPosEditor->setValue(comp->targetPos());
 
     QObject::connect(targetPosEditor, &Vec3DEdit::valueChanged,
@@ -395,9 +380,11 @@ void CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
     });
 
 
-    auto *editorLayout = new QFormLayout(editorWidget);
+    auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Eye Pos", eyePosEditor);
     editorLayout->addRow("Target Pos", targetPosEditor);
+
+    return ret;
 }
 
 
@@ -412,18 +399,16 @@ void KeyboardCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void KeyboardCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                                  QWidget *parent,
-                                                  QVBoxLayout *layout,
-                                                  const QString &projectPath)
+QWidget *KeyboardCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                      QWidget *parent,
+                                                      const QString &projectPath)
 {
     Keyboard *comp = entity.component<Keyboard>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
+    auto *ret = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
+    return ret;
 }
 
 
@@ -438,23 +423,19 @@ void ScriptCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
-void ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
-                                                QWidget *parent,
-                                                QVBoxLayout *layout,
-                                                const QString &projectPath)
+QWidget *ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                    QWidget *parent,
+                                                    const QString &projectPath)
 {
     Script *comp = entity.component<Script>().get();
 
     // Build UI
-    auto *editorWidget = new QWidget(parent);
+    auto *ret = new QWidget(parent);
 
-    layout->insertWidget(layout->count() - 1, new QLabel(componentName()));
-    layout->insertWidget(layout->count() - 1, editorWidget);
-
-    auto *scriptPathEditor = new QLineEdit(editorWidget);
+    auto *scriptPathEditor = new QLineEdit(ret);
     scriptPathEditor->setText(QString::fromStdString(comp->path));
 
-    auto *editorLayout = new QFormLayout(editorWidget);
+    auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Path", scriptPathEditor);
 
     // Create connections
@@ -462,4 +443,6 @@ void ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
                      [comp, scriptPathEditor] {
         *comp = scriptFromFile(scriptPathEditor->text().toStdString());
     });
+
+    return ret;
 }

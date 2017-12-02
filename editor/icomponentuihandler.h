@@ -21,12 +21,11 @@ public:
     virtual bool hasComponent(entityx::Entity entity) = 0;
 
     virtual void configureAddAction(entityx::Entity &entity,
-                                     QAction *action) = 0;
+                                    QAction *action) = 0;
 
-    virtual void createComponentEditor(entityx::Entity entity,
-                                       QWidget *parent,
-                                       QVBoxLayout *layout,
-                                       const QString &projectPath) = 0;
+    virtual QWidget *createComponentEditor(entityx::Entity entity,
+                                           QWidget *parent,
+                                           const QString &projectPath) = 0;
 };
 
 

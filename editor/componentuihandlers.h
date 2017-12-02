@@ -24,10 +24,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 
@@ -38,10 +37,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 class MeshCompUiHandler : public TComponentUiHandler<Mesh>
@@ -51,10 +49,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 class LightCompUiHandler : public TComponentUiHandler<Light>
@@ -64,10 +61,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 class MaterialCompUiHandler : public TComponentUiHandler<Material>
@@ -77,10 +73,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 class CameraCompUiHandler : public TComponentUiHandler<Camera>
@@ -90,10 +85,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 class KeyboardCompUiHandler : public TComponentUiHandler<Keyboard>
@@ -103,10 +97,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 class ScriptCompUiHandler : public TComponentUiHandler<Script>
@@ -116,10 +109,9 @@ public:
 
     void configureAddAction(entityx::Entity &entity,
                             QAction *action) override;
-    void createComponentEditor(entityx::Entity entity,
-                               QWidget *parent,
-                               QVBoxLayout *layout,
-                               const QString &projectPath) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 #endif // COMPONENUIHANDLERS_H
