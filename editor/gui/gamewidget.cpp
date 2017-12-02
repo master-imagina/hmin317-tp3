@@ -1,7 +1,5 @@
 #include "gamewidget.h"
 
-#include "3rdparty/entityx/deps/Dependencies.h"
-
 #include "core/scene.h"
 
 #include "extras/particles/particleeffect.h"
@@ -56,10 +54,10 @@ void GameWidget::showEvent(QShowEvent *)
 void GameWidget::initSystems()
 {
     // Add system dependencies
-    m_systemEngine.registerSystem<entityx::deps::Dependency<Geometry, Transform>>();
-    m_systemEngine.registerSystem<entityx::deps::Dependency<ParticleEffect, Geometry, Material>>();
-    m_systemEngine.registerSystem<entityx::deps::Dependency<Mesh, Transform>>();
-    m_systemEngine.registerSystem<entityx::deps::Dependency<Light, Transform>>();
+    m_systemEngine.registerDependency<Geometry, Transform>();
+    m_systemEngine.registerDependency<ParticleEffect, Geometry, Material>();
+    m_systemEngine.registerDependency<Mesh, Transform>();
+    m_systemEngine.registerDependency<Light, Transform>();
 
     // Add systems
     m_systemEngine.registerSystem<InputSystem>(this);
