@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFormLayout>
+#include <QKeyEvent>
 #include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
@@ -40,24 +41,28 @@ MainWindow::MainWindow(QWidget *parent) :
     m_projectManager(nullptr),
     m_freeCamera(),
     m_scene(),
-    m_gameWidget(nullptr)
+    m_centralWidget(nullptr),
+    m_gameWidget(nullptr),
+    m_inPlayMode(false)
 {
     m_projectManager = new ProjectManager(this);
 
-    auto centralWidget = new QWidget(this);
-    centralWidget->setFocusPolicy(Qt::StrongFocus);
+    m_centralWidget = new QWidget(this);
+    m_centralWidget->setObjectName("centralWidget");
+    m_centralWidget->setFocusPolicy(Qt::StrongFocus);
 
-    setCentralWidget(centralWidget);
+    setCentralWidget(m_centralWidget);
 
-    m_gameWidget = new GameWidget(m_scene, centralWidget);
+    m_gameWidget = new GameWidget(m_scene, m_centralWidget);
     m_gameWidget->setObjectName("Editor Main Viewport");
     m_gameWidget->setFocusPolicy(Qt::StrongFocus);
     m_gameWidget->systemEngine().configure();
+    m_gameWidget->disableScripts();
 
     m_gameWidget->setCamera(&m_freeCamera);
 
-    auto centralLayout = new QVBoxLayout(centralWidget);
-    centralLayout->setMargin(0);
+    auto centralLayout = new QVBoxLayout(m_centralWidget);
+    centralLayout->setMargin(1);
     centralLayout->addWidget(m_gameWidget);
 
     // Add controls to game widget
@@ -167,6 +172,20 @@ void MainWindow::createMenus()
     connect(buildProjectAction, &QAction::triggered,
             m_projectManager, &ProjectManager::build);
 
+    QAction *playAction = projectMenu->addAction(tr("Run"));
+    playAction->setShortcut(QKeySequence("Ctrl+R"));
+
+    connect(playAction, &QAction::triggered,
+            this, &MainWindow::enterPlayMode);
+
+    auto *leavePlayAction = new QAction(tr("Play"), m_gameWidget);
+    leavePlayAction->setShortcut(QKeySequence("Escape"));
+
+    m_gameWidget->addAction(leavePlayAction);
+
+    connect(leavePlayAction, &QAction::triggered,
+            this, &MainWindow::leavePlayMode);
+
     // View menu
     QMenu *viewMenu = menuBar->addMenu(tr("View"));
     m_openViewPaneMenu = viewMenu->addMenu(tr("Open view pane"));
@@ -216,4 +235,35 @@ void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentVi
     componentView->registerComponentUiHandler<CameraCompUiHandler>();
     componentView->registerComponentUiHandler<KeyboardCompUiHandler>();
     componentView->registerComponentUiHandler<ScriptCompUiHandler>();
+}
+
+void MainWindow::enterPlayMode()
+{
+    if (m_inPlayMode) {
+        return;
+    }
+
+    m_gameWidget->setFocus();
+    m_gameWidget->enableScripts();
+
+    m_centralWidget->setStyleSheet("#centralWidget { border: 2px solid red; }");
+
+    setCursor(Qt::BlankCursor);
+
+    m_inPlayMode = true;
+}
+
+void MainWindow::leavePlayMode()
+{
+    if (!m_inPlayMode) {
+        return;
+    }
+
+    m_gameWidget->disableScripts();
+
+    m_centralWidget->setStyleSheet(QString());
+
+    setCursor(Qt::ArrowCursor);
+
+    m_inPlayMode = false;
 }

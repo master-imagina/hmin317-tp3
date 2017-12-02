@@ -32,6 +32,9 @@ private:
 
     void createDefaultComponentEditorCreators(ComponentView *componentView);
 
+    void enterPlayMode();
+    void leavePlayMode();
+
 private:
     uptr<PaneManager> m_paneManager;
     QMenu *m_openViewPaneMenu;
@@ -41,7 +44,11 @@ private:
 
     Camera m_freeCamera;
     Scene m_scene;
+
+    QWidget *m_centralWidget;
     GameWidget *m_gameWidget;
+
+    bool m_inPlayMode;
 };
 
 #endif // MAINWINDOW_H
