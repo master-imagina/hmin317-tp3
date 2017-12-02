@@ -179,12 +179,14 @@ set(3RDPARTY_LUA_INCLUDE_DIRS
 
 set(SCRIPT_HEADERS
     script/api.h
+    script/luaserver.h
     script/script.h
     script/scriptassets.h
     script/scriptsystem.h
     )
 set(SCRIPT_SOURCES
     script/api.cpp
+    script/luaserver.cpp
     script/script.cpp
     script/scriptsystem.cpp
     script/scriptassets.cpp

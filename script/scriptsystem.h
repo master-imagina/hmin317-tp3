@@ -3,21 +3,24 @@
 
 #include "3rdparty/entityx/System.h"
 
+#include "script/luaserver.h"
+
 struct lua_State;
 
 
 class ScriptSystem : public entityx::System<ScriptSystem>
 {
 public:
-    void configure(entityx::EntityManager &entities,
-                   entityx::EventManager &events) override;
+    ScriptSystem();
 
     void update(entityx::EntityManager &entities,
                 entityx::EventManager &events,
                 double dt) override;
 
+    LuaServer &luaServer();
+
 private:
-    lua_State *m_luaState = nullptr;
+    LuaServer m_luaServer;
 };
 
 #endif // SCRIPTSYSTEM_H

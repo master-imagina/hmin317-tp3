@@ -8,35 +8,13 @@ extern "C" {
 
 #include "3rdparty/luabridge/luabridge/LuaBridge.h"
 
-#include "script/api.h"
 #include "script/script.h"
 
 
-namespace {
-
-void luaReportErrors(lua_State *L, int status)
-{
-    if (status != 0) {
-        std::cerr << "[ERROR] ScriptSystem: "
-                  << lua_tostring(L, -1);
-        lua_pop(L, 1);
-    }
-}
-
-} // anon namespace
-
-
-void ScriptSystem::configure(entityx::EntityManager &entities,
-                             entityx::EventManager &events)
-{
-    if (!m_luaState) {
-        m_luaState = luaL_newstate();
-
-        luaL_openlibs(m_luaState);
-
-        exposeEngineAPI(m_luaState);
-    }
-}
+ScriptSystem::ScriptSystem() :
+    entityx::System<ScriptSystem>(),
+    m_luaServer()
+{}
 
 void ScriptSystem::update(entityx::EntityManager &entities,
                           entityx::EventManager &events,
@@ -45,12 +23,15 @@ void ScriptSystem::update(entityx::EntityManager &entities,
     entities.each<Script>(
                 [this, dt] (entityx::Entity entity, Script &script) {
         if (!script.path.empty()) {
-            const int lscript = luaL_dostring(m_luaState, script.sourceCode.constData());
+            m_luaServer.evaluateScript(script);
 
-            luaReportErrors(m_luaState, lscript);
-
-            luabridge::LuaRef updateHandler = luabridge::getGlobal(m_luaState, "update");
+            luabridge::LuaRef updateHandler = m_luaServer.getUpdateFunc();
             updateHandler(entity, (float) dt);
         }
     });
+}
+
+LuaServer &ScriptSystem::luaServer()
+{
+    return m_luaServer;
 }
