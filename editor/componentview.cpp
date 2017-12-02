@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QLabel>
 #include <QMenu>
+#include <QPushButton>
 #include <QToolButton>
 
 #include "core/scene.h"
@@ -66,15 +67,22 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
             if (hasComponent) {
                 auto *compEditorPlaceholder = new QWidget(m_mainWidget);
 
+                auto *compTitleBtn = new QPushButton(compEditorPlaceholder);
+                compTitleBtn->setCheckable(true);
+                compTitleBtn->setChecked(true);
+                compTitleBtn->setText(compUiHandler->componentName());
+
                 QWidget *compEditor =
                         compUiHandler->createComponentEditor(m_currentEntity,
                                                              compEditorPlaceholder,
                                                              m_theProjectManager->currentProjectPath());
 
-                auto *compEditorPlaceholderLayout = new QVBoxLayout(compEditorPlaceholder);
-                compEditorPlaceholderLayout->setMargin(0);
-                compEditorPlaceholderLayout->addWidget(new QLabel(compUiHandler->componentName()));
-                compEditorPlaceholderLayout->addWidget(compEditor);
+                connect(compTitleBtn, &QPushButton::toggled,
+                        compEditor, &QWidget::setVisible);
+
+                auto *fullEditorPlaceholderLayout = new QVBoxLayout(compEditorPlaceholder);
+                fullEditorPlaceholderLayout->addWidget(compTitleBtn);
+                fullEditorPlaceholderLayout->addWidget(compEditor);
 
                 m_mainLayout->insertWidget(m_mainLayout->count() - 1, compEditorPlaceholder);
             }
