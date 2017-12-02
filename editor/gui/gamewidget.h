@@ -20,6 +20,9 @@ public:
 
     SystemEngine &systemEngine();
 
+    void enableScripts();
+    void disableScripts();
+
 protected:
     void showEvent(QShowEvent *) override;
 
@@ -33,6 +36,8 @@ private:
     SystemEngine m_systemEngine;
 
     GameLoop *m_gameLoop;
+
+    bool m_scriptsEnabled;
 };
 
 #endif // GAMEWIDGET_H

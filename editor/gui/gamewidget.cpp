@@ -26,7 +26,8 @@ GameWidget::GameWidget(Scene &scene, QWidget *parent) :
     RenderWidget(parent),
     m_initialized(false),
     m_systemEngine(scene),
-    m_gameLoop(new GameLoop(60, this))
+    m_gameLoop(new GameLoop(60, this)),
+    m_scriptsEnabled(true)
 {
     initSystems();
 }
@@ -39,6 +40,16 @@ GameLoop *GameWidget::gameLoop() const
 SystemEngine &GameWidget::systemEngine()
 {
     return m_systemEngine;
+}
+
+void GameWidget::enableScripts()
+{
+    m_scriptsEnabled = true;
+}
+
+void GameWidget::disableScripts()
+{
+    m_scriptsEnabled = false;
 }
 
 void GameWidget::showEvent(QShowEvent *)
@@ -71,7 +82,11 @@ void GameWidget::initSystems()
 void GameWidget::iterateGameLoop(float dt)
 {
     m_systemEngine.update<InputSystem>(dt);
-    m_systemEngine.update<ScriptSystem>(dt);
+
+    if (m_scriptsEnabled) {
+        m_systemEngine.update<ScriptSystem>(dt);
+    }
+
     m_systemEngine.update<ParticleSystem>(dt);
     m_systemEngine.update<RenderSystem>(dt);
 }
