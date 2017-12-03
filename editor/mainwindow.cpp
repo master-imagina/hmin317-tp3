@@ -245,6 +245,7 @@ void MainWindow::enterPlayMode()
 
     m_gameWidget->setFocus();
     m_gameWidget->enableScripts();
+    m_gameWidget->systemEngine().configure();
 
     m_centralWidget->setStyleSheet("#centralWidget { border: 2px solid red; }");
 
@@ -260,6 +261,7 @@ void MainWindow::leavePlayMode()
     }
 
     m_gameWidget->disableScripts();
+    m_gameWidget->setCamera(&m_freeCamera);
 
     m_centralWidget->setStyleSheet(QString());
 
