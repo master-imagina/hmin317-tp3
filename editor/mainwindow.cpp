@@ -107,6 +107,7 @@ void MainWindow::createMenus()
 
         connect(createProjectDialog, &QDialog::accepted,
                 [this, projectNameLineEdit] {
+            m_scene.clear();
             m_projectManager->create(projectNameLineEdit->text());
         });
 

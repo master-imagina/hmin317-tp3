@@ -87,9 +87,9 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
                 m_mainLayout->insertWidget(m_mainLayout->count() - 1, compEditorPlaceholder);
             }
         }
-    }
 
-    updateComponentMenuForEntity();
+        updateComponentMenuForEntity();
+    }
 }
 
 void ComponentView::createConnections()

@@ -50,11 +50,13 @@ void SceneView::createConnections()
             [this] (QTreeWidgetItem *current, QTreeWidgetItem *previous) {
         Q_UNUSED (previous);
 
-        if (current) {
-            entityx::Entity entity = m_itemToEntity.at(current);
+        entityx::Entity entity;
 
-            onEntityItemActivated(entity);
+        if (current) {
+            entity = m_itemToEntity.at(current);
         }
+
+        onEntityItemActivated(entity);
     });
 }
 
