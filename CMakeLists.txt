@@ -297,7 +297,7 @@ set(EDITOR_HEADERS
     editor/cameracontrollercontrols.h
     editor/componentuihandlers.h
     editor/componentview.h
-    editor/hooksystems.h
+    editor/entityxhook.h
     editor/mainwindow.h
     editor/particleeditor.h
     editor/projectmanager.h
@@ -311,7 +311,7 @@ set(EDITOR_SOURCES
     editor/cameracontrollercontrols.cpp
     editor/componentuihandlers.cpp
     editor/componentview.cpp
-    editor/hooksystems.cpp
+    editor/entityxhook.cpp
     editor/main.cpp
     editor/mainwindow.cpp
     editor/particleeditor.cpp

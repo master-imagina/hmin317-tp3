@@ -24,7 +24,7 @@
 #include "editor/assetmanagerview.h"
 #include "editor/componentuihandlers.h"
 #include "editor/componentview.h"
-#include "editor/hooksystems.h"
+#include "editor/entityxhook.h"
 #include "editor/panemanager.h"
 #include "editor/particleeditor.h"
 #include "editor/projectmanager.h"
@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_scene(),
     m_centralWidget(nullptr),
     m_gameWidget(nullptr),
+    m_entityxHook(nullptr),
     m_inPlayMode(false)
 {
     m_projectManager = new ProjectManager(this);
@@ -205,7 +206,10 @@ void MainWindow::initPanes()
     auto *particleEditor = new ParticleEditor(particleEditorPane);
     particleEditorPane->setWidget(particleEditor);
 
-    registerHookSystems(m_gameWidget->systemEngine(), *componentView);
+    m_entityxHook = new EntityxHook(m_gameWidget->systemEngine(), this);
+
+    connect(m_entityxHook, &EntityxHook::entityChanged,
+            componentView, &ComponentView::setCurrentEntity);
 
     m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);

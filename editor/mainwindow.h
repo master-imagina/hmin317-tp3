@@ -12,6 +12,7 @@
 
 class AssetManagerView;
 class ComponentView;
+class EntityxHook;
 class GameWidget;
 class PaneManager;
 class ProjectManager;
@@ -47,6 +48,8 @@ private:
 
     QWidget *m_centralWidget;
     GameWidget *m_gameWidget;
+
+    EntityxHook *m_entityxHook;
 
     bool m_inPlayMode;
 };

@@ -53,30 +53,4 @@ private:
     std::vector<uptr<IComponentUiHandler>> m_componentUiHandlers;
 };
 
-
-template <typename C>
-class ComponentAddedHook : public entityx::System<ComponentAddedHook<C>>, public entityx::Receiver<ComponentAddedHook<C>>
-{
-public:
-    ComponentAddedHook(ComponentView &componentView) :
-        m_componentView(componentView)
-    {}
-
-    void receive(const entityx::ComponentAddedEvent<C> &event)
-    {
-        m_componentView.setCurrentEntity(event.entity);
-    }
-
-    void configure(entityx::EventManager &events) override
-    {
-        events.subscribe<entityx::ComponentAddedEvent<C>>(*this);
-    }
-
-    void update(entityx::EntityManager &entities,
-                entityx::EventManager &events,
-                double dt) override {}
-private:
-    ComponentView &m_componentView;
-};
-
 #endif // COMPONENTVIEW_H
