@@ -138,6 +138,8 @@ void MainWindow::createMenus()
                       << std::endl;
         }
 
+        m_scene.clear();
+
         QDataStream dataStream(&projectFile);
         dataStream >> m_scene;
     });

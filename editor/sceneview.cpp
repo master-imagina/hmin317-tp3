@@ -43,13 +43,18 @@ void SceneView::createConnections()
     connect(&m_scene, &Scene::entityAdded,
             this, &SceneView::onEntityAdded);
 
+    connect(&m_scene, &Scene::cleared,
+            this, &SceneView::onSceneCleared);
+
     connect(m_entityTreeView, &QTreeWidget::currentItemChanged,
             [this] (QTreeWidgetItem *current, QTreeWidgetItem *previous) {
         Q_UNUSED (previous);
 
-        entityx::Entity entity = m_itemToEntity.at(current);
+        if (current) {
+            entityx::Entity entity = m_itemToEntity.at(current);
 
-        onEntityItemActivated(entity);
+            onEntityItemActivated(entity);
+        }
     });
 }
 
@@ -69,4 +74,10 @@ void SceneView::onEntityAdded(entityx::Entity entity)
 void SceneView::onEntityItemActivated(entityx::Entity entity)
 {
     Q_EMIT entityItemSelected(entity);
+}
+
+void SceneView::onSceneCleared()
+{
+    m_entityTreeView->clear();
+    m_itemToEntity.clear();
 }

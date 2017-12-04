@@ -27,3 +27,11 @@ std::size_t Scene::count() const
 {
     return entities.size();
 }
+
+void Scene::clear()
+{
+    entities.reset();
+    m_entityCache.clear();
+
+    Q_EMIT cleared();
+}

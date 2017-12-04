@@ -20,12 +20,15 @@ public:
     std::vector<entityx::Entity> entityCache() const;
     std::size_t count() const;
 
+    void clear();
+
     /* consider private */
     entityx::EventManager events;
     entityx::EntityManager entities;
 
 Q_SIGNALS:
     void entityAdded(entityx::Entity entity);
+    void cleared();
 
 private:
     std::vector<entityx::Entity> m_entityCache;

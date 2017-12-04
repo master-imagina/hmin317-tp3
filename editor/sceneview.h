@@ -31,6 +31,7 @@ private:
 private:
     void onEntityAdded(entityx::Entity entity);
     void onEntityItemActivated(entityx::Entity entity);
+    void onSceneCleared();
 
 private:
     Scene &m_scene;
