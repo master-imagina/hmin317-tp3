@@ -12,7 +12,6 @@ QWidget *createFpsLabel(GameLoop *gameLoop, QWidget *parent)
 {
     auto *ret = new QLabel(parent);
     ret->setStyleSheet("QLabel { background-color : red }");
-    ret->move(20, 20);
     ret->setFixedWidth(50);
 
     auto *effectiveFpsTimer = new QTimer(ret);

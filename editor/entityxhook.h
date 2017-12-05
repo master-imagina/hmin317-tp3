@@ -17,7 +17,7 @@ public:
     ~EntityxHook() = default;
 
 Q_SIGNALS:
-    void entityChanged(entityx::Entity entity);
+    void entityComponentAdded(entityx::Entity entity);
 
 private:
     SystemEngine &m_systemEngine;
@@ -36,7 +36,7 @@ public:
 
     void receive(const entityx::ComponentAddedEvent<C> &event)
     {
-        Q_EMIT m_entityxHook.entityChanged(event.entity);
+        Q_EMIT m_entityxHook.entityComponentAdded(event.entity);
     }
 
     void configure(entityx::EventManager &events) override

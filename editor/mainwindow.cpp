@@ -22,6 +22,7 @@
 #include "editor/gui/gamewidget.h"
 
 #include "editor/assetmanagerview.h"
+#include "editor/cameracontrols.h"
 #include "editor/componentuihandlers.h"
 #include "editor/componentview.h"
 #include "editor/entityxhook.h"
@@ -44,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_centralWidget(nullptr),
     m_gameWidget(nullptr),
     m_entityxHook(nullptr),
+    m_cameraControls(nullptr),
     m_inPlayMode(false)
 {
     m_projectManager = new ProjectManager(this);
@@ -69,6 +71,31 @@ MainWindow::MainWindow(QWidget *parent) :
     // Add controls to game widget
     createFpsLabel(m_gameWidget->gameLoop(), m_gameWidget);
 
+    m_cameraControls = new CameraControls(m_gameWidget->camera(), m_scene,
+                                          m_gameWidget);
+
+    connect(m_cameraControls, &CameraControls::cameraChanged,
+            [this] (Camera *camera) {
+        if (!camera) {
+            m_gameWidget->setCamera(&m_freeCamera);
+            m_cameraControls->setCamera(&m_freeCamera);
+        }
+        else {
+            m_gameWidget->setCamera(camera);
+        }
+    });
+
+    auto *gameWidgetTopBar = new QWidget(m_gameWidget);
+
+    auto *gameWidgetTopBarLayout = new QHBoxLayout(gameWidgetTopBar);
+    gameWidgetTopBarLayout->addStretch();
+    gameWidgetTopBarLayout->addWidget(m_cameraControls);
+
+    auto *gameWidgetLayout = new QVBoxLayout(m_gameWidget);
+    gameWidgetLayout->addWidget(m_cameraControls);
+    gameWidgetLayout->addStretch();
+
+    // Finishing UI creation
     createMenus();
     initPanes();
 
@@ -211,8 +238,11 @@ void MainWindow::initPanes()
 
     m_entityxHook = new EntityxHook(m_gameWidget->systemEngine(), this);
 
-    connect(m_entityxHook, &EntityxHook::entityChanged,
+    connect(m_entityxHook, &EntityxHook::entityComponentAdded,
             componentView, &ComponentView::setCurrentEntity);
+
+    connect(m_entityxHook, &EntityxHook::entityComponentAdded,
+            m_cameraControls, &CameraControls::onEntityComponentAdded);
 
     m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);

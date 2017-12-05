@@ -11,6 +11,7 @@
 #include "render/camera.h"
 
 class AssetManagerView;
+class CameraControls;
 class ComponentView;
 class EntityxHook;
 class GameWidget;
@@ -50,6 +51,8 @@ private:
     GameWidget *m_gameWidget;
 
     EntityxHook *m_entityxHook;
+
+    CameraControls *m_cameraControls;
 
     bool m_inPlayMode;
 };
