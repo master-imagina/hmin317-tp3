@@ -326,7 +326,7 @@ file(COPY editor/res/images DESTINATION ${CMAKE_BINARY_DIR})
 file(INSTALL editor/res/images DESTINATION ${ENGINESPW_INSTALL_PATH})
 
 add_executable(editor ${EDITOR_SOURCES} ${EDITOR_HEADERS} ${EDITOR_RESOURCES})
-target_include_directories(editor PRIVATE ${PROJECT_SOURCE_DIR})
+target_include_directories(editor PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_LUA_INCLUDE_DIRS})
 target_link_libraries(editor enginescript engineinput editorgui engineextras enginerender enginecore Qt5::Widgets entityx)
 
 install(TARGETS editor RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
