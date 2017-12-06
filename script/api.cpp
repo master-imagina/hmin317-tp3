@@ -43,6 +43,11 @@ Keyboard *getComponentKeyboard(entityx::Entity entity)
     return ret;
 }
 
+inline QVector3D qvector3D_new(float x, float y, float z)
+{
+    return QVector3D(x, y, z);
+}
+
 inline QVector3D qvector3D_add(const QVector3D &lhs, const QVector3D &rhs)
 {
     return lhs + rhs;
@@ -131,9 +136,9 @@ void exposeEngineAPI(lua_State *lState)
     luabridge::getGlobalNamespace(lState)
         .beginClass<QVector3D>("vec3")
             .addConstructor<void (*) (void)>()
-            .addConstructor<void (*) (float, float, float)>()
             .addFunction("normalized", &QVector3D::normalized)
         .endClass()
+        .addFunction("vec3_new", &qvector3D_new)
         .addFunction("vec3_add", &qvector3D_add)
         .addFunction("vec3_mul", (QVector3D (*)(const QVector3D &, const QVector3D &))&qvector3D_mul)
         .addFunction("vec3_mul", (QVector3D (*)(const QVector3D &, float))&qvector3D_mul);
