@@ -50,3 +50,33 @@ luabridge::LuaRef LuaServer::getUpdateFunc() const
 {
     return luabridge::getGlobal(m_luaState, "update");
 }
+
+LuaKeyValueMap LuaServer::getKeyValueMap(const luabridge::LuaRef &table)
+{
+    LuaKeyValueMap ret;
+
+    if (table.isNil()) {
+        return ret;
+    }
+
+    push(m_luaState, table); // push table
+
+    lua_pushnil(m_luaState);  // push nil, so lua_next removes it from stack and puts (k, v) on stack
+
+    while (lua_next(m_luaState, -2) != 0) { // -2, because we have table at -1
+        if (lua_isstring(m_luaState, -2)) { // only store stuff with string keys
+            ret.emplace(lua_tostring(m_luaState, -2), luabridge::LuaRef::fromStack(m_luaState, -1));
+        }
+
+        lua_pop(m_luaState, 1); // remove value, keep key for lua_next
+    }
+
+    lua_pop(m_luaState, 1); // pop table
+
+    return ret;
+}
+
+luabridge::LuaRef LuaServer::getPropertiesTable() const
+{
+    return luabridge::getGlobal(m_luaState, "properties");
+}
