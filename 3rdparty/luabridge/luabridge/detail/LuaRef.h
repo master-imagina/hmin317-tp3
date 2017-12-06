@@ -851,6 +851,15 @@ public:
   inline bool isUserdata () const { return type () == LUA_TUSERDATA; }
   inline bool isThread () const { return type () == LUA_TTHREAD; }
   inline bool isLightUserdata () const { return type () == LUA_TLIGHTUSERDATA; }
+
+  template<class T>
+  inline bool is() const
+  {
+    StackPop p (m_L, 1);
+    push (m_L);
+    return Stack <T>::is_a (m_L, lua_gettop (m_L));
+  }
+
   /** @} */
 
   //----------------------------------------------------------------------------
