@@ -33,6 +33,7 @@
 #include "render/material/shaderparam.h"
 #include "render/material/texture.h"
 
+#include "script/luaserver.h"
 #include "script/script.h"
 #include "script/scriptassets.h"
 
@@ -201,7 +202,8 @@ int main(int argc, char *argv[])
 
     // Create game widget and scene
     Scene scene;
-    GameWidget gameWidget(scene);
+    LuaServer luaServer;
+    GameWidget gameWidget(scene, &luaServer);
 
     initScene(scene);
     gameWidget.systemEngine().configure();

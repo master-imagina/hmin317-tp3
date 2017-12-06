@@ -26,10 +26,10 @@ public:
                   QWidget *parent = nullptr);
     ~ComponentView() = default;
 
-    template <class Handler>
-    void registerComponentUiHandler()
+    template <class Handler, typename ... Args>
+    void registerComponentUiHandler(Args && ... args)
     {
-        m_componentUiHandlers.emplace_back(std::make_unique<Handler>());
+        m_componentUiHandlers.emplace_back(std::make_unique<Handler>(std::forward<Args>(args) ...));
     }
 
     void setCurrentEntity(entityx::Entity entity);

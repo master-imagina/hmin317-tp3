@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_projectManager(nullptr),
     m_freeCamera(),
     m_scene(),
+    m_luaServer(),
     m_centralWidget(nullptr),
     m_gameWidget(nullptr),
     m_entityxHook(nullptr),
@@ -56,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setCentralWidget(m_centralWidget);
 
-    m_gameWidget = new GameWidget(m_scene, m_centralWidget);
+    m_gameWidget = new GameWidget(m_scene, &m_luaServer, m_centralWidget);
     m_gameWidget->setObjectName("Editor Main Viewport");
     m_gameWidget->setFocusPolicy(Qt::StrongFocus);
     m_gameWidget->systemEngine().configure();
@@ -271,7 +272,7 @@ void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentVi
     componentView->registerComponentUiHandler<MaterialCompUiHandler>();
     componentView->registerComponentUiHandler<CameraCompUiHandler>();
     componentView->registerComponentUiHandler<KeyboardCompUiHandler>();
-    componentView->registerComponentUiHandler<ScriptCompUiHandler>();
+    componentView->registerComponentUiHandler<ScriptCompUiHandler>(m_luaServer);
 }
 
 void MainWindow::enterPlayMode()

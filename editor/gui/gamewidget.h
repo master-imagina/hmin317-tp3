@@ -10,11 +10,14 @@
 
 #include "render/renderwidget.h"
 
+class LuaServer;
+
 
 class GameWidget : public RenderWidget
 {
 public:
-    GameWidget(Scene &scene, QWidget *parent = nullptr);
+    GameWidget(Scene &scene, LuaServer *luaServer = nullptr,
+               QWidget *parent = nullptr);
 
     GameLoop *gameLoop() const;
 
@@ -35,6 +38,7 @@ private:
 
     SystemEngine m_systemEngine;
 
+    LuaServer *m_theLuaServer;
     GameLoop *m_gameLoop;
 
     bool m_scriptsEnabled;

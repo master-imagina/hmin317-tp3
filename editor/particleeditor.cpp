@@ -48,7 +48,7 @@ ParticleEditor::ParticleEditor(QWidget *parent) :
 
 void ParticleEditor::initEditorScene()
 {
-    m_gameWidget = new GameWidget(m_scene, this);
+    m_gameWidget = new GameWidget(m_scene, nullptr, this);
     m_gameWidget->setObjectName("Particle Editor Viewport");
     m_gameWidget->disableScripts();
 

@@ -16,6 +16,8 @@
 
 #include "script/script.h"
 
+class LuaServer;
+
 
 class TransformCompUiHandler : public TComponentUiHandler<Transform>
 {
@@ -105,6 +107,8 @@ public:
 class ScriptCompUiHandler : public TComponentUiHandler<Script>
 {
 public:
+    ScriptCompUiHandler(LuaServer &luaServer);
+
     QString componentName() override { return "Script"; }
 
     void configureAddAction(entityx::Entity &entity,
@@ -112,6 +116,9 @@ public:
     QWidget *createComponentEditor(entityx::Entity entity,
                                    QWidget *parent,
                                    const QString &projectPath) override;
+
+private:
+    LuaServer &m_theLuaServer;
 };
 
 #endif // COMPONENUIHANDLERS_H

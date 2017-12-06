@@ -10,6 +10,8 @@
 
 #include "render/camera.h"
 
+#include "script/luaserver.h"
+
 class AssetManagerView;
 class CameraControls;
 class ComponentView;
@@ -46,6 +48,8 @@ private:
 
     Camera m_freeCamera;
     Scene m_scene;
+
+    LuaServer m_luaServer;
 
     QWidget *m_centralWidget;
     GameWidget *m_gameWidget;

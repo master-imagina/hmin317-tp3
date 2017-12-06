@@ -22,10 +22,11 @@
 #include "script/scriptsystem.h"
 
 
-GameWidget::GameWidget(Scene &scene, QWidget *parent) :
+GameWidget::GameWidget(Scene &scene, LuaServer *luaServer, QWidget *parent) :
     RenderWidget(parent),
     m_initialized(false),
     m_systemEngine(scene),
+    m_theLuaServer(luaServer),
     m_gameLoop(new GameLoop(60, this)),
     m_scriptsEnabled(true)
 {
@@ -72,7 +73,11 @@ void GameWidget::initSystems()
 
     // Add systems
     m_systemEngine.registerSystem<InputSystem>(this);
-    m_systemEngine.registerSystem<ScriptSystem>();
+
+    if (m_theLuaServer) {
+        m_systemEngine.registerSystem<ScriptSystem>();
+    }
+
     m_systemEngine.registerSystem<ParticleSystem>();
     m_systemEngine.registerSystem<RenderSystem>(this);
 
@@ -83,7 +88,7 @@ void GameWidget::iterateGameLoop(float dt)
 {
     m_systemEngine.update<InputSystem>(dt);
 
-    if (m_scriptsEnabled) {
+    if (m_theLuaServer && m_scriptsEnabled) {
         m_systemEngine.update<ScriptSystem>(dt);
     }
 

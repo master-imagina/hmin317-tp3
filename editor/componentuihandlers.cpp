@@ -1,5 +1,7 @@
 #include "componentuihandlers.h"
 
+#include <string>
+
 #include <QAction>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
@@ -17,6 +19,7 @@
 #include "render/material/shaderparam.h"
 #include "render/material/shaderprogram.h"
 
+#include "script/luaserver.h"
 #include "script/scriptassets.h"
 
 
@@ -413,6 +416,10 @@ QWidget *KeyboardCompUiHandler::createComponentEditor(entityx::Entity entity,
 
 
 ////////////////////// ScriptCompUiHandler //////////////////////
+
+ScriptCompUiHandler::ScriptCompUiHandler(LuaServer &luaServer) :
+    m_theLuaServer(luaServer)
+{}
 
 void ScriptCompUiHandler::configureAddAction(entityx::Entity &entity,
                                              QAction *action)
