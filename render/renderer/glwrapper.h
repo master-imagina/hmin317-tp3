@@ -13,7 +13,7 @@
 #include "render/light.h"
 
 class DrawCommand;
-class ShaderParam;
+class Param;
 class ShaderProgram;
 class Texture2D;
 class TextureManager;
@@ -49,7 +49,7 @@ public:
     void createShaderProgram(GLShaderProgram &glProgram, const ShaderProgram &program);
     void destroyShaderProgram(const GLShaderProgram &glProgram);
 
-    void sendUniforms(const GLShaderProgram &glProgram, const std::vector<ShaderParam *> &params);
+    void sendUniforms(const GLShaderProgram &glProgram, const std::vector<Param *> &params);
 
     void sendActiveCameraUniforms(const GLShaderProgram &glProgram,
                                   const QMatrix4x4 &worldMatrix,
@@ -59,7 +59,7 @@ public:
                               const QMatrix4x4 &modelMatrix);
     void sendLightUniforms(const GLShaderProgram &glProgram, const std::vector<Light> &lights);
     void sendTextureUniforms(const GLShaderProgram &glProgram,
-                             const std::vector<ShaderParam *> &textures,
+                             const std::vector<Param *> &textures,
                              TextureManager &textureManager);
 
     void setupVaoForBufferAndShader(const GLShaderProgram &glProgram,

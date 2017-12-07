@@ -14,7 +14,7 @@
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 #include "render/material/shaderprogram.h"
 
 #include "script/script.h"
@@ -130,8 +130,9 @@ QDataStream &operator>>(QDataStream &os, Scene &scene)
             else if (componentType == "script") {
                 Script script;
                 os >> script;
+                script.sourceCode = scriptFromFile(script.path).sourceCode;
 
-                entity.assign<Script>(scriptFromFile(script.path));
+                entity.assign<Script>(script);
             }
 
             os >> endEntityFlag;

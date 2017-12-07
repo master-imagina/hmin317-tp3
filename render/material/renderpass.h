@@ -6,7 +6,8 @@
 
 #include <QVariant>
 
-#include "shaderparam.h"
+#include "core/param.h"
+
 #include "shaderprogram.h"
 
 class QDataStream;
@@ -29,13 +30,13 @@ public:
     const ShaderProgram &shaderProgram() const;
     void setShaderProgram(const ShaderProgram &program);
 
-    ShaderParam &addParam(const std::string &name, const QVariant &value);
-    ShaderParam *param(const std::string &name);
+    Param &addParam(const std::string &name, const QVariant &value);
+    Param *param(const std::string &name);
     void setParam(const std::string &name, const QVariant &value);
-    void removeParam(ShaderParam *param);
+    void removeParam(Param *param);
 
-    const std::vector<ShaderParam> &params() const;
-    std::vector<ShaderParam> &params();
+    const std::vector<Param> &params() const;
+    std::vector<Param> &params();
 
     void clearParams();
 
@@ -45,7 +46,7 @@ private:
 private:
     std::string m_name;
     ShaderProgram m_shaderProgram;
-    std::vector<ShaderParam> m_params;
+    std::vector<Param> m_params;
 };
 
 

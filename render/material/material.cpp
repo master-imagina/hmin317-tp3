@@ -8,7 +8,7 @@
 #include "render/renderassets.h"
 
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 
 
 ////////////////////// Material //////////////////////
@@ -75,10 +75,10 @@ std::vector<RenderPass> &Material::renderPasses()
     return m_passes;
 }
 
-ShaderParam &Material::addParam(const std::string &name, const QVariant &value)
+Param &Material::addParam(const std::string &name, const QVariant &value)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                   [name] (const ShaderParam &param) {
+                                   [name] (const Param &param) {
         return param.name == name;
     });
 
@@ -89,15 +89,15 @@ ShaderParam &Material::addParam(const std::string &name, const QVariant &value)
     }
 
     // Create the shader param and return a handle to it
-    ShaderParam param {name, value};
+    Param param {name, value};
 
     return *m_params.insert(m_params.end(), param);
 }
 
-ShaderParam *Material::param(const std::string &name)
+Param *Material::param(const std::string &name)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                   [name] (const ShaderParam &param) {
+                                   [name] (const Param &param) {
         return param.name == name;
     });
 
@@ -111,7 +111,7 @@ ShaderParam *Material::param(const std::string &name)
 void Material::setParam(const std::string &name, const QVariant &value)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                   [name] (const ShaderParam &param) {
+                                   [name] (const Param &param) {
         return param.name == name;
     });
 
@@ -123,21 +123,21 @@ void Material::setParam(const std::string &name, const QVariant &value)
     }
 }
 
-void Material::removeParam(ShaderParam *param)
+void Material::removeParam(Param *param)
 {
     m_params.erase(std::remove_if(m_params.begin(), m_params.end(),
                                   [param]
-                                  (const ShaderParam &p) {
+                                  (const Param &p) {
         return param->name == p.name;
     }), m_params.end());
 }
 
-const std::vector<ShaderParam> &Material::params() const
+const std::vector<Param> &Material::params() const
 {
     return m_params;
 }
 
-std::vector<ShaderParam> &Material::params()
+std::vector<Param> &Material::params()
 {
     return m_params;
 }
@@ -160,11 +160,11 @@ QDataStream &operator<<(QDataStream &os, const Material &material)
         os << pass;
     }
 
-    const std::vector<ShaderParam> &params = material.params();
+    const std::vector<Param> &params = material.params();
 
     os << (int) params.size();
 
-    for (const ShaderParam &param : material.params()) {
+    for (const Param &param : material.params()) {
         os << param;
     }
 }
@@ -181,7 +181,7 @@ QDataStream &operator>>(QDataStream &os, Material &material)
         RenderPass &pass = material.addRenderPass(uglyTrick.name());
         pass.setShaderProgram(uglyTrick.shaderProgram());
 
-        for (const ShaderParam &shaderParam : uglyTrick.params()) {
+        for (const Param &shaderParam : uglyTrick.params()) {
             pass.addParam(shaderParam.name, shaderParam.value);
         }
     }
@@ -190,7 +190,7 @@ QDataStream &operator>>(QDataStream &os, Material &material)
     os >> paramCount;
 
     for (int i = 0; i < paramCount; i++) {
-        ShaderParam param;
+        Param param;
         os >> param;
 
         material.addParam(param.name, param.value);

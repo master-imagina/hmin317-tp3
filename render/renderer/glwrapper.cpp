@@ -18,7 +18,7 @@
 
 #include "render/geometry/vertexlayout.h"
 
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 #include "render/material/shaderprogram.h"
 #include "render/material/texture.h"
 
@@ -159,12 +159,12 @@ void GLWrapper::releaseShaderProgram(const GLShaderProgram &glProgram)
 }
 
 void GLWrapper::sendUniforms(const GLShaderProgram &glProgram,
-                             const std::vector<ShaderParam*> &params)
+                             const std::vector<Param*> &params)
 {
     bindShaderProgram(glProgram);
 
     // /!\ Assume a shader program is bound to the current context
-    for (const ShaderParam *param : params) {
+    for (const Param *param : params) {
         const char *rawName = param->name.c_str();
         const QVariant value = param->value;
         const int valueType = value.userType();
@@ -285,13 +285,13 @@ void GLWrapper::sendLightUniforms(const GLShaderProgram &glProgram,
 }
 
 void GLWrapper::sendTextureUniforms(const GLShaderProgram &glProgram,
-                                    const std::vector<ShaderParam *> &textureParams,
+                                    const std::vector<Param *> &textureParams,
                                     TextureManager &textureManager)
 {
     bindShaderProgram(glProgram);
 
     for (int texUnit = 0; texUnit < textureParams.size(); texUnit++) {
-        ShaderParam *param = textureParams[texUnit];
+        Param *param = textureParams[texUnit];
         auto texture = param->value.value<Texture2D>();
 
          GLTexture *glTexture = textureManager.get(texture);

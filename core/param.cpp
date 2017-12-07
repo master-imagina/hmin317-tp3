@@ -1,12 +1,12 @@
-#include "shaderparam.h"
+#include "param.h"
 
 
-ShaderParam::ShaderParam() :
+Param::Param() :
     name(),
     value()
 {}
 
-ShaderParam::ShaderParam(const std::string &_name, const QVariant &_value) :
+Param::Param(const std::string &_name, const QVariant &_value) :
     name(_name),
     value(_value)
 {}
@@ -14,13 +14,13 @@ ShaderParam::ShaderParam(const std::string &_name, const QVariant &_value) :
 
 ////////////////////// Functions //////////////////////
 
-QDataStream &operator<<(QDataStream &os, const ShaderParam &param)
+QDataStream &operator<<(QDataStream &os, const Param &param)
 {
     os << QString::fromStdString(param.name);
     os << param.value;
 }
 
-QDataStream &operator>>(QDataStream &os, ShaderParam &param)
+QDataStream &operator>>(QDataStream &os, Param &param)
 {
     QString paramName;
     os >> paramName;

@@ -5,7 +5,7 @@
 #include "render/material/builtins.h"
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 
 #include "render/renderer/renderer.h"
 

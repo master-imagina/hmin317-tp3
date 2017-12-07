@@ -4,6 +4,7 @@
 #include <QSurfaceFormat>
 
 #include "core/assetmanager.h"
+#include "core/param.h"
 #include "core/scene.h"
 
 #include "editor/gui/gamewidget.h"
@@ -30,7 +31,6 @@
 #include "render/material/builtins.h"
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
 #include "render/material/texture.h"
 
 #include "script/luaserver.h"
@@ -43,7 +43,7 @@
 // Global attributes
 AABoundingBox terrainBoundingBox;
 
-ShaderParam *terrainColorParam;
+Param *terrainColorParam;
 
 entityx::ComponentHandle<Camera> camera;
 entityx::ComponentHandle<ParticleEffect> particleEffect;

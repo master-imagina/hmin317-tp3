@@ -1,5 +1,10 @@
 -- free_camera.lua
 
+properties =
+{
+    turboFactor = 4.
+}
+
 function computeDirectionFromKeys(keyboard, camera)
     local viewVec = camera:viewVector():normalized()
     local rightVec = camera:rightVector()
@@ -28,7 +33,7 @@ function update(entity, dt)
 
     local speed = 100.
     if keyboard:keyIsPressed(Key.Shift) then
-        speed = speed * 4.
+        speed = speed * properties.turboFactor
     end
 
     local moveDirection = computeDirectionFromKeys(keyboard, camera)

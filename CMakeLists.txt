@@ -60,6 +60,7 @@ set(CORE_HEADERS
     core/bigfile.h
     core/gameloop.h
     core/log.h
+    core/param.h
     core/scene.h
     core/systemengine.h
     )
@@ -68,6 +69,7 @@ set(CORE_SOURCES
     core/bigfile.cpp
     core/gameloop.cpp
     core/scene.cpp
+    core/param.cpp
     core/systemengine.cpp
     )
 
@@ -94,7 +96,6 @@ set(RENDER_HEADERS
     render/material/builtins.h
     render/material/material.h
     render/material/renderpass.h
-    render/material/shaderparam.h
     render/material/shaderprogram.h
     render/material/texture.h
     render/renderer/managers/buffermanager.h
@@ -128,7 +129,6 @@ set(RENDER_SOURCES
     render/material/builtins.cpp
     render/material/material.cpp
     render/material/renderpass.cpp
-    render/material/shaderparam.cpp
     render/material/shaderprogram.cpp
     render/renderer/glwrapper.cpp
     render/renderer/renderer.cpp

@@ -28,7 +28,7 @@
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 #include "render/material/texture.h"
 
 

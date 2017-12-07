@@ -55,10 +55,10 @@ void RenderPass::setShaderProgram(const ShaderProgram &program)
     m_shaderProgram = program;
 }
 
-ShaderParam &RenderPass::addParam(const std::string &name, const QVariant &value)
+Param &RenderPass::addParam(const std::string &name, const QVariant &value)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                  [name] (const ShaderParam &param) {
+                                  [name] (const Param &param) {
         return param.name == name;
     });
 
@@ -69,15 +69,15 @@ ShaderParam &RenderPass::addParam(const std::string &name, const QVariant &value
     }
 
     // Create the shader param and return a handle to it
-    ShaderParam param {name, value};
+    Param param {name, value};
 
     return *m_params.insert(m_params.end(), param);
 }
 
-ShaderParam *RenderPass::param(const std::string &name)
+Param *RenderPass::param(const std::string &name)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                  [name] (const ShaderParam &param) {
+                                  [name] (const Param &param) {
         return param.name == name;
     });
 
@@ -93,7 +93,7 @@ ShaderParam *RenderPass::param(const std::string &name)
 void RenderPass::setParam(const std::string &name, const QVariant &value)
 {
     auto paramFound = std::find_if(m_params.begin(), m_params.end(),
-                                  [name] (const ShaderParam &param) {
+                                  [name] (const Param &param) {
         return param.name == name;
     });
 
@@ -105,21 +105,21 @@ void RenderPass::setParam(const std::string &name, const QVariant &value)
     }
 }
 
-void RenderPass::removeParam(ShaderParam *param)
+void RenderPass::removeParam(Param *param)
 {
     m_params.erase(std::remove_if(m_params.begin(), m_params.end(),
                                   [param]
-                                  (const ShaderParam &p) {
+                                  (const Param &p) {
                         return &p == param;
     }), m_params.end());
 }
 
-const std::vector<ShaderParam> &RenderPass::params() const
+const std::vector<Param> &RenderPass::params() const
 {
     return m_params;
 }
 
-std::vector<ShaderParam> &RenderPass::params()
+std::vector<Param> &RenderPass::params()
 {
     return m_params;
 }
@@ -147,11 +147,11 @@ QDataStream &operator<<(QDataStream &os, const RenderPass &pass)
 
     os << pass.shaderProgram();
 
-    const std::vector<ShaderParam> &params = pass.params();
+    const std::vector<Param> &params = pass.params();
 
     os << (int) params.size();
 
-    for (const ShaderParam &param : params) {
+    for (const Param &param : params) {
         os << param;
     }
 }
@@ -167,7 +167,7 @@ QDataStream &operator>>(QDataStream &os, RenderPass &pass)
     os >> paramCount;
 
     for (int i = 0; i < paramCount; i++) {
-        ShaderParam param;
+        Param param;
         os >> param;
 
         pass.addParam(param.name, param.value);

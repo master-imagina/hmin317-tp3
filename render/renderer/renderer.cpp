@@ -13,7 +13,7 @@
 
 #include "render/material/material.h"
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 #include "render/material/shaderprogram.h"
 #include "render/material/texture.h"
 
@@ -221,7 +221,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
     // Note that material parameters override pass parameters
     Material &material = drawCmd.material;
 
-    for (ShaderParam &materialParam : material.params()) {
+    for (Param &materialParam : material.params()) {
         m_currentPassParams.emplace_back(&materialParam);
     }
 
@@ -230,8 +230,8 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
     for (RenderPass &pass : passes) {
         GLShaderProgram *glProgram = m_shaderManager.get(&pass.shaderProgram());
 
-        for (ShaderParam &passParam : pass.params()) {
-            ShaderParam *overridingParam = material.param(passParam.name);
+        for (Param &passParam : pass.params()) {
+            Param *overridingParam = material.param(passParam.name);
 
             if (!overridingParam) {
                 m_currentPassParams.emplace_back(&passParam);
@@ -239,7 +239,7 @@ void Renderer::updatePassParameters(Camera &camera, const DrawCommand &drawCmd)
         }
 
         int textureUnitCounter = 0;
-        for (ShaderParam *param : m_currentPassParams) {
+        for (Param *param : m_currentPassParams) {
             if (param->value.userType() == qMetaTypeId<Texture2D>()) {
                 auto texture = param->value.value<Texture2D>();
                 if (!texture.path.empty()) {

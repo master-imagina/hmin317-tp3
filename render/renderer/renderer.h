@@ -17,7 +17,7 @@ class Camera;
 class Geometry;
 class Material;
 class RenderPass;
-class ShaderParam;
+class Param;
 class Transform;
 
 namespace entityx {
@@ -63,8 +63,8 @@ private:
     GLWrapper m_glWrapper;
 
     std::vector<DrawCommand> m_drawCommands;
-    std::vector<ShaderParam *> m_currentPassParams;
-    std::vector<ShaderParam *> m_activeTextures;
+    std::vector<Param *> m_currentPassParams;
+    std::vector<Param *> m_activeTextures;
     std::vector<Light> m_currentLights;
 };
 

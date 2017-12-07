@@ -145,6 +145,7 @@ void exposeEngineAPI(lua_State *lState)
 
     luabridge::getGlobalNamespace(lState)
         .beginClass<entityx::Entity>("Entity")
+            .addConstructor<void (*) (void)>()
         .endClass();
 
     luabridge::getGlobalNamespace(lState)

@@ -248,7 +248,7 @@ void MainWindow::initPanes()
     m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, componentView);
-    m_paneManager->registerPane(Qt::BottomDockWidgetArea, assetManagerPane/*, false*/);
+    m_paneManager->registerPane(Qt::BottomDockWidgetArea, assetManagerPane, false);
     m_paneManager->registerPane(Qt::LeftDockWidgetArea, particleEditorPane, false);
 
     createDefaultComponentEditorCreators(componentView);

@@ -27,6 +27,7 @@ public:
 
     luabridge::LuaRef getUpdateFunc() const;
     luabridge::LuaRef getPropertiesTable() const;
+
     LuaKeyValueMap getKeyValueMap(const luabridge::LuaRef &table);
 
 private:

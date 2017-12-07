@@ -4,7 +4,7 @@
 #include <QVector3D>
 
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 #include "render/material/shaderprogram.h"
 
 #include "render/renderassets.h"

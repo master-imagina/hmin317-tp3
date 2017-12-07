@@ -9,6 +9,14 @@
 #include <QLineEdit>
 #include <QUrl>
 
+extern "C" {
+#include <lua5.3.4/lua.h>
+#include <lua5.3.4/lauxlib.h>
+#include <lua5.3.4/lualib.h>
+}
+
+#include "3rdparty/luabridge/luabridge/LuaBridge.h"
+
 #include "editor/gui/advancedslider.h"
 #include "editor/gui/coloreditor/coloreditor.h"
 #include "editor/gui/vec3edit.h"
@@ -16,7 +24,7 @@
 #include "extras/particles/quick.h"
 
 #include "render/material/renderpass.h"
-#include "render/material/shaderparam.h"
+#include "core/param.h"
 #include "render/material/shaderprogram.h"
 
 #include "script/luaserver.h"
@@ -27,7 +35,7 @@
 
 namespace {
 
-QWidget *createParamEditor(ShaderParam &param, QWidget *parent)
+QWidget *createParamEditor(Param &param, QWidget *parent)
 {
     const QVariant oldValue = param.value;
     const int paramType = oldValue.userType();
@@ -78,6 +86,25 @@ QWidget *createParamEditor(ShaderParam &param, QWidget *parent)
                   << "unsupported parameter type ("
                   << QMetaType::typeName(paramType) << ")"
                   << std::endl;
+        ret = new QWidget(parent);
+    }
+
+    return ret;
+}
+
+QVariant luaRefToVariant(const luabridge::LuaRef &luaValue)
+{
+    QVariant ret;
+
+    if (luaValue.isNumber()) {
+        ret = luaValue.cast<float>();
+    }
+    else if (luaValue.isString()) {
+        ret = QString::fromStdString(luaValue.cast<std::string>());
+    }
+    // Userdata only
+    else if (luaValue.is<QVector3D>()) {
+        ret = QVariant::fromValue(luaValue.cast<QVector3D>());
     }
 
     return ret;
@@ -336,7 +363,7 @@ QWidget *MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
 
     auto *editorLayout = new QFormLayout(ret);
 
-    for (ShaderParam &param : comp->params()) {
+    for (Param &param : comp->params()) {
         QWidget *paramEditor = createParamEditor(param, ret);
 
         editorLayout->addRow(QString::fromStdString(param.name), paramEditor);
@@ -444,6 +471,20 @@ QWidget *ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
 
     auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Path", scriptPathEditor);
+
+    // Retrieve script properties
+    m_theLuaServer.evaluateScript(*comp);
+
+    luabridge::LuaRef propsTable = m_theLuaServer.getPropertiesTable();
+    LuaKeyValueMap props = m_theLuaServer.getKeyValueMap(propsTable);
+
+    for (auto &p : props) {
+        // Retrieve the LUA property to a Param
+        Param &param = comp->addParam(p.first, luaRefToVariant(p.second));
+
+        editorLayout->addRow(QString::fromStdString(p.first),
+                             createParamEditor(param, parent));
+    }
 
     // Create connections
     QObject::connect(scriptPathEditor, &QLineEdit::editingFinished,
