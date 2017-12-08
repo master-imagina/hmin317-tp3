@@ -36,4 +36,6 @@ private:
     std::vector<entityx::Entity> m_entityCache;
 };
 
+Q_DECLARE_METATYPE(entityx::Entity)
+
 #endif // SCENE_H
