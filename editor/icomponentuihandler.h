@@ -22,6 +22,8 @@ public:
 
     virtual void configureAddAction(entityx::Entity &entity,
                                     QAction *action) = 0;
+    virtual void configureRemoveAction(entityx::Entity &entity,
+                                       QAction *action) = 0;
 
     virtual QWidget *createComponentEditor(entityx::Entity entity,
                                            QWidget *parent,

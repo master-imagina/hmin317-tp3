@@ -98,6 +98,15 @@ void TransformCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
+void TransformCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                                   QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Transform>();
+    });
+}
+
 QWidget *TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
                                                        QWidget *parent,
                                                        const QString &)
@@ -156,6 +165,17 @@ void ParticleEffectCompUiHandler::configureAddAction(entityx::Entity &entity,
     QObject::connect(action, &QAction::triggered,
                      [entity] {
         createParticleEffect(entity);
+    });
+}
+
+void ParticleEffectCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                                        QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<ParticleEffect>();
+        entity.remove<Geometry>();
+        entity.remove<Material>();
     });
 }
 
@@ -254,6 +274,15 @@ void MeshCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
+void MeshCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                              QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Mesh>();
+    });
+}
+
 QWidget *MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
                                                   QWidget *parent,
                                                   const QString &projectPath)
@@ -287,6 +316,15 @@ void LightCompUiHandler::configureAddAction(entityx::Entity &entity,
     QObject::connect(action, &QAction::triggered,
                      [&entity] {
         entity.assign<Light>();
+    });
+}
+
+void LightCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                               QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Light>();
     });
 }
 
@@ -326,6 +364,15 @@ void MaterialCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
+void MaterialCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                                  QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Material>();
+    });
+}
+
 QWidget *MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
                                                       QWidget *parent,
                                                       const QString &projectPath)
@@ -355,6 +402,15 @@ void CameraCompUiHandler::configureAddAction(entityx::Entity &entity,
     QObject::connect(action, &QAction::triggered,
                      [&entity] {
         entity.assign<Camera>();
+    });
+}
+
+void CameraCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                                QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Camera>();
     });
 }
 
@@ -403,6 +459,15 @@ void KeyboardCompUiHandler::configureAddAction(entityx::Entity &entity,
     });
 }
 
+void KeyboardCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                                  QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Keyboard>();
+    });
+}
+
 QWidget *KeyboardCompUiHandler::createComponentEditor(entityx::Entity entity,
                                                       QWidget *parent,
                                                       const QString &projectPath)
@@ -428,6 +493,14 @@ void ScriptCompUiHandler::configureAddAction(entityx::Entity &entity,
     QObject::connect(action, &QAction::triggered,
                      [&entity] {
         entity.assign<Script>();
+    });
+}
+
+void ScriptCompUiHandler::configureRemoveAction(entityx::Entity &entity, QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Script>();
     });
 }
 

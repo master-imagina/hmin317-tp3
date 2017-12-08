@@ -29,6 +29,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void onEntityComponentAdded(entityx::Entity entity);
+    void onEntityComponentRemoved(entityx::Entity entity);
 
 private:
     Camera *m_camera;

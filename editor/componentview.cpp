@@ -72,6 +72,19 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
                 compTitleBtn->setChecked(true);
                 compTitleBtn->setText(compUiHandler->componentName());
 
+                auto *removeCompBtn = new QToolButton(compEditorPlaceholder);
+                removeCompBtn->setText("x");
+
+                auto *removeCompAction = new QAction(removeCompBtn);
+                compUiHandler->configureRemoveAction(m_currentEntity, removeCompAction);
+
+                connect(removeCompBtn, &QPushButton::clicked,
+                        [this, removeCompAction] {
+                    removeCompAction->trigger();
+
+                    setCurrentEntity(m_currentEntity);
+                });
+
                 QWidget *compEditor =
                         compUiHandler->createComponentEditor(m_currentEntity,
                                                              compEditorPlaceholder,
@@ -80,9 +93,13 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
                 connect(compTitleBtn, &QPushButton::toggled,
                         compEditor, &QWidget::setVisible);
 
-                auto *fullEditorPlaceholderLayout = new QVBoxLayout(compEditorPlaceholder);
-                fullEditorPlaceholderLayout->addWidget(compTitleBtn);
-                fullEditorPlaceholderLayout->addWidget(compEditor);
+                auto *compBarLayout = new QHBoxLayout;
+                compBarLayout->addWidget(compTitleBtn);
+                compBarLayout->addWidget(removeCompBtn);
+
+                auto *compEditorPlaceholderLayout = new QVBoxLayout(compEditorPlaceholder);
+                compEditorPlaceholderLayout->addLayout(compBarLayout);
+                compEditorPlaceholderLayout->addWidget(compEditor);
 
                 m_mainLayout->insertWidget(m_mainLayout->count() - 1, compEditorPlaceholder);
             }

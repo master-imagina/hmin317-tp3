@@ -18,6 +18,7 @@ public:
 
 Q_SIGNALS:
     void entityComponentAdded(entityx::Entity entity);
+    void entityComponentRemoved(entityx::Entity entity);
 
 private:
     SystemEngine &m_systemEngine;

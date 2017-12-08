@@ -140,3 +140,26 @@ void CameraControls::onEntityComponentAdded(entityx::Entity entity)
 
     m_currentCameraComboBox->addItem(entityName);
 }
+
+void CameraControls::onEntityComponentRemoved(entityx::Entity entity)
+{
+    Q_ASSERT (entity);  // entity is not already destroyed
+
+    if (!entity.has_component<Camera>()) {
+        return;
+    }
+
+    const auto cameraHandled = std::find(m_entitiesWithCamera.begin(),
+                                         m_entitiesWithCamera.end(),
+                                         entity);
+
+    if (cameraHandled == m_entitiesWithCamera.end()) {
+        return;
+    }
+
+    m_entitiesWithCamera.erase(cameraHandled);
+
+    const QString entityName = QString::number(entity.id().index());
+
+    m_currentCameraComboBox->removeItem(m_currentCameraComboBox->findText(entityName));
+}

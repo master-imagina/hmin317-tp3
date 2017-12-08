@@ -20,6 +20,8 @@
 #include "script/script.h"
 
 
+////////////////////// ComponentAddedHook //////////////////////
+
 template <typename C>
 class ComponentAddedHook :
         public entityx::System<ComponentAddedHook<C>>,
@@ -48,21 +50,61 @@ private:
 };
 
 
+////////////////////// ComponentRemovedHook //////////////////////
+
+template <typename C>
+class ComponentRemovedHook :
+        public entityx::System<ComponentRemovedHook<C>>,
+        public entityx::Receiver<ComponentRemovedHook<C>>
+{
+public:
+    ComponentRemovedHook(EntityxHook &entityxHook) :
+        m_entityxHook(entityxHook)
+    {}
+
+    void receive(const entityx::ComponentRemovedEvent<C> &event)
+    {
+        Q_EMIT m_entityxHook.entityComponentRemoved(event.entity);
+    }
+
+    void configure(entityx::EventManager &events) override
+    {
+        events.subscribe<entityx::ComponentRemovedEvent<C>>(*this);
+    }
+
+    void update(entityx::EntityManager &entities,
+                entityx::EventManager &events,
+                double dt) override {}
+private:
+    EntityxHook &m_entityxHook;
+};
+
+
+////////////////////// Helpers //////////////////////
+
+template <typename Component>
+void registerHookSystemsForComponent(EntityxHook &entityHook, SystemEngine &systemEngine)
+{
+    systemEngine.registerSystem<ComponentAddedHook<Component>>(entityHook);
+    systemEngine.registerSystem<ComponentRemovedHook<Component>>(entityHook);
+}
+
+
 ////////////////////// EntityxHook //////////////////////
 
 EntityxHook::EntityxHook(SystemEngine &systemEngine, QObject *parent) :
     QObject(parent),
     m_systemEngine(systemEngine)
 {
-    m_systemEngine.registerSystem<ComponentAddedHook<Transform>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<Geometry>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<Material>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<ParticleEffect>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<Mesh>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<Light>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<Camera>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<Keyboard>>(*this);
-    m_systemEngine.registerSystem<ComponentAddedHook<Script>>(*this);
+    registerHookSystemsForComponent<Transform>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Geometry>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Material>(*this, m_systemEngine);
+    registerHookSystemsForComponent<ParticleEffect>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Mesh>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Light>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Camera>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Keyboard>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Script>(*this, m_systemEngine);
 
     m_systemEngine.configure();
 }

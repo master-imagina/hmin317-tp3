@@ -242,8 +242,14 @@ void MainWindow::initPanes()
     connect(m_entityxHook, &EntityxHook::entityComponentAdded,
             componentView, &ComponentView::setCurrentEntity);
 
+    connect(m_entityxHook, &EntityxHook::entityComponentRemoved,
+            componentView, &ComponentView::setCurrentEntity);
+
     connect(m_entityxHook, &EntityxHook::entityComponentAdded,
             m_cameraControls, &CameraControls::onEntityComponentAdded);
+
+    connect(m_entityxHook, &EntityxHook::entityComponentRemoved,
+            m_cameraControls, &CameraControls::onEntityComponentRemoved);
 
     m_paneManager = std::make_unique<PaneManager>(this, m_openViewPaneMenu);
     m_paneManager->registerPane(Qt::RightDockWidgetArea, sceneView);
