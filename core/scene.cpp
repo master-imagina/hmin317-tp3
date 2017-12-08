@@ -2,20 +2,30 @@
 
 
 Scene::Scene() :
-    events(),
-    entities(events),
+    m_eventManager(),
+    m_entityManager(m_eventManager),
     m_entityCache()
 {}
 
 entityx::Entity Scene::createEntity()
 {
-    entityx::Entity ret = entities.create();
+    entityx::Entity ret = m_entityManager.create();
 
     m_entityCache.emplace_back(ret);
 
     Q_EMIT entityAdded(ret);
 
     return ret;
+}
+
+void Scene::removeEntity(entityx::Entity entity)
+{
+    Q_EMIT entityRemoved(entity);
+
+    auto cacheIt = std::find(m_entityCache.begin(), m_entityCache.end(), entity);
+    m_entityCache.erase(cacheIt);
+
+    m_entityManager.destroy(entity.id());
 }
 
 std::vector<entityx::Entity> Scene::entityCache() const
@@ -25,12 +35,12 @@ std::vector<entityx::Entity> Scene::entityCache() const
 
 std::size_t Scene::count() const
 {
-    return entities.size();
+    return m_entityManager.size();
 }
 
 void Scene::clear()
 {
-    entities.reset();
+    m_entityManager.reset();
     m_entityCache.clear();
 
     Q_EMIT cleared();

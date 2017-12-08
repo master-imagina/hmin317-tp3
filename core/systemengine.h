@@ -19,6 +19,12 @@ public:
         return m_systemManager.add<T>(std::forward<Args>(args) ...);
     }
 
+    template <class T>
+    std::shared_ptr<T> system()
+    {
+        return m_systemManager.system<T>();
+    }
+
     template <class T, typename ... Deps>
     void registerDependency()
     {

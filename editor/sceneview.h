@@ -1,7 +1,7 @@
 #ifndef SCENEVIEW_H
 #define SCENEVIEW_H
 
-#include <map>
+#include <unordered_map>
 
 #include "editor/gui/pane.h"
 
@@ -30,7 +30,7 @@ private:
 
 private:
     void onEntityAdded(entityx::Entity entity);
-    void onEntityItemActivated(entityx::Entity entity);
+    void onEntityRemoved(entityx::Entity entity);
     void onSceneCleared();
 
 private:
@@ -38,7 +38,7 @@ private:
 
     QTreeWidget *m_entityTreeView;
 
-    std::map<QTreeWidgetItem *, entityx::Entity> m_itemToEntity;
+    std::unordered_map<QTreeWidgetItem *, entityx::Entity> m_itemToEntity;
 };
 
 #endif // SCENEVIEW_H

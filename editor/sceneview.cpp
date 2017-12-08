@@ -32,16 +32,36 @@ void SceneView::createToolbar()
     auto *addBtn = new QToolButton(toolbar);
     addBtn->setText(tr("Add"));
 
+    auto *removeBtn = new QToolButton(toolbar);
+    removeBtn->setText(tr("Remove"));
+
     toolbar->addWidget(addBtn);
+    toolbar->addWidget(removeBtn);
 
     connect(addBtn, &QToolButton::clicked,
             &m_scene, &Scene::createEntity);
+
+    connect(removeBtn, &QToolButton::clicked,
+            [this] {
+        entityx::Entity entityToRemove;
+
+        QTreeWidgetItem *currentEntityItem = m_entityTreeView->currentItem();
+
+        if (currentEntityItem) {
+            entityToRemove = m_itemToEntity.at(currentEntityItem);
+
+            m_scene.removeEntity(entityToRemove);
+        }
+    });
 }
 
 void SceneView::createConnections()
 {
     connect(&m_scene, &Scene::entityAdded,
             this, &SceneView::onEntityAdded);
+
+    connect(&m_scene, &Scene::entityRemoved,
+            this, &SceneView::onEntityRemoved);
 
     connect(&m_scene, &Scene::cleared,
             this, &SceneView::onSceneCleared);
@@ -56,7 +76,7 @@ void SceneView::createConnections()
             entity = m_itemToEntity.at(current);
         }
 
-        onEntityItemActivated(entity);
+        Q_EMIT entityItemSelected(entity);
     });
 }
 
@@ -67,15 +87,22 @@ void SceneView::onEntityAdded(entityx::Entity entity)
     auto *item = new QTreeWidgetItem;
     item->setText(0, QString::number(entity.id().index()));
 
-    m_itemToEntity.insert({item, entity});
+    m_itemToEntity.emplace(item, entity);
 
     m_entityTreeView->addTopLevelItem(item);
     m_entityTreeView->setCurrentItem(item);
 }
 
-void SceneView::onEntityItemActivated(entityx::Entity entity)
+void SceneView::onEntityRemoved(entityx::Entity entity)
 {
-    Q_EMIT entityItemSelected(entity);
+    auto itemIt = std::find_if(m_itemToEntity.begin(), m_itemToEntity.end(),
+                               [entity] (const auto &itemAndEntity) {
+        return entity == itemAndEntity.second;
+    });
+
+    delete m_entityTreeView->takeTopLevelItem(m_entityTreeView->indexOfTopLevelItem(itemIt->first));
+
+    m_itemToEntity.erase(itemIt);
 }
 
 void SceneView::onSceneCleared()

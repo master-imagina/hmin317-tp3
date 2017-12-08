@@ -16,6 +16,7 @@ public:
     ~Scene() = default;
 
     entityx::Entity createEntity();
+    void removeEntity(entityx::Entity entity);
 
     std::vector<entityx::Entity> entityCache() const;
     std::size_t count() const;
@@ -23,11 +24,12 @@ public:
     void clear();
 
     /* consider private */
-    entityx::EventManager events;
-    entityx::EntityManager entities;
+    entityx::EventManager m_eventManager;
+    entityx::EntityManager m_entityManager;
 
 Q_SIGNALS:
     void entityAdded(entityx::Entity entity);
+    void entityRemoved(entityx::Entity entity);
     void cleared();
 
 private:
