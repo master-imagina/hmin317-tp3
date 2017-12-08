@@ -163,7 +163,7 @@ void ParticleEffectCompUiHandler::configureAddAction(entityx::Entity &entity,
                                                      QAction *action)
 {
     QObject::connect(action, &QAction::triggered,
-                     [entity] {
+                     [&entity] {
         createParticleEffect(entity);
     });
 }
@@ -421,9 +421,14 @@ QWidget *CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
     Camera *comp = entity.component<Camera>().get();
 
     // Build UI
+    static const float COORD_MIN = -10000.f;
+    static const float COORD_MAX = 10000.f;
+
     auto *ret = new QWidget(parent);
 
     auto *eyePosEditor = new Vec3DEdit(ret);
+    eyePosEditor->setMin(COORD_MIN);
+    eyePosEditor->setMax(COORD_MAX);
     eyePosEditor->setValue(comp->eyePos());
 
     QObject::connect(eyePosEditor, &Vec3DEdit::valueChanged,
@@ -432,6 +437,8 @@ QWidget *CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
     });
 
     auto *targetPosEditor = new Vec3DEdit(ret);
+    targetPosEditor->setMin(COORD_MIN);
+    targetPosEditor->setMax(COORD_MAX);
     targetPosEditor->setValue(comp->targetPos());
 
     QObject::connect(targetPosEditor, &Vec3DEdit::valueChanged,

@@ -187,6 +187,20 @@ void Vec3DEdit::setZMax(float max)
     }
 }
 
+void Vec3DEdit::setMin(float min)
+{
+    setXMin(min);
+    setYMin(min);
+    setZMin(min);
+}
+
+void Vec3DEdit::setMax(float max)
+{
+    setXMax(max);
+    setYMax(max);
+    setZMax(max);
+}
+
 float Vec3DEdit::stepSize() const
 {
     return m_xSpinBox->singleStep();

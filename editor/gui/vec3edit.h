@@ -70,6 +70,9 @@ public Q_SLOTS:
     void setZMin(float min);
     void setZMax(float max);
 
+    void setMin(float min);
+    void setMax(float max);
+
     void setStepSize(float step);
 
 private:
