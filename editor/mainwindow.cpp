@@ -240,11 +240,11 @@ void MainWindow::initPanes()
     m_entityxHook = new EntityxHook(m_gameWidget->systemEngine(), this);
 
     connect(m_entityxHook, &EntityxHook::entityComponentAdded,
-            componentView, &ComponentView::setCurrentEntity,
+            componentView, &ComponentView::onComponentAdded,
             Qt::QueuedConnection);
 
     connect(m_entityxHook, &EntityxHook::entityComponentRemoved,
-            componentView, &ComponentView::setCurrentEntity,
+            componentView, &ComponentView::onComponentAdded,
             Qt::QueuedConnection);
 
     connect(m_entityxHook, &EntityxHook::entityComponentAdded,

@@ -118,7 +118,8 @@ void CameraControls::setCamera(Camera *camera)
     }
 }
 
-void CameraControls::onEntityComponentAdded(entityx::Entity entity)
+void CameraControls::onEntityComponentAdded(entityx::Entity entity,
+                                            const QString &compName)
 {
     Q_ASSERT (entity);
 
@@ -141,11 +142,12 @@ void CameraControls::onEntityComponentAdded(entityx::Entity entity)
     m_currentCameraComboBox->addItem(entityName);
 }
 
-void CameraControls::onEntityComponentRemoved(entityx::Entity entity)
+void CameraControls::onEntityComponentRemoved(entityx::Entity entity,
+                                              const QString &compName)
 {
     Q_ASSERT (entity);  // entity is not already destroyed
 
-    if (!entity.has_component<Camera>()) {
+    if (compName != "camera") {
         return;
     }
 

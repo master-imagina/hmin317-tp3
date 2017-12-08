@@ -28,8 +28,8 @@ Q_SIGNALS:
     void cameraChanged(Camera *camera);
 
 public Q_SLOTS:
-    void onEntityComponentAdded(entityx::Entity entity);
-    void onEntityComponentRemoved(entityx::Entity entity);
+    void onEntityComponentAdded(entityx::Entity entity, const QString &compName);
+    void onEntityComponentRemoved(entityx::Entity entity, const QString &compName);
 
 private:
     Camera *m_camera;

@@ -17,8 +17,8 @@ public:
     ~EntityxHook() = default;
 
 Q_SIGNALS:
-    void entityComponentAdded(entityx::Entity entity);
-    void entityComponentRemoved(entityx::Entity entity);
+    void entityComponentAdded(entityx::Entity entity, const QString &compName);
+    void entityComponentRemoved(entityx::Entity entity, const QString &compName);
 
 private:
     SystemEngine &m_systemEngine;

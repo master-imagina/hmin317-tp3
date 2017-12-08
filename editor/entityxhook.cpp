@@ -20,6 +20,66 @@
 #include "script/script.h"
 
 
+////////////////////// Helpers //////////////////////
+
+template <typename Component>
+QString compName() = delete;
+
+template <>
+QString compName<Transform>()
+{
+    return "transform";
+}
+
+template <>
+QString compName<Geometry>()
+{
+    return "geometry";
+}
+
+template <>
+QString compName<Material>()
+{
+    return "material";
+}
+
+template <>
+QString compName<ParticleEffect>()
+{
+    return "particleeffect";
+}
+
+template <>
+QString compName<Mesh>()
+{
+    return "mesh";
+}
+
+template <>
+QString compName<Light>()
+{
+    return "light";
+}
+
+template <>
+QString compName<Camera>()
+{
+    return "camera";
+}
+
+template <>
+QString compName<Keyboard>()
+{
+    return "keyboard";
+}
+
+template <>
+QString compName<Script>()
+{
+    return "script";
+}
+
+
 ////////////////////// ComponentAddedHook //////////////////////
 
 template <typename C>
@@ -34,7 +94,8 @@ public:
 
     void receive(const entityx::ComponentAddedEvent<C> &event)
     {
-        Q_EMIT m_entityxHook.entityComponentAdded(event.entity);
+        Q_EMIT m_entityxHook.entityComponentAdded(event.entity,
+                                                  compName<C>());
     }
 
     void configure(entityx::EventManager &events) override
@@ -64,7 +125,8 @@ public:
 
     void receive(const entityx::ComponentRemovedEvent<C> &event)
     {
-        Q_EMIT m_entityxHook.entityComponentRemoved(event.entity);
+        Q_EMIT m_entityxHook.entityComponentRemoved(event.entity,
+                                                    compName<C>());
     }
 
     void configure(entityx::EventManager &events) override

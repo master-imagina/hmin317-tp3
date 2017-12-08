@@ -34,6 +34,8 @@ public:
 
     void setCurrentEntity(entityx::Entity entity);
 
+    void onComponentAdded(entityx::Entity entity, const QString &compName);
+
 private:
     void createConnections();
 

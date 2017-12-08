@@ -109,6 +109,11 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
     }
 }
 
+void ComponentView::onComponentAdded(entityx::Entity entity, const QString &compName)
+{
+    setCurrentEntity(entity);
+}
+
 void ComponentView::createConnections()
 {
     connect(m_theSceneView, &SceneView::entityItemSelected,
