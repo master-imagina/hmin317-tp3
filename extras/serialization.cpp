@@ -64,7 +64,7 @@ QDataStream &operator<<(QDataStream &os, const Scene &scene)
     }
 }
 
-QDataStream &operator>>(QDataStream &os, Scene &scene)
+QDataStream &deserializeScene(QDataStream &os, Scene &scene, LuaServer &luaServer)
 {
     quint64 entityCount = 0;
     os >> entityCount;
@@ -130,7 +130,7 @@ QDataStream &operator>>(QDataStream &os, Scene &scene)
             else if (componentType == "script") {
                 Script script;
                 os >> script;
-                script.sourceCode = scriptFromFile(script.path).sourceCode;
+                script.sourceCode = scriptFromFile(script.path, luaServer).sourceCode;
 
                 entity.assign<Script>(script);
             }

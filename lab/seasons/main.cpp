@@ -59,11 +59,11 @@ void fetchBigFile()
     AssetManager::self()->loadBigFile(bigFileName);
 }
 
-void initScene(Scene &scene)
+void initScene(Scene &scene, LuaServer &luaServer)
 {
     entityx::Entity mainCameraEntity = scene.createEntity();
     camera = mainCameraEntity.assign<Camera>();
-    mainCameraEntity.assign<Script>(scriptFromFile("builtins/scripts/free_camera.lua"));
+    mainCameraEntity.assign<Script>(scriptFromFile("builtins/scripts/free_camera.lua", luaServer));
     mainCameraEntity.assign<Keyboard>();
 
     // Create terrain
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
     LuaServer luaServer;
     GameWidget gameWidget(scene, &luaServer);
 
-    initScene(scene);
+    initScene(scene, luaServer);
     gameWidget.systemEngine().configure();
 
     // Show game widget

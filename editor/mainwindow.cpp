@@ -170,7 +170,7 @@ void MainWindow::createMenus()
         m_scene.clear();
 
         QDataStream dataStream(&projectFile);
-        dataStream >> m_scene;
+        deserializeScene(dataStream, m_scene, m_luaServer);
     });
 
     QAction *saveProjectAction = fileMenu->addAction(tr("Save project"));
