@@ -40,6 +40,9 @@ public:
     void clearParams();
 
 private:
+    void init();
+
+private:
     std::vector<RenderPass> m_passes;
     std::vector<Param> m_params;
 };

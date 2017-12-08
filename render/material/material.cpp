@@ -21,6 +21,11 @@ Material::Material() :
     m_passes(),
     m_params()
 {
+    init();
+}
+
+void Material::init()
+{
     // Pre-allocate a chunk for passes
     if (RESERVE_PASSES_COUNT > MAX_PASSES_COUNT) {
         RESERVE_PASSES_COUNT = MAX_PASSES_COUNT;
