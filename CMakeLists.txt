@@ -362,3 +362,33 @@ target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR})
 target_link_libraries(seasons enginescript engineinput editorgui engineextras enginerender enginecore editorgui Qt5::Widgets entityx)
 
 install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
+
+#  marble
+set(MARBLE_HEADERS
+    )
+set(MARBLE_SOURCES
+    lab/marble/main.cpp
+    )
+file(GLOB MARBLE_SHADERS
+    lab/marble/data/shaders/*.vert
+    lab/marble/data/shaders/*.geom
+    lab/marble/data/shaders/*.frag
+    )
+file(GLOB MARBLE_SCRIPTS
+    lab/marble/data/scripts/*.lua)
+
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data_marble)
+file(COPY lab/marble/data/images DESTINATION ${CMAKE_BINARY_DIR}/data_marble)
+file(INSTALL lab/marble/data/images DESTINATION ${ENGINESPW_INSTALL_PATH}/data_marble)
+file(COPY lab/marble/data/meshes DESTINATION ${CMAKE_BINARY_DIR}/data_marble)
+file(INSTALL lab/marble/data/meshes DESTINATION ${ENGINESPW_INSTALL_PATH}/data_marble)
+file(COPY lab/marble/data/shaders DESTINATION ${CMAKE_BINARY_DIR}/data_marble)
+file(INSTALL lab/marble/data/shaders DESTINATION ${ENGINESPW_INSTALL_PATH}/data_marble)
+file(COPY lab/marble/data/scripts DESTINATION ${CMAKE_BINARY_DIR}/data_marble)
+file(INSTALL lab/marble/data/scripts DESTINATION ${ENGINESPW_INSTALL_PATH}/data_marble)
+
+add_executable(marble ${MARBLE_SOURCES} ${MARBLE_HEADERS} ${MARBLE_SHADERS} ${MARBLE_SCRIPTS})
+target_include_directories(marble PRIVATE ${PROJECT_SOURCE_DIR})
+target_link_libraries(marble enginescript engineinput editorgui engineextras enginerender enginecore editorgui Qt5::Widgets entityx)
+
+install(TARGETS marble RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
