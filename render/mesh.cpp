@@ -108,7 +108,7 @@ Geometry Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
     ret.vertexLayout.addAttribute(defaultTexCoordsAttrib());
 
     ret.primitiveType = Geometry::Triangles;
-    ret.primitiveCount = mesh->mNumFaces;
+    ret.primitiveCount = ret.indices.size();
 
     ret.isIndexed = true;
     ret.isDirty = true;
