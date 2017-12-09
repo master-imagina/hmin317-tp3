@@ -11,6 +11,8 @@ extern "C" {
 
 #include "3rdparty/luabridge/luabridge/LuaBridge.h"
 
+#include "core/scene.h"
+
 #include "script/script.h"
 
 
@@ -30,6 +32,9 @@ void commitParamValueToLua(const std::string &name,
     }
     else if (type == QMetaType::QVector3D) {
         luaPropsTable[name] = qtValue.value<QVector3D>();
+    }
+    else if (type == qMetaTypeId<entityx::Entity>()) {
+        luaPropsTable[name] = qtValue.value<entityx::Entity>();
     }
 }
 
