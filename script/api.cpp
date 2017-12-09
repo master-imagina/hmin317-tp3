@@ -15,11 +15,23 @@ extern "C" {
 #include "input/keyboard.h"
 
 #include "render/camera.h"
+#include "render/transform.h"
 
 #include "extras/cameraactions.h"
 
 
 namespace {
+
+Transform *getComponentTransform(entityx::Entity entity)
+{
+    Transform *ret = nullptr;
+
+    if (entity.has_component<Transform>()) {
+        ret = entity.component<Transform>().get();
+    }
+
+    return ret;
+}
 
 Camera *getComponentCamera(entityx::Entity entity)
 {
@@ -150,6 +162,14 @@ void exposeEngineAPI(lua_State *lState)
         .endClass();
 
     luabridge::getGlobalNamespace(lState)
+        .beginClass<Transform>("Transform")
+            .addConstructor<void (*) (void)>()
+            .addProperty("translate", &Transform::translate, &Transform::setTranslate)
+            .addProperty("rotation", &Transform::rotation, &Transform::setRotation)
+            .addProperty("scale", &Transform::scale, &Transform::setScale)
+        .endClass();
+
+    luabridge::getGlobalNamespace(lState)
         .beginClass<Keyboard>("Keyboard")
             .addFunction("keyIsPressed", &Keyboard::keyIsPressed)
         .endClass();
@@ -170,6 +190,7 @@ void exposeEngineAPI(lua_State *lState)
         .endNamespace();
 
     luabridge::getGlobalNamespace(lState)
+        .addFunction("getComponentTransform", &getComponentTransform)
         .addFunction("getComponentCamera", &getComponentCamera)
         .addFunction("getComponentKeyboard", &getComponentKeyboard);
 }
