@@ -14,6 +14,7 @@ extern "C" {
 #include "3rdparty/luabridge/luabridge/LuaBridge.h"
 
 #include "core/assetmanager.h"
+#include "core/scene.h"
 
 #include "script/luaserver.h"
 
@@ -33,6 +34,9 @@ QVariant luaRefToVariant(const luabridge::LuaRef &luaValue)
     // Userdata only
     else if (luaValue.is<QVector3D>()) {
         ret = QVariant::fromValue(luaValue.cast<QVector3D>());
+    }
+    else if (luaValue.is<entityx::Entity>()) {
+        ret = QVariant::fromValue(luaValue.cast<entityx::Entity>());
     }
 
     return ret;
