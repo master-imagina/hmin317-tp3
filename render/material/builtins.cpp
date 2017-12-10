@@ -34,7 +34,26 @@ Material phongMaterial()
             shaderProgramFromFile("builtins/shaders/phong.vert",
                                   "builtins/shaders/phong.frag");
 
-    basePass.setShaderProgram(std::move(shader));
+    basePass.setShaderProgram(shader);
+
+    ret.setParam("ka", QColor::fromRgbF(1.f, 0.5f, 0.31f));
+    ret.setParam("kd", QColor::fromRgbF(1.f, 0.5f, 0.31f));
+    ret.setParam("ks", QColor::fromRgbF(0.5f, 0.5f, 0.5f));
+    ret.setParam("shininess", 32.f);
+
+    return ret;
+}
+
+Material phongDirectionalMaterial()
+{
+    Material ret;
+
+    RenderPass &basePass = ret.addRenderPass("base");
+    ShaderProgram shader =
+            shaderProgramFromFile("builtins/shaders/phong_directional.vert",
+                                  "builtins/shaders/phong_directional.frag");
+
+    basePass.setShaderProgram(shader);
 
     ret.setParam("ka", QColor::fromRgbF(1.f, 0.5f, 0.31f));
     ret.setParam("kd", QColor::fromRgbF(1.f, 0.5f, 0.31f));

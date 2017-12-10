@@ -9,6 +9,7 @@
 struct Light
 {
     QVector3D pos;
+    QVector3D direction;
     QColor color;
 };
 

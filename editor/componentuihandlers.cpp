@@ -340,13 +340,25 @@ QWidget *LightCompUiHandler::createComponentEditor(entityx::Entity entity,
     auto *lightColorEditor = new ColorEditor(ret);
     lightColorEditor->setValue(comp->color);
 
+    auto *directionEditor = new Vec3DEdit(ret);
+    directionEditor->setMin(-1.f);
+    directionEditor->setMax(1.f);
+    directionEditor->setValue(comp->direction.normalized());
+    directionEditor->setStepSize(0.1f);
+
     auto *editorLayout = new QFormLayout(ret);
     editorLayout->addRow("Color", lightColorEditor);
+    editorLayout->addRow("Direction", directionEditor);
 
     // Create connections
     QObject::connect(lightColorEditor, &ColorEditor::valueChanged,
                      [comp, lightColorEditor] {
         comp->color = lightColorEditor->value();
+    });
+
+    QObject::connect(directionEditor, &Vec3DEdit::valueChanged,
+                     [comp, directionEditor] {
+        comp->direction = directionEditor->value();
     });
 
     return ret;

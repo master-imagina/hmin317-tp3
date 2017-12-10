@@ -273,6 +273,12 @@ void GLWrapper::sendLightUniforms(const GLShaderProgram &glProgram,
             m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&light.pos));
         }
 
+        location = m_gl->glGetUniformLocation(glProgram.id, "light.direction");
+
+        if (location != -1) {
+            m_gl->glUniform3fv(location, 1, reinterpret_cast<const float *>(&light.direction));
+        }
+
         location = m_gl->glGetUniformLocation(glProgram.id, "light.color");
 
         if (location != -1) {

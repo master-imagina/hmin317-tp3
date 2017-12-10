@@ -3,7 +3,9 @@
 
 #include "render/material/material.h"
 
+
 Material defaultMaterial();
 Material phongMaterial();
+Material phongDirectionalMaterial();
 
 #endif // RENDER_MATERIALS_BUILTINS_H

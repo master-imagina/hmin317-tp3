@@ -52,7 +52,6 @@ void initScene(Scene &scene, LuaServer &luaServer)
 
     //  Terrain geometry
     auto terrainGeom = terrainEntity.assign<Geometry>(grid(32));
-
     terrainGeom->vertexLayout.addAttribute(defaultPositionAttrib());
 
     //  Terrain material
@@ -84,7 +83,7 @@ void initScene(Scene &scene, LuaServer &luaServer)
 
     // Create light
     entityx::Entity lightEntity = scene.createEntity();
-    entityx::ComponentHandle<Light> light = lightEntity.assign<Light>();
+    auto light = lightEntity.assign<Light>();
     light->color = QColor(Qt::red);
 }
 
