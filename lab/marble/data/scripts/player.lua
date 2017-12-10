@@ -30,18 +30,16 @@ end
 
 function update(entity, dt)
     local keyboard = getComponentKeyboard(entity)
-
     local moveDirection = computeDirectionFromKeys(keyboard)
 
     local dtFactor = dt / 1000. * properties.speed
     local moveAmount = vec3_mul(moveDirection, dtFactor)
 
     local transform = getComponentTransform(entity)
-
     transform.translate = vec3_add(transform.translate, moveAmount)
 
     assert (properties.cameraEntity)
-    camera = getComponentCamera(properties.cameraEntity)
+    local camera = getComponentCamera(properties.cameraEntity)
 
     assert (camera)
     CameraActions.move(camera, moveDirection, properties.speed, dt)
