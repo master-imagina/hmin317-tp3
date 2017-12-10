@@ -1,44 +1,12 @@
 #include "scriptsystem.h"
 
 #include <QDebug>
-#include <QVector3D>
-
-extern "C" {
-#include <lua5.3.4/lua.h>
-#include <lua5.3.4/lauxlib.h>
-#include <lua5.3.4/lualib.h>
-}
-
-#include "3rdparty/luabridge/luabridge/LuaBridge.h"
 
 #include "core/scene.h"
 
+#include "script/lua_includes.h"
+#include "script/luaqvariant_bridge.h"
 #include "script/script.h"
-
-
-namespace {
-
-void commitParamValueToLua(const std::string &name,
-                           const QVariant &qtValue,
-                           luabridge::LuaRef &luaPropsTable)
-{
-    const int type = qtValue.userType();
-
-    if (type == QMetaType::Int) {
-        luaPropsTable[name] = qtValue.toInt();
-    }
-    else if (type == QMetaType::Float) {
-        luaPropsTable[name] = qtValue.toFloat();
-    }
-    else if (type == QMetaType::QVector3D) {
-        luaPropsTable[name] = qtValue.value<QVector3D>();
-    }
-    else if (type == qMetaTypeId<entityx::Entity>()) {
-        luaPropsTable[name] = qtValue.value<entityx::Entity>();
-    }
-}
-
-} // anon namespace
 
 
 ScriptSystem::ScriptSystem() :

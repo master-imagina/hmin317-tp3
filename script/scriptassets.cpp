@@ -5,44 +5,14 @@
 #include <QFile>
 #include <QVector3D>
 
-extern "C" {
-#include <lua5.3.4/lua.h>
-#include <lua5.3.4/lauxlib.h>
-#include <lua5.3.4/lualib.h>
-}
-
-#include "3rdparty/luabridge/luabridge/LuaBridge.h"
+#include "3rdparty/entityx/Entity.h"
 
 #include "core/assetmanager.h"
-#include "core/scene.h"
 
+#include "script/lua_includes.h"
+#include "script/luaqvariant_bridge.h"
 #include "script/luaserver.h"
 
-
-namespace {
-
-QVariant luaRefToVariant(const luabridge::LuaRef &luaValue)
-{
-    QVariant ret;
-
-    if (luaValue.isNumber()) {
-        ret = luaValue.cast<float>();
-    }
-    else if (luaValue.isString()) {
-        ret = QString::fromStdString(luaValue.cast<std::string>());
-    }
-    // Userdata only
-    else if (luaValue.is<QVector3D>()) {
-        ret = QVariant::fromValue(luaValue.cast<QVector3D>());
-    }
-    else if (luaValue.is<entityx::Entity>()) {
-        ret = QVariant::fromValue(luaValue.cast<entityx::Entity>());
-    }
-
-    return ret;
-}
-
-} // anon namespace
 
 Script scriptFromFile(const std::string &path, LuaServer &luaServer)
 {

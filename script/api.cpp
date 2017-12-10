@@ -2,14 +2,6 @@
 
 #include <type_traits>
 
-extern "C" {
-#include <lua5.3.4/lua.h>
-#include <lua5.3.4/lauxlib.h>
-#include <lua5.3.4/lualib.h>
-}
-
-#include "3rdparty/luabridge/luabridge/LuaBridge.h"
-
 #include "3rdparty/entityx/Entity.h"
 
 #include "input/keyboard.h"
@@ -18,6 +10,8 @@ extern "C" {
 #include "render/transform.h"
 
 #include "extras/cameraactions.h"
+
+#include "script/lua_includes.h"
 
 
 namespace {

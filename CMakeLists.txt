@@ -179,6 +179,8 @@ set(3RDPARTY_LUA_INCLUDE_DIRS
 
 set(SCRIPT_HEADERS
     script/api.h
+    script/lua_includes.h
+    script/luaqvariant_bridge.h
     script/luaserver.h
     script/script.h
     script/scriptassets.h
@@ -186,6 +188,7 @@ set(SCRIPT_HEADERS
     )
 set(SCRIPT_SOURCES
     script/api.cpp
+    script/luaqvariant_bridge.cpp
     script/luaserver.cpp
     script/script.cpp
     script/scriptsystem.cpp
