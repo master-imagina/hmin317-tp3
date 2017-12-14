@@ -205,9 +205,34 @@ file(GLOB SCRIPTS_BUILTINS
 add_library(enginescript SHARED ${SCRIPT_SOURCES} ${SCRIPT_HEADERS} ${SCRIPTS_BUILTINS})
 target_include_directories(enginescript PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_LUA_INCLUDE_DIRS})
 target_compile_definitions(enginescript PRIVATE SCRIPT_LIBRARY=1)
-target_link_libraries(enginescript enginecore enginerender Qt5::Core entityx lua)
+target_link_libraries(enginescript enginecore enginerender enginephysics Qt5::Core entityx lua)
 
 install(TARGETS enginescript LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
+
+#  physics
+set(3RDPARTY_BULLET_INCLUDE_DIRS
+    ${ENGINESPW_INSTALL_PATH}/include/bullet
+    )
+
+set(PHYSICS_HEADERS
+    physics/bullet_engine_bridge.h
+    physics/collider.h
+    physics/collisionsystem.h
+    physics/rigidbody.h
+    )
+set(PHYSICS_SOURCES
+    physics/bullet_engine_bridge.cpp
+    physics/collider.cpp
+    physics/collisionsystem.cpp
+    physics/rigidbody.cpp
+    )
+
+add_library(enginephysics SHARED ${PHYSICS_SOURCES} ${PHYSICS_HEADERS})
+target_include_directories(enginephysics PRIVATE ${PROJECT_SOURCE_DIR} ${3RDPARTY_BULLET_INCLUDE_DIRS})
+target_compile_definitions(enginephysics PRIVATE PHYSICS_LIBRARY=1)
+target_link_libraries(enginephysics enginecore enginerender Qt5::Core entityx BulletCollision BulletDynamics)
+
+install(TARGETS enginephysics LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
 #  extras
 set(EXTRAS_HEADERS
@@ -285,7 +310,7 @@ set(EDITORGUI_RESOURCES
 add_library(editorgui SHARED ${EDITORGUI_SOURCES} ${EDITORGUI_HEADERS} ${EDITORGUI_RESOURCES})
 target_include_directories(editorgui PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_definitions(editorgui PRIVATE EDITORGUI_LIBRARY=1)
-target_link_libraries(editorgui enginecore Qt5::Widgets)
+target_link_libraries(editorgui enginecore enginephysics Qt5::Widgets)
 
 install(TARGETS editorgui LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
 
