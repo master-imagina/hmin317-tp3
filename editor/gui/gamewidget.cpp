@@ -7,6 +7,10 @@
 
 #include "input/inputsystem.h"
 
+#include "physics/collider.h"
+#include "physics/collisionsystem.h"
+#include "physics/rigidbody.h"
+
 #include "render/light.h"
 #include "render/mesh.h"
 #include "render/transform.h"
@@ -70,11 +74,14 @@ void GameWidget::initSystems()
     m_systemEngine.registerDependency<ParticleEffect, Geometry, Material>();
     m_systemEngine.registerDependency<Mesh, Transform>();
     m_systemEngine.registerDependency<Light, Transform>();
+    m_systemEngine.registerDependency<Collider, Transform>();
+    m_systemEngine.registerDependency<RigidBody, Transform>();
 
     // Add systems
     m_systemEngine.registerSystem<InputSystem>(this);
 
     if (m_theLuaServer) {
+        m_systemEngine.registerSystem<CollisionSystem>();
         m_systemEngine.registerSystem<ScriptSystem>();
     }
 
@@ -89,6 +96,7 @@ void GameWidget::iterateGameLoop(float dt)
     m_systemEngine.update<InputSystem>(dt);
 
     if (m_theLuaServer && m_playModeEnabled) {
+        m_systemEngine.update<CollisionSystem>(dt);
         m_systemEngine.update<ScriptSystem>(dt);
     }
 
