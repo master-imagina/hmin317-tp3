@@ -17,6 +17,9 @@
 
 #include "input/keyboard.h"
 
+#include "physics/collider.h"
+#include "physics/rigidbody.h"
+
 #include "render/aabb.h"
 #include "render/renderassets.h"
 #include "render/camera.h"
@@ -54,6 +57,13 @@ void initScene(Scene &scene, LuaServer &luaServer)
     auto terrainGeom = terrainEntity.assign<Geometry>(grid(32));
     terrainGeom->vertexLayout.addAttribute(defaultPositionAttrib());
 
+    AABoundingBox terrainBB(terrainGeom->vertices);
+
+    terrainEntity.assign<Collider>(Collider::Type::Box, terrainBB.radius(), terrainBB.center());
+
+    auto terrainRigidBody = terrainEntity.assign<RigidBody>();
+    terrainRigidBody->restitution = 0.5f;
+
     //  Terrain material
     auto terrainMaterial = terrainEntity.assign<Material>();
     RenderPass &terrainPass = terrainMaterial->addRenderPass("base");
@@ -64,18 +74,27 @@ void initScene(Scene &scene, LuaServer &luaServer)
     terrainPass.setShaderProgram(terrainShader);
 
     // Create camera
-    AABoundingBox terrainBB(terrainGeom->vertices);
     entityx::Entity mainCameraEntity = scene.createEntity();
     auto camera = mainCameraEntity.assign<Camera>();
+//    camera->setEyePos({30, 0, 15});
+//    camera->setTargetPos({15, 0, 15});
 
     centerCameraOnBBox(*camera.get(), terrainBB);
 
     // Create player
     entityx::Entity playerEntity = scene.createEntity();
-    playerEntity.assign<Mesh>("meshes/sphere.ply");
+    auto playerMesh = playerEntity.assign<Mesh>("meshes/sphere.obj");
 
     auto playerTransform = playerEntity.component<Transform>();
-    playerTransform->setTranslate(terrainBB.center());
+    playerTransform->setTranslate(terrainBB.center() + QVector3D(0, 20, 0));
+
+    AABoundingBox playerBB(playerMesh->geometry(0).vertices);
+
+    playerEntity.assign<Collider>(Collider::Type::Sphere, playerBB.radius());
+
+    auto playerRigidBody = playerEntity.assign<RigidBody>();
+    playerRigidBody->mass = 3.f;
+    playerRigidBody->linearDamping = 0.2f;
 
     playerEntity.assign<Keyboard>();
     auto playerScript = playerEntity.assign<Script>(scriptFromFile("scripts/player.lua", luaServer));
@@ -84,6 +103,7 @@ void initScene(Scene &scene, LuaServer &luaServer)
     // Create light
     entityx::Entity lightEntity = scene.createEntity();
     auto light = lightEntity.assign<Light>();
+    light->direction = {0, -1, 0};
     light->color = QColor(Qt::red);
 }
 
@@ -117,6 +137,7 @@ int main(int argc, char *argv[])
     createFpsLabel(gameWidget.gameLoop(), &gameWidget);
 
     gameWidget.show();
+//    gameWidget.showMaximized();
 
     return app.exec();
 }
