@@ -36,7 +36,7 @@ void main()
     vec3 lightDir = normalize(light.pos - worldPos);
     float diff = max(dot(norm, lightDir), 0.0);
 
-    vec3 diffuse = lightDiffuseColor * (diff * kd.xyz);
+    vec3 diffuse = lightDiffuseColor * diff * kd.xyz;
 
     // specular
     vec3 viewDir = normalize(cameraPos - worldPos);

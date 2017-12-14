@@ -33,7 +33,7 @@ void main()
     vec3 lightDir = normalize(-light.direction);
 
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = vec3(0.5) * kd.rgb;
+    vec3 diffuse = vec3(0.5) * diff * kd.rgb;
 
     // specular
     vec3 viewDir = normalize(cameraPos - worldPos);
@@ -42,7 +42,7 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
     vec3 specular = vec3(1.0) * spec * ks.rgb;
 
-    vec3 result = ambient + diffuse + specular;
+    vec3 result = diffuse + ambient + specular;
 
     fragColor = vec4(result, 1.0);
 }
