@@ -9,6 +9,9 @@
 #include "render/camera.h"
 #include "render/transform.h"
 
+#include "physics/collider.h"
+#include "physics/rigidbody.h"
+
 #include "extras/cameraactions.h"
 
 #include "script/lua_includes.h"
@@ -44,6 +47,28 @@ Keyboard *getComponentKeyboard(entityx::Entity entity)
 
     if (entity.has_component<Keyboard>()) {
         ret = entity.component<Keyboard>().get();
+    }
+
+    return ret;
+}
+
+Collider *getComponentCollider(entityx::Entity entity)
+{
+    Collider *ret = nullptr;
+
+    if (entity.has_component<Collider>()) {
+        ret = entity.component<Collider>().get();
+    }
+
+    return ret;
+}
+
+RigidBody *getComponentRigidBody(entityx::Entity entity)
+{
+    RigidBody *ret = nullptr;
+
+    if (entity.has_component<RigidBody>()) {
+        ret = entity.component<RigidBody>().get();
     }
 
     return ret;
@@ -169,6 +194,15 @@ void exposeEngineAPI(lua_State *lState)
         .endClass();
 
     luabridge::getGlobalNamespace(lState)
+        .beginClass<Collider>("Collider")
+        .endClass();
+
+    luabridge::getGlobalNamespace(lState)
+        .beginClass<RigidBody>("RigidBody")
+            .addFunction("applyCentralImpulse", &RigidBody::applyCentralImpulse)
+        .endClass();
+
+    luabridge::getGlobalNamespace(lState)
         .beginClass<Camera>("Camera")
             .addProperty("eyePos", &Camera::eyePos, &Camera::setEyePos)
             .addProperty("targetPos", &Camera::targetPos, &Camera::setTargetPos)
@@ -186,5 +220,7 @@ void exposeEngineAPI(lua_State *lState)
     luabridge::getGlobalNamespace(lState)
         .addFunction("getComponentTransform", &getComponentTransform)
         .addFunction("getComponentCamera", &getComponentCamera)
-        .addFunction("getComponentKeyboard", &getComponentKeyboard);
+        .addFunction("getComponentKeyboard", &getComponentKeyboard)
+        .addFunction("getComponentCollider", &getComponentCollider)
+        .addFunction("getComponentRigidBody", &getComponentRigidBody);
 }
