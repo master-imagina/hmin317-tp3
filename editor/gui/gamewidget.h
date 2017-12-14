@@ -23,8 +23,8 @@ public:
 
     SystemEngine &systemEngine();
 
-    void enableScripts();
-    void disableScripts();
+    void enablePlayMode();
+    void disablePlayMode();
 
 protected:
     void showEvent(QShowEvent *) override;
@@ -41,7 +41,7 @@ private:
     LuaServer *m_theLuaServer;
     GameLoop *m_gameLoop;
 
-    bool m_scriptsEnabled;
+    bool m_playModeEnabled;
 };
 
 #endif // GAMEWIDGET_H

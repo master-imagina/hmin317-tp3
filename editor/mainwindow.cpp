@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_gameWidget->setObjectName("Editor Main Viewport");
     m_gameWidget->setFocusPolicy(Qt::StrongFocus);
     m_gameWidget->systemEngine().configure();
-    m_gameWidget->disableScripts();
+    m_gameWidget->disablePlayMode();
 
     m_gameWidget->setCamera(&m_freeCamera);
 
@@ -290,7 +290,7 @@ void MainWindow::enterPlayMode()
     }
 
     m_gameWidget->setFocus();
-    m_gameWidget->enableScripts();
+    m_gameWidget->enablePlayMode();
     m_gameWidget->systemEngine().configure();
 
     m_centralWidget->setStyleSheet("#centralWidget { border: 2px solid red; }");
@@ -306,7 +306,7 @@ void MainWindow::leavePlayMode()
         return;
     }
 
-    m_gameWidget->disableScripts();
+    m_gameWidget->disablePlayMode();
     m_gameWidget->setCamera(&m_freeCamera);
 
     m_centralWidget->setStyleSheet(QString());

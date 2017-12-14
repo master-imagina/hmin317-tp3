@@ -50,7 +50,7 @@ void ParticleEditor::initEditorScene()
 {
     m_gameWidget = new GameWidget(m_scene, nullptr, this);
     m_gameWidget->setObjectName("Particle Editor Viewport");
-    m_gameWidget->disableScripts();
+    m_gameWidget->disablePlayMode();
 
     // Create main camera entity
     entityx::Entity mainCameraEntity = m_scene.createEntity();

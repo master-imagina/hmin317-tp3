@@ -28,7 +28,7 @@ GameWidget::GameWidget(Scene &scene, LuaServer *luaServer, QWidget *parent) :
     m_systemEngine(scene),
     m_theLuaServer(luaServer),
     m_gameLoop(new GameLoop(60, this)),
-    m_scriptsEnabled(true)
+    m_playModeEnabled(true)
 {
     initSystems();
 }
@@ -43,14 +43,14 @@ SystemEngine &GameWidget::systemEngine()
     return m_systemEngine;
 }
 
-void GameWidget::enableScripts()
+void GameWidget::enablePlayMode()
 {
-    m_scriptsEnabled = true;
+    m_playModeEnabled = true;
 }
 
-void GameWidget::disableScripts()
+void GameWidget::disablePlayMode()
 {
-    m_scriptsEnabled = false;
+    m_playModeEnabled = false;
 }
 
 void GameWidget::showEvent(QShowEvent *)
@@ -88,7 +88,7 @@ void GameWidget::iterateGameLoop(float dt)
 {
     m_systemEngine.update<InputSystem>(dt);
 
-    if (m_theLuaServer && m_scriptsEnabled) {
+    if (m_theLuaServer && m_playModeEnabled) {
         m_systemEngine.update<ScriptSystem>(dt);
     }
 
