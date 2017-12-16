@@ -1,5 +1,7 @@
 #include "param.h"
 
+#include <QDataStream>
+
 
 Param::Param() :
     name(),

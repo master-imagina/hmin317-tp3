@@ -26,6 +26,9 @@
 
 QDataStream &operator<<(QDataStream &os, const Scene &scene)
 {
+    qRegisterMetaTypeStreamOperators<entityx::Entity::Id>("entityx::Entity::Id");
+
+
     os << (quint64) scene.count();
 
     for (entityx::Entity &entity : scene.entityCache()) {

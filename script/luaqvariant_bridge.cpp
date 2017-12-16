@@ -20,7 +20,9 @@ QVariant luaRefToVariant(const luabridge::LuaRef &luaValue)
         ret = QVariant::fromValue(luaValue.cast<QVector3D>());
     }
     else if (luaValue.is<entityx::Entity>()) {
-        ret = QVariant::fromValue(luaValue.cast<entityx::Entity>());
+        auto entity = luaValue.cast<entityx::Entity>();
+
+        ret = QVariant::fromValue(entity.id());
     }
 
     return ret;
@@ -28,7 +30,8 @@ QVariant luaRefToVariant(const luabridge::LuaRef &luaValue)
 
 void commitParamValueToLua(const std::string &name,
                            const QVariant &qtValue,
-                           luabridge::LuaRef &luaPropsTable)
+                           luabridge::LuaRef &luaPropsTable,
+                           entityx::EntityManager &entityManager)
 {
     const int type = qtValue.userType();
 
@@ -41,7 +44,9 @@ void commitParamValueToLua(const std::string &name,
     else if (type == QMetaType::QVector3D) {
         luaPropsTable[name] = qtValue.value<QVector3D>();
     }
-    else if (type == qMetaTypeId<entityx::Entity>()) {
-        luaPropsTable[name] = qtValue.value<entityx::Entity>();
+    else if (type == qMetaTypeId<entityx::Entity::Id>()) {
+        auto entityId = qtValue.value<entityx::Entity::Id>();
+
+        luaPropsTable[name] = entityManager.get(entityId);
     }
 }

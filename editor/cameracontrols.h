@@ -3,7 +3,7 @@
 
 #include <QFrame>
 
-#include "entityx/Entity.h"
+#include "3rdparty/entityx/Entity.h"
 
 class Camera;
 class GameWidget;

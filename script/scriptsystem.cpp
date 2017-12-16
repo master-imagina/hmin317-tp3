@@ -19,7 +19,7 @@ void ScriptSystem::update(entityx::EntityManager &entities,
                           double dt)
 {
     entities.each<Script>(
-                [this, dt] (entityx::Entity entity, Script &script) {
+                [&entities, this, dt] (entityx::Entity entity, Script &script) {
         if (!script.path.empty()) {
             m_luaServer.evaluateScript(script);
 
@@ -27,7 +27,7 @@ void ScriptSystem::update(entityx::EntityManager &entities,
             luabridge::LuaRef propsTable = m_luaServer.getPropertiesTable();
 
             for (const Param &param : script.params()) {
-                commitParamValueToLua(param.name, param.value, propsTable);
+                commitParamValueToLua(param.name, param.value, propsTable, entities);
             }
 
             // Call update

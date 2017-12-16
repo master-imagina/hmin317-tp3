@@ -1,5 +1,7 @@
 #include "scene.h"
 
+#include <QDataStream>
+
 
 Scene::Scene() :
     m_eventManager(),
@@ -44,4 +46,20 @@ void Scene::clear()
     m_entityCache.clear();
 
     Q_EMIT cleared();
+}
+
+
+////////////////////// Functions //////////////////////
+
+QDataStream &operator<<(QDataStream &os, const entityx::Entity::Id &entityId)
+{
+    os << (quint64) entityId.id();
+}
+
+QDataStream &operator>>(QDataStream &os, entityx::Entity::Id &entityId)
+{
+    quint64 rawEntityId = 0;
+    os >> rawEntityId;
+
+    entityId = entityx::Entity::Id(rawEntityId);
 }

@@ -10,6 +10,9 @@
 #include <QLineEdit>
 #include <QUrl>
 
+#include "core/param.h"
+#include "core/scene.h"
+
 #include "editor/gui/advancedslider.h"
 #include "editor/gui/coloreditor/coloreditor.h"
 #include "editor/gui/vec3edit.h"
@@ -17,7 +20,6 @@
 #include "extras/particles/quick.h"
 
 #include "render/material/renderpass.h"
-#include "core/param.h"
 #include "render/material/shaderprogram.h"
 
 #include "script/luaserver.h"
@@ -79,6 +81,7 @@ QWidget *createParamEditor(Param &param, QWidget *parent)
                   << "unsupported parameter type ("
                   << QMetaType::typeName(paramType) << ")"
                   << std::endl;
+
         ret = new QWidget(parent);
     }
 

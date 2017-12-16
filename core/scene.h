@@ -36,6 +36,12 @@ private:
     std::vector<entityx::Entity> m_entityCache;
 };
 
+
 Q_DECLARE_METATYPE(entityx::Entity)
+Q_DECLARE_METATYPE(entityx::Entity::Id)
+
+QDataStream &operator<<(QDataStream &os, const entityx::Entity::Id &entityId);
+QDataStream &operator>>(QDataStream &os, entityx::Entity::Id &entityId);
+
 
 #endif // SCENE_H
