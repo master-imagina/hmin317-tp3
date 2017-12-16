@@ -119,9 +119,9 @@ void AABoundingBox::expand(const AABoundingBox &other)
         m_radius.setZ(otherRadiusZ);
     }
 
-    m_center.setX(otherRadiusX * 0.5);
-    m_center.setY(otherRadiusY * 0.5);
-    m_center.setZ(otherRadiusZ * 0.5);
+    m_center.setX(m_center.x() + other.center().x() * 0.5);
+    m_center.setY(m_center.y() + other.center().y() * 0.5);
+    m_center.setZ(m_center.z() + other.center().z() * 0.5);
 }
 
 
