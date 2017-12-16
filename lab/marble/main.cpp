@@ -76,8 +76,6 @@ void initScene(Scene &scene, LuaServer &luaServer)
     // Create camera
     entityx::Entity mainCameraEntity = scene.createEntity();
     auto camera = mainCameraEntity.assign<Camera>();
-//    camera->setEyePos({30, 0, 15});
-//    camera->setTargetPos({15, 0, 15});
 
     centerCameraOnBBox(*camera.get(), terrainBB);
 
