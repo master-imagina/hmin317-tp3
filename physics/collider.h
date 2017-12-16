@@ -3,8 +3,6 @@
 
 #include <QVector3D>
 
-#include "core/aliases_memory.h"
-
 class btCollisionShape;
 
 
@@ -13,18 +11,22 @@ struct Collider
     enum class Type
     {
         Box,
-        Sphere,
-        Plane
+        Sphere
     };
 
     Collider();
-    Collider(Type type, const QVector3D &dims, const QVector3D &orig = QVector3D());
+    Collider(Type _type, const QVector3D &dims, const QVector3D &orig = QVector3D());
     ~Collider();
 
     Type type;
     QVector3D origin;
+    QVector3D dimensions;
 
-    uptr<btCollisionShape> shape;
+    btCollisionShape *shape;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const Collider &collider);
+QDataStream &operator>>(QDataStream &os, Collider &collider);
 
 #endif // COLLIDER_H

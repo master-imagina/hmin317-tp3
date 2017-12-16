@@ -3,8 +3,6 @@
 
 #include <QVector3D>
 
-#include "core/aliases_memory.h"
-
 class btDefaultMotionState;
 class btRigidBody;
 
@@ -22,8 +20,12 @@ struct RigidBody
     float friction;
     float linearDamping;
 
-    uptr<btRigidBody> bulletRigidBody;
-    uptr<btDefaultMotionState> motionState;
+    btRigidBody *bulletRigidBody;
+    btDefaultMotionState *motionState;
 };
+
+
+QDataStream &operator<<(QDataStream &os, const RigidBody &rigidBody);
+QDataStream &operator>>(QDataStream &os, RigidBody &rigidBody);
 
 #endif // RIGIDBODY_H

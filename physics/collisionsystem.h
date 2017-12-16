@@ -6,10 +6,16 @@
 #include "core/aliases_memory.h"
 
 class btBroadphaseInterface;
-class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
-class btSequentialImpulseConstraintSolver;
+class btCollisionShape;
+class btDefaultCollisionConfiguration;
 class btDiscreteDynamicsWorld;
+class btRigidBody;
+class btSequentialImpulseConstraintSolver;
+class btDefaultMotionState;
+
+class Collider;
+class RigidBody;
 
 
 class CollisionSystem : public entityx::System<CollisionSystem>
@@ -26,11 +32,18 @@ public:
                 double dt) override;
 
 private:
+    void createBtRigidBody(const Collider &collider, RigidBody &rigidBody);
+
+private:
     uptr<btBroadphaseInterface> m_broadPhase;
     uptr<btDefaultCollisionConfiguration> m_collisionConfig;
     uptr<btCollisionDispatcher> m_dispatcher;
     uptr<btSequentialImpulseConstraintSolver> m_solver;
     uptr<btDiscreteDynamicsWorld> m_dynamicsWorld;
+
+    uptr_vector<btCollisionShape> m_collisionShapes;
+    uptr_vector<btRigidBody> m_rigidBodies;
+    uptr_vector<btDefaultMotionState> m_motionStates;
 };
 
 #endif // COLLISIONSYSTEM_H

@@ -7,6 +7,9 @@
 
 #include "input/keyboard.h"
 
+#include "physics/collider.h"
+#include "physics/rigidbody.h"
+
 #include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
@@ -58,6 +61,14 @@ QDataStream &operator<<(QDataStream &os, const Scene &scene)
         if (entity.has_component<Script>()) {
             os << QString("script");
             os << *entity.component<Script>().get();
+        }
+        if (entity.has_component<Collider>()) {
+            os << QString("collider");
+            os << *entity.component<Collider>().get();
+        }
+        if (entity.has_component<RigidBody>()) {
+            os << QString("rigidbody");
+            os << *entity.component<RigidBody>().get();
         }
 
         os << QString("endentity");
@@ -133,6 +144,18 @@ QDataStream &deserializeScene(QDataStream &os, Scene &scene, LuaServer &luaServe
                 script.sourceCode = scriptFromFile(script.path, luaServer).sourceCode;
 
                 entity.assign<Script>(script);
+            }
+            else if (componentType == "collider") {
+                Collider collider;
+                os >> collider;
+
+                entity.assign<Collider>(collider);
+            }
+            else if (componentType == "rigidbody") {
+                RigidBody rigidBody;
+                os >> rigidBody;
+
+                entity.assign<RigidBody>(rigidBody);
             }
 
             os >> endEntityFlag;
