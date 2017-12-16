@@ -2,6 +2,10 @@
 
 #include "render/geometry/geometry.h"
 
+#include "render/mesh.h"
+
+
+////////////////////// AABoundingBox //////////////////////
 
 AABoundingBox::AABoundingBox() :
     m_center(),
@@ -96,4 +100,47 @@ void AABoundingBox::processVertices(const std::vector<Vertex> vertices)
 
     m_center = 0.5 * (min + max);
     m_radius = 0.5 * (max - min);
+}
+
+void AABoundingBox::expand(const AABoundingBox &other)
+{
+    const QVector3D otherRadius = other.radius();
+    const float otherRadiusX = otherRadius.x();
+    const float otherRadiusY = otherRadius.y();
+    const float otherRadiusZ = otherRadius.z();
+
+    if (m_radius.x() < otherRadiusX) {
+        m_radius.setX(otherRadiusX);
+    }
+    if (m_radius.y() < otherRadiusY) {
+        m_radius.setY(otherRadiusY);
+    }
+    if (m_radius.z() < otherRadiusZ) {
+        m_radius.setZ(otherRadiusZ);
+    }
+
+    m_center.setX(otherRadiusX * 0.5);
+    m_center.setY(otherRadiusY * 0.5);
+    m_center.setZ(otherRadiusZ * 0.5);
+}
+
+
+////////////////////// Functions //////////////////////
+
+AABoundingBox meshAABB(const Geometry &geom)
+{
+    return AABoundingBox(geom.vertices);
+}
+
+AABoundingBox meshAABB(Mesh &mesh)
+{
+    AABoundingBox ret;
+
+    for (int meshIdx = 0; meshIdx < mesh.count(); meshIdx++) {
+        const Geometry &geom = mesh.geometry(meshIdx);
+
+        ret.expand(meshAABB(geom));
+    }
+
+    return ret;
 }
