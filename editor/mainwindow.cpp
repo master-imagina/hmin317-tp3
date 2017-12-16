@@ -309,7 +309,7 @@ void MainWindow::leavePlayMode()
     }
 
     m_gameWidget->disablePlayMode();
-    m_gameWidget->setCamera(&m_freeCamera);
+    m_gameWidget->setCamera(m_cameraControls->getCamera());
 
     m_centralWidget->setStyleSheet(QString());
 
