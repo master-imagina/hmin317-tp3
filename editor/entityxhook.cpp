@@ -8,6 +8,9 @@
 
 #include "input/keyboard.h"
 
+#include "physics/collider.h"
+#include "physics/rigidbody.h"
+
 #include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
@@ -77,6 +80,18 @@ template <>
 QString compName<Script>()
 {
     return "script";
+}
+
+template <>
+QString compName<Collider>()
+{
+    return "collider";
+}
+
+template <>
+QString compName<RigidBody>()
+{
+    return "rigidbody";
 }
 
 
@@ -167,6 +182,8 @@ EntityxHook::EntityxHook(SystemEngine &systemEngine, QObject *parent) :
     registerHookSystemsForComponent<Camera>(*this, m_systemEngine);
     registerHookSystemsForComponent<Keyboard>(*this, m_systemEngine);
     registerHookSystemsForComponent<Script>(*this, m_systemEngine);
+    registerHookSystemsForComponent<Collider>(*this, m_systemEngine);
+    registerHookSystemsForComponent<RigidBody>(*this, m_systemEngine);
 
     m_systemEngine.configure();
 }
