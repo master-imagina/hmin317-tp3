@@ -26,6 +26,7 @@
 
 QDataStream &operator<<(QDataStream &os, const Scene &scene)
 {
+    qRegisterMetaType<entityx::Entity::Id>();
     qRegisterMetaTypeStreamOperators<entityx::Entity::Id>("entityx::Entity::Id");
 
 
@@ -80,6 +81,10 @@ QDataStream &operator<<(QDataStream &os, const Scene &scene)
 
 QDataStream &deserializeScene(QDataStream &os, Scene &scene, LuaServer &luaServer)
 {
+    qRegisterMetaType<entityx::Entity::Id>();
+    qRegisterMetaTypeStreamOperators<entityx::Entity::Id>("entityx::Entity::Id");
+
+
     quint64 entityCount = 0;
     os >> entityCount;
 
