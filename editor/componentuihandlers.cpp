@@ -3,6 +3,7 @@
 #include <string>
 
 #include <QAction>
+#include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
 #include <QLabel>
@@ -548,6 +549,160 @@ QWidget *ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
                      [this, comp, scriptPathEditor] {
         *comp = scriptFromFile(scriptPathEditor->text().toStdString(),
                                m_theLuaServer);
+    });
+
+    return ret;
+}
+
+
+////////////////////// ColliderCompUiHandler //////////////////////
+
+void ColliderCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                               QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<Collider>();
+    });
+}
+
+void ColliderCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                                  QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<Collider>();
+    });
+}
+
+QWidget *ColliderCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                      QWidget *parent,
+                                                      const QString &projectPath)
+{
+    Collider *comp = entity.component<Collider>().get();
+
+    // Build UI
+    static const float COORD_MIN = -10000.f;
+    static const float COORD_MAX = 10000.f;
+
+    auto *ret = new QWidget(parent);
+
+    auto *shapeTypeEditor = new QComboBox(ret);
+    shapeTypeEditor->addItem("Box", static_cast<int>(Collider::Type::Box));
+    shapeTypeEditor->addItem("Sphere", static_cast<int>(Collider::Type::Sphere));
+
+    shapeTypeEditor->setCurrentIndex(static_cast<int>(comp->type));
+
+    auto *originEditor = new Vec3DEdit(ret);
+    originEditor->setMin(COORD_MIN);
+    originEditor->setMax(COORD_MAX);
+    originEditor->setValue(comp->origin);
+
+    auto *dimensionsEditor = new Vec3DEdit(ret);
+    dimensionsEditor->setMax(COORD_MAX);
+    dimensionsEditor->setValue(comp->dimensions);
+
+    auto *editorLayout = new QFormLayout(ret);
+    editorLayout->addRow("Shape Type", shapeTypeEditor);
+    editorLayout->addRow("Origin", originEditor);
+    editorLayout->addRow("Dimensions", dimensionsEditor);
+
+    // Create connection
+    QObject::connect(shapeTypeEditor, static_cast<void (QComboBox::*) (int)>(&QComboBox::currentIndexChanged),
+                     [comp, shapeTypeEditor] (int index) {
+        comp->type = (Collider::Type) shapeTypeEditor->itemData(index).toInt();
+    });
+
+    QObject::connect(originEditor, &Vec3DEdit::valueChanged,
+                     [comp] (const QVector3D &value) {
+        comp->origin = value;
+    });
+
+    QObject::connect(dimensionsEditor, &Vec3DEdit::valueChanged,
+                     [comp] (const QVector3D &value) {
+        comp->dimensions = value;
+    });
+
+    return ret;
+}
+
+
+////////////////////// RigidBodCompUiHandler //////////////////////
+
+void RigidBodyCompUiHandler::configureAddAction(entityx::Entity &entity,
+                                                QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.assign<RigidBody>();
+    });
+}
+
+void RigidBodyCompUiHandler::configureRemoveAction(entityx::Entity &entity,
+                                                   QAction *action)
+{
+    QObject::connect(action, &QAction::triggered,
+                     [&entity] {
+        entity.remove<RigidBody>();
+    });
+}
+
+QWidget *RigidBodyCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                       QWidget *parent,
+                                                       const QString &projectPath)
+{
+    RigidBody *comp = entity.component<RigidBody>().get();
+
+    // Build UI
+    auto *ret = new QWidget(parent);
+
+    auto *massEditor = new ValuedSlider(Qt::Horizontal, ret);
+    massEditor->setMaximum(1000);
+    massEditor->setValue(comp->mass);
+
+    auto restitutionEditor = new QDoubleSpinBox(ret);
+    restitutionEditor->setMaximum(1.f);
+    restitutionEditor->setSingleStep(0.1f);
+    restitutionEditor->setValue(comp->restitution);
+
+    auto frictionEditor = new QDoubleSpinBox(ret);
+    frictionEditor->setMaximum(1.f);
+    frictionEditor->setSingleStep(0.1f);
+    frictionEditor->setValue(comp->friction);
+
+    auto linearDampingEditor = new QDoubleSpinBox(ret);
+    linearDampingEditor->setMaximum(1.f);
+    linearDampingEditor->setSingleStep(0.1f);
+    linearDampingEditor->setValue(comp->linearDamping);
+
+    auto *editorLayout = new QFormLayout(ret);
+    editorLayout->addRow("Mass", massEditor);
+    editorLayout->addRow("Restitution", restitutionEditor);
+    editorLayout->addRow("Friction", frictionEditor);
+    editorLayout->addRow("Linear Damping", linearDampingEditor);
+
+    // Create connections
+    QObject::connect(massEditor, &QSlider::valueChanged,
+                     [comp] (int value) {
+        comp->mass = value;
+    });
+
+    auto QDoubleSpinBoxValueChangedSig
+            = static_cast<void (QDoubleSpinBox::*) (double)>(&QDoubleSpinBox::valueChanged);
+
+    QObject::connect(restitutionEditor, QDoubleSpinBoxValueChangedSig,
+                     [comp] (double value) {
+        comp->restitution = static_cast<float>(value);
+    });
+
+    QObject::connect(frictionEditor, QDoubleSpinBoxValueChangedSig,
+                     [comp] (double value) {
+        comp->friction = static_cast<float>(value);
+    });
+
+    QObject::connect(linearDampingEditor, QDoubleSpinBoxValueChangedSig,
+                     [comp] (double value) {
+        comp->linearDamping = static_cast<float>(value);
     });
 
     return ret;

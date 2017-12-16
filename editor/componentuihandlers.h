@@ -5,6 +5,9 @@
 
 #include "input/keyboard.h"
 
+#include "physics/collider.h"
+#include "physics/rigidbody.h"
+
 #include "render/camera.h"
 #include "render/light.h"
 #include "render/mesh.h"
@@ -135,6 +138,34 @@ public:
 
 private:
     LuaServer &m_theLuaServer;
+};
+
+class ColliderCompUiHandler : public TComponentUiHandler<Collider>
+{
+public:
+    QString componentName() override { return "Collider"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void configureRemoveAction(entityx::Entity &entity,
+                               QAction *action) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
+};
+
+class RigidBodyCompUiHandler : public TComponentUiHandler<RigidBody>
+{
+public:
+    QString componentName() override { return "RigidBody"; }
+
+    void configureAddAction(entityx::Entity &entity,
+                            QAction *action) override;
+    void configureRemoveAction(entityx::Entity &entity,
+                               QAction *action) override;
+    QWidget *createComponentEditor(entityx::Entity entity,
+                                   QWidget *parent,
+                                   const QString &projectPath) override;
 };
 
 #endif // COMPONENUIHANDLERS_H

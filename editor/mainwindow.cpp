@@ -281,6 +281,8 @@ void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentVi
     componentView->registerComponentUiHandler<CameraCompUiHandler>();
     componentView->registerComponentUiHandler<KeyboardCompUiHandler>();
     componentView->registerComponentUiHandler<ScriptCompUiHandler>(m_luaServer);
+    componentView->registerComponentUiHandler<ColliderCompUiHandler>();
+    componentView->registerComponentUiHandler<RigidBodyCompUiHandler>();
 }
 
 void MainWindow::enterPlayMode()
