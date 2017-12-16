@@ -62,7 +62,7 @@ void Mesh::processNode(aiNode *node, const aiScene *scene)
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 
-        m_geometries.push_back(processMesh(mesh, scene));
+        m_geometries.emplace_back(processMesh(mesh, scene));
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
@@ -99,7 +99,7 @@ Geometry Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
         aiFace face = mesh->mFaces[i];
 
         for (unsigned int j = 0; j < face.mNumIndices; j++) {
-            ret.indices.push_back(face.mIndices[j]);
+            ret.indices.emplace_back(face.mIndices[j]);
         }
     }
 
