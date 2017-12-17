@@ -13,6 +13,8 @@
 #include "core/param.h"
 #include "core/scene.h"
 
+#include "editor/entitylistmodel.h"
+
 #include "editor/gui/advancedslider.h"
 #include "editor/gui/coloreditor/coloreditor.h"
 #include "editor/gui/vec3edit.h"
@@ -30,7 +32,9 @@
 
 namespace {
 
-QWidget *createParamEditor(Param &param, QWidget *parent)
+QWidget *createParamEditor(Param &param,
+                           EntityListModel *entityListModel,
+                           QWidget *parent)
 {
     const QVariant oldValue = param.value;
     const int paramType = oldValue.userType();
@@ -74,6 +78,27 @@ QWidget *createParamEditor(Param &param, QWidget *parent)
 
         ret = editor;
     }
+    else if (paramType == qMetaTypeId<entityx::Entity::Id>()) {
+        auto *editor = new QComboBox(parent);
+        editor->setModel(entityListModel);
+
+        const auto entityId = param.value.value<entityx::Entity::Id>();
+
+        const QModelIndex idx = entityListModel->indexFromEntityId(entityId);
+        editor->setCurrentIndex(idx.row());
+
+        QObject::connect(editor, static_cast<void (QComboBox::*) (int)>(&QComboBox::currentIndexChanged),
+                         [&param, editor] (int index) {
+            if (editor->count() == 0) {
+                param.value = QVariant::fromValue(entityx::Entity::Id());
+            }
+            else {
+                param.value = editor->itemData(index, Qt::UserRole + 1);
+            }
+        });
+
+        ret = editor;
+    }
 
     // Check type support
     if (!ret) {
@@ -112,6 +137,7 @@ void TransformCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                       EntityListModel *entityListModel,
                                                        QWidget *parent,
                                                        const QString &)
 {
@@ -184,6 +210,7 @@ void ParticleEffectCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *ParticleEffectCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                            EntityListModel *entityListModel,
                                                             QWidget *parent,
                                                             const QString &)
 {
@@ -288,6 +315,7 @@ void MeshCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *MeshCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                  EntityListModel *entityListModel,
                                                   QWidget *parent,
                                                   const QString &projectPath)
 {
@@ -333,6 +361,7 @@ void LightCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *LightCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                   EntityListModel *entityListModel,
                                                    QWidget *parent,
                                                    const QString &)
 {
@@ -390,6 +419,7 @@ void MaterialCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                      EntityListModel *entityListModel,
                                                       QWidget *parent,
                                                       const QString &projectPath)
 {
@@ -401,7 +431,7 @@ QWidget *MaterialCompUiHandler::createComponentEditor(entityx::Entity entity,
     auto *editorLayout = new QFormLayout(ret);
 
     for (Param &param : comp->params()) {
-        QWidget *paramEditor = createParamEditor(param, ret);
+        QWidget *paramEditor = createParamEditor(param, entityListModel, ret);
 
         editorLayout->addRow(QString::fromStdString(param.name), paramEditor);
     }
@@ -431,6 +461,7 @@ void CameraCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *CameraCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                    EntityListModel *entityListModel,
                                                     QWidget *parent,
                                                     const QString &projectPath)
 {
@@ -492,6 +523,7 @@ void KeyboardCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *KeyboardCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                      EntityListModel *entityListModel,
                                                       QWidget *parent,
                                                       const QString &projectPath)
 {
@@ -528,6 +560,7 @@ void ScriptCompUiHandler::configureRemoveAction(entityx::Entity &entity, QAction
 }
 
 QWidget *ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                    EntityListModel *entityListModel,
                                                     QWidget *parent,
                                                     const QString &projectPath)
 {
@@ -544,7 +577,7 @@ QWidget *ScriptCompUiHandler::createComponentEditor(entityx::Entity entity,
 
     for (Param &param: comp->params()) {
         editorLayout->addRow(QString::fromStdString(param.name),
-                             createParamEditor(param, parent));
+                             createParamEditor(param, entityListModel, parent));
     }
 
     // Create connections
@@ -579,6 +612,7 @@ void ColliderCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *ColliderCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                      EntityListModel *entityListModel,
                                                       QWidget *parent,
                                                       const QString &projectPath)
 {
@@ -651,6 +685,7 @@ void RigidBodyCompUiHandler::configureRemoveAction(entityx::Entity &entity,
 }
 
 QWidget *RigidBodyCompUiHandler::createComponentEditor(entityx::Entity entity,
+                                                       EntityListModel *entityListModel,
                                                        QWidget *parent,
                                                        const QString &projectPath)
 {

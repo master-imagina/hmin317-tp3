@@ -16,6 +16,7 @@ class AssetManagerView;
 class CameraControls;
 class ComponentView;
 class EntityxHook;
+class EntityListModel;
 class GameWidget;
 class PaneManager;
 class ProjectManager;
@@ -64,6 +65,8 @@ private:
     bool m_inPlayMode;
 
     QByteArray m_playModeSceneDump;
+
+    EntityListModel *m_entityListModel;
 };
 
 #endif // MAINWINDOW_H

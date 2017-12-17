@@ -326,6 +326,7 @@ set(EDITOR_HEADERS
     editor/componentuihandlers.h
     editor/componentview.h
     editor/entityxhook.h
+    editor/entitylistmodel.h
     editor/mainwindow.h
     editor/particleeditor.h
     editor/projectmanager.h
@@ -340,6 +341,7 @@ set(EDITOR_SOURCES
     editor/componentuihandlers.cpp
     editor/componentview.cpp
     editor/entityxhook.cpp
+    editor/entitylistmodel.cpp
     editor/main.cpp
     editor/mainwindow.cpp
     editor/particleeditor.cpp

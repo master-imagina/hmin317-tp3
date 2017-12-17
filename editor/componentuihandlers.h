@@ -32,6 +32,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -47,6 +48,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -61,6 +63,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -75,6 +78,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -89,6 +93,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -103,6 +108,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -117,6 +123,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -133,6 +140,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 
@@ -150,6 +158,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };
@@ -164,6 +173,7 @@ public:
     void configureRemoveAction(entityx::Entity &entity,
                                QAction *action) override;
     QWidget *createComponentEditor(entityx::Entity entity,
+                                   EntityListModel *entityListModel,
                                    QWidget *parent,
                                    const QString &projectPath) override;
 };

@@ -9,6 +9,7 @@
 
 #include "core/scene.h"
 
+#include "editor/entitylistmodel.h"
 #include "editor/projectmanager.h"
 #include "editor/sceneview.h"
 
@@ -16,10 +17,12 @@
 
 
 ComponentView::ComponentView(SceneView *sceneView,
+                             EntityListModel *entityListModel,
                              ProjectManager *projectManager,
                              QWidget *parent) :
     ScrollablePane(tr("Components"), parent),
     m_theSceneView(sceneView),
+    m_theEntityListModel(entityListModel),
     m_theProjectManager(projectManager),
     m_mainWidget(nullptr),
     m_mainLayout(nullptr),
@@ -87,6 +90,7 @@ void ComponentView::setCurrentEntity(entityx::Entity entity)
 
                 QWidget *compEditor =
                         compUiHandler->createComponentEditor(m_currentEntity,
+                                                             m_theEntityListModel,
                                                              compEditorPlaceholder,
                                                              m_theProjectManager->currentProjectPath());
 

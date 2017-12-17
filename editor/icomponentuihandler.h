@@ -5,6 +5,8 @@
 
 #include "3rdparty/entityx/Entity.h"
 
+class EntityListModel;
+
 class QAction;
 class QVBoxLayout;
 class QWidget;
@@ -26,6 +28,7 @@ public:
                                        QAction *action) = 0;
 
     virtual QWidget *createComponentEditor(entityx::Entity entity,
+                                           EntityListModel *entityListModel,
                                            QWidget *parent,
                                            const QString &projectPath) = 0;
 };

@@ -37,11 +37,26 @@ private:
 };
 
 
+namespace std
+{
+    template<> struct hash<entityx::Entity::Id>
+    {
+        typedef entityx::Entity::Id argument_type;
+        typedef std::size_t result_type;
+
+        result_type operator()(const argument_type &entityId) const
+        {
+            const result_type ret ( std::hash<uint64_t>{}(entityId.id()) );
+            return ret;
+        }
+    };
+}
+
+
 Q_DECLARE_METATYPE(entityx::Entity)
 Q_DECLARE_METATYPE(entityx::Entity::Id)
 
 QDataStream &operator<<(QDataStream &os, const entityx::Entity::Id &entityId);
 QDataStream &operator>>(QDataStream &os, entityx::Entity::Id &entityId);
-
 
 #endif // SCENE_H

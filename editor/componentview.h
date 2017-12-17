@@ -13,6 +13,7 @@
 class QMenu;
 class QVBoxLayout;
 
+class EntityListModel;
 class ProjectManager;
 class SceneView;
 
@@ -22,7 +23,9 @@ class ComponentView : public ScrollablePane
     Q_OBJECT
 
 public:
-    ComponentView(SceneView *sceneView, ProjectManager *projectManager,
+    ComponentView(SceneView *sceneView,
+                  EntityListModel *entityListModel,
+                  ProjectManager *projectManager,
                   QWidget *parent = nullptr);
     ~ComponentView() = default;
 
@@ -43,6 +46,7 @@ private:
 
 private:
     SceneView *m_theSceneView;
+    EntityListModel *m_theEntityListModel;
     ProjectManager *m_theProjectManager;
 
     QWidget *m_mainWidget;

@@ -26,6 +26,7 @@
 #include "editor/componentuihandlers.h"
 #include "editor/componentview.h"
 #include "editor/entityxhook.h"
+#include "editor/entitylistmodel.h"
 #include "editor/panemanager.h"
 #include "editor/particleeditor.h"
 #include "editor/projectmanager.h"
@@ -50,8 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_entityxHook(nullptr),
     m_cameraControls(nullptr),
     m_inPlayMode(false),
-    m_playModeSceneDump()
+    m_playModeSceneDump(),
+    m_entityListModel(nullptr)
 {
+    m_entityListModel = new EntityListModel(m_scene, this);
+
     m_projectManager = new ProjectManager(this);
 
     m_centralWidget = new QWidget(this);
@@ -196,7 +200,7 @@ void MainWindow::createMenus()
 void MainWindow::initPanes()
 {
     auto *sceneView = new SceneView(m_scene, this);
-    auto *componentView = new ComponentView(sceneView, m_projectManager, this);
+    auto *componentView = new ComponentView(sceneView, m_entityListModel, m_projectManager, this);
 
     auto *assetManagerPane = new QDockWidget(tr("Asset Manager"), this);
     m_assetManagerView = new AssetManagerView(assetManagerPane);
