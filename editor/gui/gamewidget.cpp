@@ -81,10 +81,10 @@ void GameWidget::initSystems()
     m_systemEngine.registerSystem<InputSystem>(this);
 
     if (m_theLuaServer) {
-        m_systemEngine.registerSystem<CollisionSystem>();
         m_systemEngine.registerSystem<ScriptSystem>();
     }
 
+    m_systemEngine.registerSystem<CollisionSystem>();
     m_systemEngine.registerSystem<ParticleSystem>();
     m_systemEngine.registerSystem<RenderSystem>(this);
 
