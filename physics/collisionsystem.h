@@ -31,6 +31,8 @@ public:
                 entityx::EventManager &events,
                 double dt) override;
 
+    void clear();
+
 private:
     void createBtRigidBody(const Collider &collider, RigidBody &rigidBody);
 

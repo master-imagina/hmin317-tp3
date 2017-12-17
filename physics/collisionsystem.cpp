@@ -90,6 +90,21 @@ void CollisionSystem::update(entityx::EntityManager &entities,
     });
 }
 
+void CollisionSystem::clear()
+{
+    for (uptr<btCollisionShape> &shape : m_collisionShapes) {
+        shape.reset();
+    }
+
+    for (uptr<btDefaultMotionState> &motionState : m_motionStates) {
+        motionState.reset();
+    }
+
+    for (uptr<btRigidBody> &bulletRigidBody : m_rigidBodies) {
+        bulletRigidBody.reset();
+    }
+}
+
 void CollisionSystem::createBtRigidBody(const Collider &collider, RigidBody &rigidBody)
 {
     btVector3 bulletFallIntertia(rigidBody.fallInertia.x(),
