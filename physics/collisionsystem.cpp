@@ -64,19 +64,14 @@ void CollisionSystem::update(entityx::EntityManager &entities,
             m_collisionShapes.emplace_back(std::move(shape));
         }
 
-        if (!rigidBody.bulletRigidBody) {
+        if (!rigidBody.bulletRigidBody && !rigidBody.motionState) {
             auto motionState = std::make_unique<btDefaultMotionState>();
             rigidBody.motionState = motionState.get();
             m_motionStates.emplace_back(std::move(motionState));
 
             btTransform startTransform = transformToBtTransform(*transform.get());
 
-            if (rigidBody.mass > 0.f) {
-                startTransform.setOrigin(vec3ToBtVec3(transform->translate()));
-            }
-            else {
-                startTransform.setOrigin(vec3ToBtVec3(collider.origin));
-            }
+            startTransform.setOrigin(vec3ToBtVec3(transform->translate() + collider.origin));
 
             rigidBody.motionState->setWorldTransform(startTransform);
 
@@ -85,13 +80,11 @@ void CollisionSystem::update(entityx::EntityManager &entities,
             m_dynamicsWorld->addRigidBody(rigidBody.bulletRigidBody);
         }
 
-        btTransform bulletTransform;
-        rigidBody.bulletRigidBody->getMotionState()->getWorldTransform(bulletTransform);
-
-        const btVector3 &origin = bulletTransform.getOrigin();
-
         if (rigidBody.mass > 0.f) {
-            transform->setTranslate({origin.x(), origin.y(), origin.z()});
+            btTransform bulletTransform;
+            rigidBody.bulletRigidBody->getMotionState()->getWorldTransform(bulletTransform);
+
+            transform->setTranslate(btVec3ToVec3(bulletTransform.getOrigin()));
         }
         //TODO update rotation too
     });
