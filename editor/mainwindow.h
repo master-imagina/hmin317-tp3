@@ -62,6 +62,8 @@ private:
     CameraControls *m_cameraControls;
 
     bool m_inPlayMode;
+
+    QByteArray m_playModeSceneDump;
 };
 
 #endif // MAINWINDOW_H

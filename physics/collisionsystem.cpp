@@ -90,18 +90,29 @@ void CollisionSystem::update(entityx::EntityManager &entities,
     });
 }
 
-void CollisionSystem::clear()
+void CollisionSystem::clear(entityx::EntityManager &entities)
 {
-    for (uptr<btCollisionShape> &shape : m_collisionShapes) {
-        shape.reset();
-    }
+    entities.each<Collider, RigidBody>(
+                [this] (entityx::Entity entity,
+                        Collider &collider, RigidBody &rigidBody) {
+        collider.shape = nullptr;
+        rigidBody.bulletRigidBody = nullptr;
+        rigidBody.motionState = nullptr;
+    });
 
-    for (uptr<btDefaultMotionState> &motionState : m_motionStates) {
-        motionState.reset();
-    }
+    m_collisionShapes.clear();
+    m_motionStates.clear();
 
-    for (uptr<btRigidBody> &bulletRigidBody : m_rigidBodies) {
+    auto bulletRigidBodyIt = m_rigidBodies.begin();
+
+    while (bulletRigidBodyIt != m_rigidBodies.end()) {
+        uptr<btRigidBody> &bulletRigidBody = *bulletRigidBodyIt;
+
+        m_dynamicsWorld->removeRigidBody(bulletRigidBody.get());
+
         bulletRigidBody.reset();
+
+        bulletRigidBodyIt = m_rigidBodies.erase(bulletRigidBodyIt);
     }
 }
 

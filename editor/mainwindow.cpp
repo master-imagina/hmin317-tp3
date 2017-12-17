@@ -31,6 +31,8 @@
 #include "editor/projectmanager.h"
 #include "editor/sceneview.h"
 
+#include "physics/collisionsystem.h"
+
 #include "render/camera.h"
 
 
@@ -47,7 +49,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_gameWidget(nullptr),
     m_entityxHook(nullptr),
     m_cameraControls(nullptr),
-    m_inPlayMode(false)
+    m_inPlayMode(false),
+    m_playModeSceneDump()
 {
     m_projectManager = new ProjectManager(this);
 
@@ -299,6 +302,9 @@ void MainWindow::enterPlayMode()
         return;
     }
 
+    QDataStream playModeSceneDumpStream(&m_playModeSceneDump, QIODevice::WriteOnly);
+    playModeSceneDumpStream << m_scene;
+
     m_gameWidget->setFocus();
     m_gameWidget->enablePlayMode();
     m_gameWidget->systemEngine().configure();
@@ -322,6 +328,14 @@ void MainWindow::leavePlayMode()
     m_centralWidget->setStyleSheet(QString());
 
     setCursor(Qt::ArrowCursor);
+
+    m_gameWidget->systemEngine().system<CollisionSystem>()->clear(m_scene.m_entityManager);
+
+    //TODO Optimize
+    m_scene.clear();
+
+    QDataStream playModeSceneDumpStream(&m_playModeSceneDump, QIODevice::ReadOnly);
+    deserializeScene(playModeSceneDumpStream, m_scene, m_luaServer);
 
     m_inPlayMode = false;
 }
