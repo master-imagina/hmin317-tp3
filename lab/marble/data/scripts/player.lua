@@ -35,9 +35,6 @@ function update(entity, dt)
     local dtFactor = dt / 1000. * properties.speed
     local moveAmount = vec3_mul(moveDirection, dtFactor)
 
---    local transform = getComponentTransform(entity)
---    transform.translate = vec3_add(transform.translate, moveAmount)
-
     local rigidBody = getComponentRigidBody(entity)
     assert (rigidBody)
     rigidBody:applyCentralImpulse(moveAmount)
