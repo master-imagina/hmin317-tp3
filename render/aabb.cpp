@@ -29,7 +29,7 @@ QVector3D AABoundingBox::radius() const
     return m_radius;
 }
 
-std::array<QVector3D, 8> AABoundingBox::getCorners()
+std::array<QVector3D, 8> AABoundingBox::getCorners() const
 {
     std::array<QVector3D, 8> ret;
 
@@ -119,9 +119,9 @@ void AABoundingBox::expand(const AABoundingBox &other)
         m_radius.setZ(otherRadiusZ);
     }
 
-    m_center.setX(m_center.x() + other.center().x() * 0.5);
-    m_center.setY(m_center.y() + other.center().y() * 0.5);
-    m_center.setZ(m_center.z() + other.center().z() * 0.5);
+    m_center.setX((m_center.x() + other.center().x()) * 0.5);
+    m_center.setY((m_center.y() + other.center().y()) * 0.5);
+    m_center.setZ((m_center.z() + other.center().z()) * 0.5);
 }
 
 
@@ -134,13 +134,7 @@ AABoundingBox meshAABB(const Geometry &geom)
 
 AABoundingBox meshAABB(Mesh &mesh)
 {
-    AABoundingBox ret;
-
-    for (int meshIdx = 0; meshIdx < mesh.count(); meshIdx++) {
-        const Geometry &geom = mesh.geometry(meshIdx);
-
-        ret.expand(meshAABB(geom));
-    }
+    AABoundingBox ret = meshAABB(mesh.geometry(0));
 
     return ret;
 }

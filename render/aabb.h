@@ -20,7 +20,7 @@ public:
     QVector3D center() const;
     QVector3D radius() const;
 
-    std::array<QVector3D, 8> getCorners();
+    std::array<QVector3D, 8> getCorners() const;
 
     void processVertices(const std::vector<Vertex> vertices);
 
