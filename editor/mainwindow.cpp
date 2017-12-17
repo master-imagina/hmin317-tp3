@@ -154,47 +154,14 @@ void MainWindow::createMenus()
 
     connect(recentProjectsMenu, &QMenu::triggered,
             [this] (QAction *action) {
-        m_projectManager->load(action->data().toString());
-
-        const QUrl projectFileUrl =
-                QUrl(m_projectManager->currentProjectPath() + "/")
-                .resolved(QUrl(m_projectManager->currentProjectName()));
-
-        QFile projectFile(projectFileUrl.toString());
-
-        if (!projectFile.open(QIODevice::ReadOnly)) {
-            std::cerr << "[EDITOR - ERROR] << can't load project file"
-                      << std::endl;
-        }
-
-        m_scene.clear();
-
-        QDataStream dataStream(&projectFile);
-        deserializeScene(dataStream, m_scene, m_luaServer);
+        loadProject(action->data().toString());
     });
 
     QAction *saveProjectAction = fileMenu->addAction(tr("Save project"));
     saveProjectAction->setShortcut(QKeySequence("Ctrl+S"));
 
     connect(saveProjectAction, &QAction::triggered,
-            [this] {
-        if (!m_projectManager->hasOpenedProject()) {
-            return;
-        }
-
-        const QUrl projectFileUrl =
-                QUrl(m_projectManager->currentProjectPath() + "/")
-                .resolved(QUrl(m_projectManager->currentProjectName()));
-
-        QFile projectFile(projectFileUrl.toString());
-        if (!projectFile.open(QIODevice::WriteOnly)) {
-            std::cerr << "[EDITOR - ERROR] << can't save project file"
-                      << std::endl;
-        }
-
-        QDataStream dataStream(&projectFile);
-        dataStream << m_scene;
-    });
+            this, &MainWindow::saveProject);
 
     // Project menu
     QMenu *projectMenu = menuBar->addMenu(tr("Project"));
@@ -283,6 +250,47 @@ void MainWindow::createDefaultComponentEditorCreators(ComponentView *componentVi
     componentView->registerComponentUiHandler<ScriptCompUiHandler>(m_luaServer);
     componentView->registerComponentUiHandler<ColliderCompUiHandler>();
     componentView->registerComponentUiHandler<RigidBodyCompUiHandler>();
+}
+
+void MainWindow::loadProject(const QString &filePath)
+{
+    m_projectManager->load(filePath);
+
+    const QUrl projectFileUrl =
+            QUrl(m_projectManager->currentProjectPath() + "/")
+            .resolved(QUrl(m_projectManager->currentProjectName()));
+
+    QFile projectFile(projectFileUrl.toString());
+
+    if (!projectFile.open(QIODevice::ReadOnly)) {
+        std::cerr << "[EDITOR - ERROR] << can't load project file"
+                  << std::endl;
+    }
+
+    m_scene.clear();
+
+    QDataStream dataStream(&projectFile);
+    deserializeScene(dataStream, m_scene, m_luaServer);
+}
+
+void MainWindow::saveProject() const
+{
+    if (!m_projectManager->hasOpenedProject()) {
+        return;
+    }
+
+    const QUrl projectFileUrl =
+            QUrl(m_projectManager->currentProjectPath() + "/")
+            .resolved(QUrl(m_projectManager->currentProjectName()));
+
+    QFile projectFile(projectFileUrl.toString());
+    if (!projectFile.open(QIODevice::WriteOnly)) {
+        std::cerr << "[EDITOR - ERROR] << can't save project file"
+                  << std::endl;
+    }
+
+    QDataStream dataStream(&projectFile);
+    dataStream << m_scene;
 }
 
 void MainWindow::enterPlayMode()

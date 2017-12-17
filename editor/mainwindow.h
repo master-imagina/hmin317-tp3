@@ -36,6 +36,9 @@ private:
 
     void createDefaultComponentEditorCreators(ComponentView *componentView);
 
+    void loadProject(const QString &filePath);
+    void saveProject() const;
+
     void enterPlayMode();
     void leavePlayMode();
 
