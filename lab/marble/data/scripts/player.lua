@@ -35,6 +35,10 @@ function update(entity, dt)
     local dtFactor = dt / 1000. * properties.speed
     local moveAmount = vec3_mul(moveDirection, dtFactor)
 
+    if keyboard:keyIsPressed(Key.Space) then
+        moveAmount.y = 5
+    end
+
     local rigidBody = getComponentRigidBody(entity)
     assert (rigidBody)
     rigidBody:applyCentralImpulse(moveAmount)
