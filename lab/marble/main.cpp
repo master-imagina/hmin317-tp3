@@ -2,7 +2,6 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QSurfaceFormat>
-#include <QWindow>
 
 #include "core/assetmanager.h"
 #include "core/param.h"
@@ -14,6 +13,7 @@
 #include "extras/cameraactions.h"
 #include "extras/grid.h"
 #include "extras/heightmap.h"
+#include "extras/serialization.h"
 
 #include "input/keyboard.h"
 
@@ -54,15 +54,14 @@ void initScene(Scene &scene, LuaServer &luaServer)
     entityx::Entity terrainEntity = scene.createEntity();
 
     //  Terrain geometry
-    auto terrainGeom = terrainEntity.assign<Geometry>(grid(32));
-    terrainGeom->vertexLayout.addAttribute(defaultPositionAttrib());
+    auto terrainMesh = terrainEntity.assign<Mesh>("meshes/map1.obj");
+    AABoundingBox terrainBB = meshAABB(*terrainMesh.get());
 
-    AABoundingBox terrainBB(terrainGeom->vertices);
-
-    terrainEntity.assign<Collider>(Collider::Type::Box, terrainBB.radius(), terrainBB.center());
+//    terrainEntity.assign<Collider>(Collider::Type::Box, terrainBB.radius());
+    terrainEntity.assign<Collider>(Collider::Type::Mesh);
 
     auto terrainRigidBody = terrainEntity.assign<RigidBody>();
-    terrainRigidBody->restitution = 0.5f;
+    terrainRigidBody->restitution = 0.7f;
 
     //  Terrain material
     auto terrainMaterial = terrainEntity.assign<Material>();
@@ -84,19 +83,20 @@ void initScene(Scene &scene, LuaServer &luaServer)
     auto playerMesh = playerEntity.assign<Mesh>("meshes/sphere.obj");
 
     auto playerTransform = playerEntity.component<Transform>();
-    playerTransform->setTranslate(terrainBB.center() + QVector3D(0, 20, 0));
+    playerTransform->setTranslate({-9, 5, 0});
 
-    AABoundingBox playerBB(playerMesh->geometry(0).vertices);
+    AABoundingBox playerBB = meshAABB(*playerMesh.get());
 
     playerEntity.assign<Collider>(Collider::Type::Sphere, playerBB.radius());
 
     auto playerRigidBody = playerEntity.assign<RigidBody>();
-    playerRigidBody->mass = 3.f;
-    playerRigidBody->linearDamping = 0.2f;
+    playerRigidBody->mass = 1.f;
+    playerRigidBody->linearDamping = 0.1f;
+    playerRigidBody->friction = 0.2f;
 
     playerEntity.assign<Keyboard>();
     auto playerScript = playerEntity.assign<Script>(scriptFromFile("scripts/player.lua", luaServer));
-    playerScript->setParam("cameraEntity", QVariant::fromValue(mainCameraEntity));
+    playerScript->setParam("cameraEntity", QVariant::fromValue(mainCameraEntity.id()));
 
     // Create light
     entityx::Entity lightEntity = scene.createEntity();
@@ -134,8 +134,17 @@ int main(int argc, char *argv[])
     gameWidget.setMinimumSize(640, 400);
     createFpsLabel(gameWidget.gameLoop(), &gameWidget);
 
-    gameWidget.show();
-//    gameWidget.showMaximized();
+//    gameWidget.show();
+    gameWidget.showMaximized();
+
+    QFile projectFile("test_project");
+    if (!projectFile.open(QIODevice::WriteOnly)) {
+        std::cerr << "[EDITOR - ERROR] << can't save project file"
+                  << std::endl;
+    }
+
+    QDataStream dataStream(&projectFile);
+    dataStream << scene;
 
     return app.exec();
 }
