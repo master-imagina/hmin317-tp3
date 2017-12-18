@@ -90,7 +90,7 @@ void initScene(Scene &scene, LuaServer &luaServer)
     playerEntity.assign<Collider>(Collider::Type::Sphere, playerBB.radius());
 
     auto playerRigidBody = playerEntity.assign<RigidBody>();
-    playerRigidBody->mass = 1.f;
+    playerRigidBody->mass = 3.f;
     playerRigidBody->linearDamping = 0.1f;
     playerRigidBody->friction = 0.2f;
 
