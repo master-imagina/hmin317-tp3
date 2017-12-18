@@ -143,23 +143,24 @@ QWidget *TransformCompUiHandler::createComponentEditor(entityx::Entity entity,
 {
     Transform *comp = entity.component<Transform>().get();
 
+    static const float COORD_MIN = -10000.f;
+    static const float COORD_MAX = 10000.f;
+
     // Build UI
     auto *ret = new QWidget(parent);
 
     auto *translateEditor = new Vec3DEdit(parent);
+    translateEditor->setMin(COORD_MIN);
+    translateEditor->setMax(COORD_MAX);
     translateEditor->setValue(comp->translate());
 
     auto *rotateEditor = new Vec3DEdit(parent);
-    rotateEditor->setValue(comp->rotation());
     const float maxRotateAngle = 360.;
-    rotateEditor->setXMax(maxRotateAngle);
-    rotateEditor->setYMax(maxRotateAngle);
-    rotateEditor->setZMax(maxRotateAngle);
+    rotateEditor->setMax(maxRotateAngle);
+    rotateEditor->setValue(comp->rotation());
 
     auto *scaleEditor = new Vec3DEdit(parent);
-    scaleEditor->setXMin(1.);
-    scaleEditor->setYMin(1.);
-    scaleEditor->setZMin(1.);
+    scaleEditor->setMin(1.);
     scaleEditor->setValue(comp->scale());
 
     auto *editorLayout = new QFormLayout(ret);
@@ -627,6 +628,7 @@ QWidget *ColliderCompUiHandler::createComponentEditor(entityx::Entity entity,
     auto *shapeTypeEditor = new QComboBox(ret);
     shapeTypeEditor->addItem("Box", static_cast<int>(Collider::Type::Box));
     shapeTypeEditor->addItem("Sphere", static_cast<int>(Collider::Type::Sphere));
+    shapeTypeEditor->addItem("Mesh", static_cast<int>(Collider::Type::Mesh));
 
     shapeTypeEditor->setCurrentIndex(static_cast<int>(comp->type));
 
@@ -708,6 +710,11 @@ QWidget *RigidBodyCompUiHandler::createComponentEditor(entityx::Entity entity,
     frictionEditor->setSingleStep(0.1f);
     frictionEditor->setValue(comp->friction);
 
+    auto rollingFrictionEditor = new QDoubleSpinBox(ret);
+    rollingFrictionEditor->setMaximum(1.f);
+    rollingFrictionEditor->setSingleStep(0.1f);
+    rollingFrictionEditor->setValue(comp->rollingFriction);
+
     auto linearDampingEditor = new QDoubleSpinBox(ret);
     linearDampingEditor->setMaximum(1.f);
     linearDampingEditor->setSingleStep(0.1f);
@@ -717,6 +724,7 @@ QWidget *RigidBodyCompUiHandler::createComponentEditor(entityx::Entity entity,
     editorLayout->addRow("Mass", massEditor);
     editorLayout->addRow("Restitution", restitutionEditor);
     editorLayout->addRow("Friction", frictionEditor);
+    editorLayout->addRow("Rolling Friction", rollingFrictionEditor);
     editorLayout->addRow("Linear Damping", linearDampingEditor);
 
     // Create connections
@@ -736,6 +744,11 @@ QWidget *RigidBodyCompUiHandler::createComponentEditor(entityx::Entity entity,
     QObject::connect(frictionEditor, QDoubleSpinBoxValueChangedSig,
                      [comp] (double value) {
         comp->friction = static_cast<float>(value);
+    });
+
+    QObject::connect(rollingFrictionEditor, QDoubleSpinBoxValueChangedSig,
+                     [comp] (double value) {
+        comp->rollingFriction = static_cast<float>(value);
     });
 
     QObject::connect(linearDampingEditor, QDoubleSpinBoxValueChangedSig,
