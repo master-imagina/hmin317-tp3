@@ -15,4 +15,7 @@ void moveCamera(Camera &camera, const QVector3D &direction, float speed, float d
 void moveCameraForward(Camera &camera, float offset, float speed, float dt);
 void truckCamera(Camera &camera, float dx, float dy, float speed, float dt);
 
+void panCamera(Camera &camera, float dx, float speed, float dt);
+void tiltCamera(Camera &camera, float dy, float speed, float dt);
+
 #endif // CAMERAACTIONS_H

@@ -67,6 +67,19 @@ CameraControls::CameraControls(Camera *camera, Scene &scene, GameWidget *gameWid
                                   "}";
     const QSize btnSize {36, 36};
 
+    // Lookup button
+    auto lookupBtn = new DragToolButton(this);
+    lookupBtn->setStyleSheet(btnStyleSheet);
+    lookupBtn->setFixedSize(btnSize);
+    lookupBtn->setIcon(QIcon(":/editor/res/icons/lookup_icon_32.png"));
+    lookupBtn->setToolTip(tr("Lookup"));
+
+    connect(lookupBtn, &DragToolButton::mouseDragged,
+            [this]  (float dx, float dy) {
+        panCamera(*m_camera, dx, m_lookupSpeed, 1000.f);
+        tiltCamera(*m_camera, dy, m_lookupSpeed, 1000.f);
+    });
+
     //  Draw view button
     auto dragBtn = new DragToolButton(this);
     dragBtn->setStyleSheet(btnStyleSheet);
@@ -100,6 +113,7 @@ CameraControls::CameraControls(Camera *camera, Scene &scene, GameWidget *gameWid
     myLayout->addStretch();
 
     myLayout->addWidget(m_currentCameraComboBox);
+    myLayout->addWidget(lookupBtn);
     myLayout->addWidget(dragBtn);
     myLayout->addWidget(moveForwardBtn);
 }
