@@ -34,8 +34,8 @@ public:
     std::size_t primitiveCount = 0;
     PrimitiveType primitiveType = Points;
 
-    static const std::size_t vertexSize = sizeof(Vertex);
-    static const std::size_t indexSize = sizeof(uint32);
+    static const int vertexSize;
+    static const int indexSize;
 
     VertexLayout vertexLayout;
 

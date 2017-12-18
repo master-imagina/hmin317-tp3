@@ -120,6 +120,7 @@ set(RENDER_SOURCES
     render/rendersystem.cpp
     render/transform.cpp
     render/renderwidget.cpp
+    render/geometry/geometry.cpp
     render/geometry/vertexattrib.cpp
     render/geometry/vertexlayout.cpp
     render/renderer/managers/buffermanager.cpp
