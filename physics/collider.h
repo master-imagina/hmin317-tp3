@@ -4,17 +4,19 @@
 #include <QVector3D>
 
 class btCollisionShape;
-
+class btStridingMeshInterface;
 
 struct Collider
 {
     enum class Type
     {
         Box,
-        Sphere
+        Sphere,
+        Mesh
     };
 
     Collider();
+    Collider(Type _type);
     Collider(Type _type, const QVector3D &dims, const QVector3D &orig = QVector3D());
     ~Collider();
 
@@ -23,6 +25,7 @@ struct Collider
     QVector3D dimensions;
 
     btCollisionShape *shape;
+    btStridingMeshInterface *meshInterface;
 };
 
 

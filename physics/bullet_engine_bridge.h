@@ -19,6 +19,8 @@ inline QVector3D btVec3ToVec3(const btVector3 &v)
     return QVector3D(v.x(), v.y(), v.z());
 }
 
+QVector3D btQuatToVec3(const btQuaternion &quat);
+
 btTransform transformToBtTransform(const Transform &transform);
 
 #endif // BULLETENGINEBRIDGE_H

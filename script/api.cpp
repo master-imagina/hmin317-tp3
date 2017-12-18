@@ -121,6 +121,7 @@ std::vector<int> keys {
     Qt::Key_X,
     Qt::Key_Y,
     Qt::Key_Z,
+    Qt::Key_Space,
     Qt::Key_Control,
     Qt::Key_Alt,
     Qt::Key_Shift,
@@ -159,9 +160,10 @@ void exposeEngineAPI(lua_State *lState)
             .addVariable("X", &keys[23], false)
             .addVariable("Y", &keys[24], false)
             .addVariable("Z", &keys[25], false)
-            .addVariable("Ctrl", &keys[26], false)
-            .addVariable("Alt", &keys[27], false)
-            .addVariable("Shift", &keys[28], false)
+            .addVariable("Space", &keys[26], false)
+            .addVariable("Ctrl", &keys[27], false)
+            .addVariable("Alt", &keys[28], false)
+            .addVariable("Shift", &keys[29], false)
         .endNamespace();
 
     luabridge::getGlobalNamespace(lState)
@@ -203,6 +205,7 @@ void exposeEngineAPI(lua_State *lState)
     luabridge::getGlobalNamespace(lState)
         .beginClass<RigidBody>("RigidBody")
             .addFunction("applyCentralImpulse", &RigidBody::applyCentralImpulse)
+            .addFunction("applyForce", &RigidBody::applyForce)
         .endClass();
 
     luabridge::getGlobalNamespace(lState)

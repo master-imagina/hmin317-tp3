@@ -10,14 +10,24 @@ Collider::Collider() :
     type(Type::Box),
     origin(),
     dimensions(),
-    shape(nullptr)
+    shape(nullptr),
+    meshInterface(nullptr)
+{}
+
+Collider::Collider(Type _type) :
+    type(_type),
+    origin(),
+    dimensions(),
+    shape(nullptr),
+    meshInterface(nullptr)
 {}
 
 Collider::Collider(Type _type, const QVector3D &dims, const QVector3D &orig) :
     type(_type),
     origin(orig),
     dimensions(dims),
-    shape(nullptr)
+    shape(nullptr),
+    meshInterface(nullptr)
 {
     if (type == Type::Sphere) {
         Q_ASSERT (qFuzzyCompare(dims.x(), dims.y()) && qFuzzyCompare(dims.y(), dims.z()));

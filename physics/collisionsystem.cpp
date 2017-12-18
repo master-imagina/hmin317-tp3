@@ -9,6 +9,7 @@
 #include "physics/collider.h"
 #include "physics/rigidbody.h"
 
+#include "render/mesh.h"
 #include "render/transform.h"
 
 
@@ -46,7 +47,7 @@ void CollisionSystem::update(entityx::EntityManager &entities,
         auto transform = entity.component<Transform>();
 
         if (!collider.shape) {
-            std::unique_ptr<btCollisionShape> shape;
+            uptr<btCollisionShape> shape;
 
             switch (collider.type) {
             case Collider::Type::Box:
@@ -54,6 +55,24 @@ void CollisionSystem::update(entityx::EntityManager &entities,
                 break;
             case Collider::Type::Sphere:
                 shape = std::make_unique<btSphereShape>(collider.dimensions.x());
+                break;
+            case Collider::Type::Mesh:
+            {
+                Geometry &geom = entity.component<Mesh>()->geometry(0);
+
+                auto meshInterface = std::make_unique<btTriangleIndexVertexArray>(geom.primitiveCount / 3,
+                                                                                  reinterpret_cast<int *>(geom.indices.data()),
+                                                                                  Geometry::indexSize * 3,
+                                                                                  geom.vertices.size(),
+                                                                                  reinterpret_cast<btScalar *>(geom.vertices.data()),
+                                                                                  Geometry::vertexSize);
+
+                collider.meshInterface = meshInterface.get();
+
+                shape = std::make_unique<btBvhTriangleMeshShape>(collider.meshInterface, true);
+
+                m_meshInterfaces.emplace_back(std::move(meshInterface));
+            }
                 break;
             default:
                 break;
@@ -85,8 +104,8 @@ void CollisionSystem::update(entityx::EntityManager &entities,
             rigidBody.bulletRigidBody->getMotionState()->getWorldTransform(bulletTransform);
 
             transform->setTranslate(btVec3ToVec3(bulletTransform.getOrigin()));
+            transform->setRotation(btQuatToVec3(bulletTransform.getRotation()));
         }
-        //TODO update rotation too
     });
 }
 
@@ -96,12 +115,14 @@ void CollisionSystem::clear(entityx::EntityManager &entities)
                 [this] (entityx::Entity entity,
                         Collider &collider, RigidBody &rigidBody) {
         collider.shape = nullptr;
+        collider.meshInterface = nullptr;
         rigidBody.bulletRigidBody = nullptr;
         rigidBody.motionState = nullptr;
     });
 
     m_collisionShapes.clear();
     m_motionStates.clear();
+    m_meshInterfaces.clear();
 
     auto bulletRigidBodyIt = m_rigidBodies.begin();
 
@@ -134,6 +155,7 @@ void CollisionSystem::createBtRigidBody(const Collider &collider, RigidBody &rig
 
     rigidBodyCI.m_restitution = rigidBody.restitution;
     rigidBodyCI.m_friction = rigidBody.friction;
+    rigidBodyCI.m_rollingFriction = rigidBody.rollingFriction;
     rigidBodyCI.m_linearDamping = rigidBody.linearDamping;
 
     auto bulletRigidBody = std::make_unique<btRigidBody>(rigidBodyCI);

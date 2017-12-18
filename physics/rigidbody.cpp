@@ -17,6 +17,7 @@ RigidBody::RigidBody() :
     restitution(1.f),
     friction(1.f),
     linearDamping(0.f),
+    rollingFriction(0.f),
     bulletRigidBody(nullptr),
     motionState(nullptr)
 {}
@@ -32,6 +33,14 @@ void RigidBody::applyCentralImpulse(const QVector3D &impulse)
     bulletRigidBody->applyCentralImpulse(vec3ToBtVec3(impulse));
 }
 
+void RigidBody::applyForce(const QVector3D &force, const QVector3D &relPos)
+{
+    Q_ASSERT (bulletRigidBody);
+
+    bulletRigidBody->activate();
+    bulletRigidBody->applyForce(vec3ToBtVec3(force), vec3ToBtVec3(relPos));
+}
+
 
 ////////////////////// Functions //////////////////////
 
@@ -41,7 +50,8 @@ QDataStream &operator<<(QDataStream &os, const RigidBody &rigidBody)
        << rigidBody.fallInertia
        << rigidBody.restitution
        << rigidBody.friction
-       << rigidBody.linearDamping;
+       << rigidBody.linearDamping
+       << rigidBody.rollingFriction;
 }
 
 QDataStream &operator>>(QDataStream &os, RigidBody &rigidBody)
@@ -51,4 +61,5 @@ QDataStream &operator>>(QDataStream &os, RigidBody &rigidBody)
     os >> rigidBody.restitution;
     os >> rigidBody.friction;
     os >> rigidBody.linearDamping;
+    os >> rigidBody.rollingFriction;
 }

@@ -13,12 +13,14 @@ struct RigidBody
     ~RigidBody();
 
     void applyCentralImpulse(const QVector3D &impulse);
+    void applyForce(const QVector3D &force, const QVector3D &relPos);
 
     float mass;
     QVector3D fallInertia;
     float restitution;
     float friction;
     float linearDamping;
+    float rollingFriction;
 
     btRigidBody *bulletRigidBody;
     btDefaultMotionState *motionState;

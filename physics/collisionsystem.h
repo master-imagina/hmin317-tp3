@@ -9,10 +9,11 @@ class btBroadphaseInterface;
 class btCollisionDispatcher;
 class btCollisionShape;
 class btDefaultCollisionConfiguration;
+class btDefaultMotionState;
 class btDiscreteDynamicsWorld;
 class btRigidBody;
 class btSequentialImpulseConstraintSolver;
-class btDefaultMotionState;
+class btStridingMeshInterface;
 
 class Collider;
 class RigidBody;
@@ -46,6 +47,7 @@ private:
     uptr_vector<btCollisionShape> m_collisionShapes;
     uptr_vector<btRigidBody> m_rigidBodies;
     uptr_vector<btDefaultMotionState> m_motionStates;
+    uptr_vector<btStridingMeshInterface> m_meshInterfaces;
 };
 
 #endif // COLLISIONSYSTEM_H
