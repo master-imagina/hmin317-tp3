@@ -6,6 +6,11 @@ properties =
     cameraEntity = nil
 }
 
+privateProperties =
+{
+    isJumping = false
+}
+
 function computeDirectionFromKeys(keyboard)
     local leftVec = vec3_new(1, 0, 0)
     local forwardVec = vec3_new(0, 0, 1)
@@ -36,7 +41,12 @@ function update(entity, dt)
     local moveAmount = vec3_mul(moveDirection, dtFactor)
 
     if keyboard:keyIsPressed(Key.Space) then
-        moveAmount.y = 5
+        if not privateProperties.isJumping then
+            moveAmount.y = 15
+            privateProperties.isJumping = true
+        end
+    else
+        privateProperties.isJumping = false
     end
 
     local rigidBody = getComponentRigidBody(entity)
