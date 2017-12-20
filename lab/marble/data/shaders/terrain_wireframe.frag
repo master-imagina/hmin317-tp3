@@ -6,6 +6,9 @@
 
 in vec3 outVertexPos;
 
+uniform vec4 backgroundColor;
+uniform vec4 lineColor;
+
 out vec4 fragColor;
 
 
@@ -19,5 +22,10 @@ void main()
       float line = min(grid.x, grid.y);
 
       // Just visualize the grid lines directly
-      fragColor = vec4(vec3(1.0 - min(line, 1.0)), 1.0);
+      if (line < 1.0) {
+          fragColor = lineColor;
+      }
+      else {
+          fragColor = backgroundColor;
+      }
 }
