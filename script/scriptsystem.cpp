@@ -30,12 +30,18 @@ void ScriptSystem::update(entityx::EntityManager &entities,
                 commitParamValueToLua(param.name, param.value, propsTable, entities);
             }
 
+            // Pass private properties to LUA
+            luabridge::LuaRef privatePropsTable = m_luaServer.getPrivatePropertiesTable();
+
+            for (const Param &privateProp : script.privateProperties()) {
+                commitParamValueToLua(privateProp.name, privateProp.value, privatePropsTable, entities);
+            }
+
             // Call update
             luabridge::LuaRef updateHandler = m_luaServer.getUpdateFunc();
             updateHandler(entity, (float) dt);
 
             // Retrieve and store script's private properties
-            luabridge::LuaRef privatePropsTable = m_luaServer.getPrivatePropertiesTable();
             LuaKeyValueMap privateProps = m_luaServer.getKeyValueMap(privatePropsTable);
 
             for (auto &prop : privateProps) {

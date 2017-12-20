@@ -39,7 +39,7 @@ Script scriptFromFile(const std::string &path, LuaServer &luaServer)
         ret.sourceCode = assetManager->bigFile().data(path);
     }
 
-    // Retrieve script properties
+    // Retrieve script parameters
     luaServer.evaluateScript(ret);
 
     luabridge::LuaRef propsTable = luaServer.getPropertiesTable();
@@ -47,6 +47,13 @@ Script scriptFromFile(const std::string &path, LuaServer &luaServer)
 
     for (auto &p : props) {
         ret.addParam(p.first, luaRefToVariant(p.second));
+    }
+
+    // Retrieve private properties
+    luabridge::LuaRef privatePropsTable = luaServer.getPrivatePropertiesTable();
+
+    for (const auto &p : luaServer.getKeyValueMap(privatePropsTable)) {
+        ret.setPrivateProperty(p.first, luaRefToVariant(p.second));
     }
 
     return ret;
