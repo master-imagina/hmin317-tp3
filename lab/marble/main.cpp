@@ -72,6 +72,9 @@ void initScene(Scene &scene, LuaServer &luaServer)
 
     terrainPass.setShaderProgram(terrainShader);
 
+    terrainMaterial->setParam("backgroundColor", QColor(255, 0, 0));
+    terrainMaterial->setParam("lineColor", QColor(Qt::black));
+
     // Create camera
     entityx::Entity mainCameraEntity = scene.createEntity();
     auto camera = mainCameraEntity.assign<Camera>();
@@ -137,7 +140,7 @@ int main(int argc, char *argv[])
 //    gameWidget.show();
     gameWidget.showMaximized();
 
-    QFile projectFile("test_project");
+    QFile projectFile("marble_project");
     if (!projectFile.open(QIODevice::WriteOnly)) {
         std::cerr << "[EDITOR - ERROR] << can't save project file"
                   << std::endl;
