@@ -66,7 +66,7 @@ void RenderSystem::update(entityx::EntityManager &entities,
                         Mesh &mesh, Transform &transform) {
         for (int i = 0;i < mesh.count(); i++) {
             if (!entity.has_component<Material>()) {
-                entity.assign<Material>(phongMaterial());
+                entity.assign<Material>(phongDirectionalMaterial());
             }
 
             m_renderer->prepareDrawCommand(mesh.geometry(i),
