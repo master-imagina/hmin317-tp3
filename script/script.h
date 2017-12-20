@@ -13,6 +13,9 @@ class QDataStream;
 
 struct Script
 {
+    Script();
+    Script(const Script &other);
+
     std::string path;
     QByteArray sourceCode;
 
@@ -24,8 +27,12 @@ struct Script
     const std::vector<Param> &params() const;
     std::vector<Param> &params();
 
+    const std::vector<Param> &privateProperties() const;
+    void setPrivateProperty(const std::string &name, const QVariant &value);
+
 private:
     std::vector<Param> m_params;
+    std::vector<Param> m_privateProperties;
 };
 
 

@@ -33,6 +33,15 @@ void ScriptSystem::update(entityx::EntityManager &entities,
             // Call update
             luabridge::LuaRef updateHandler = m_luaServer.getUpdateFunc();
             updateHandler(entity, (float) dt);
+
+            // Retrieve and store script's private properties
+            luabridge::LuaRef privatePropsTable = m_luaServer.getPrivatePropertiesTable();
+            LuaKeyValueMap privateProps = m_luaServer.getKeyValueMap(privatePropsTable);
+
+            for (auto &prop : privateProps) {
+                script.setPrivateProperty(prop.first,
+                                          luaRefToVariant(prop.second));
+            }
         }
     });
 }

@@ -5,16 +5,17 @@
 #include <QDataStream>
 
 
-////////////////////// Script //////////////////////
+namespace {
 
-Param &Script::addParam(const std::string &name, const QVariant &value)
+Param &addParamToVector(const std::string &name, const QVariant &value,
+                        std::vector<Param> &params)
 {
-    auto paramFound = std::find_if(m_params.begin(), m_params.end(),
+    auto paramFound = std::find_if(params.begin(), params.end(),
                                    [name] (const Param &param) {
         return param.name == name;
     });
 
-    if (paramFound != m_params.end()) {
+    if (paramFound != params.end()) {
         std::cout << "[WARNING] Script : param \"" << name << "\" already exists"
                   << std::endl;
         return *paramFound;
@@ -23,7 +24,31 @@ Param &Script::addParam(const std::string &name, const QVariant &value)
     // Create the shader param and return a handle to it
     Param param {name, value};
 
-    return *m_params.insert(m_params.end(), param);
+    return *params.insert(params.end(), param);
+}
+
+} // anon namespace
+
+
+////////////////////// Script //////////////////////
+
+Script::Script() :
+    path(),
+    sourceCode(),
+    m_params()
+{}
+
+Script::Script(const Script &other) :
+    path(other.path),
+    sourceCode(other.sourceCode),
+    m_params()
+{
+    m_params = std::vector<Param>(other.params().begin(), other.params().end());
+}
+
+Param &Script::addParam(const std::string &name, const QVariant &value)
+{
+    return addParamToVector(name, value, m_params);
 }
 
 Param *Script::param(const std::string &name)
@@ -72,6 +97,26 @@ const std::vector<Param> &Script::params() const
 std::vector<Param> &Script::params()
 {
     return m_params;
+}
+
+const std::vector<Param> &Script::privateProperties() const
+{
+    return m_privateProperties;
+}
+
+void Script::setPrivateProperty(const std::string &name, const QVariant &value)
+{
+    auto privatePropFound = std::find_if(m_privateProperties.begin(), m_privateProperties.end(),
+                                   [name] (const Param &param) {
+        return param.name == name;
+    });
+
+    if (privatePropFound == m_privateProperties.end()) {
+        addParamToVector(name, value, m_privateProperties);
+    }
+    else {
+        (*privatePropFound).value = value;
+    }
 }
 
 

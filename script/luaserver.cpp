@@ -73,3 +73,8 @@ luabridge::LuaRef LuaServer::getPropertiesTable() const
 {
     return luabridge::getGlobal(m_luaState, "properties");
 }
+
+luabridge::LuaRef LuaServer::getPrivatePropertiesTable() const
+{
+    return luabridge::getGlobal(m_luaState, "privateProperties");
+}
