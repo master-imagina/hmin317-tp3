@@ -15,6 +15,9 @@ QVariant luaRefToVariant(const luabridge::LuaRef &luaValue)
     else if (luaValue.isString()) {
         ret = QString::fromStdString(luaValue.cast<std::string>());
     }
+    else if (luaValue.is<bool>()) {
+        ret = luaValue.cast<bool>();
+    }
     // Userdata only
     else if (luaValue.is<QVector3D>()) {
         ret = QVariant::fromValue(luaValue.cast<QVector3D>());
@@ -40,6 +43,9 @@ void commitParamValueToLua(const std::string &name,
     }
     else if (type == QMetaType::Float) {
         luaPropsTable[name] = qtValue.toFloat();
+    }
+    else if (type == QMetaType::Bool) {
+        luaPropsTable[name] = qtValue.toBool();
     }
     else if (type == QMetaType::QVector3D) {
         luaPropsTable[name] = qtValue.value<QVector3D>();
