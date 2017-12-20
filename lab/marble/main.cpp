@@ -57,7 +57,6 @@ void initScene(Scene &scene, LuaServer &luaServer)
     auto terrainMesh = terrainEntity.assign<Mesh>("meshes/map1.obj");
     AABoundingBox terrainBB = meshAABB(*terrainMesh.get());
 
-//    terrainEntity.assign<Collider>(Collider::Type::Box, terrainBB.radius());
     terrainEntity.assign<Collider>(Collider::Type::Mesh);
 
     auto terrainRigidBody = terrainEntity.assign<RigidBody>();
