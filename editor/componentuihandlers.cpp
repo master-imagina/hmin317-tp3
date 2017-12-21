@@ -61,7 +61,12 @@ QWidget *createParamEditor(Param &param,
         ret = editor;
     }
     else if (paramType == QMetaType::QVector3D) {
+        static const float COORD_MIN = -10000.f;
+        static const float COORD_MAX = 10000.f;
+
         auto *editor = new Vec3DEdit(parent);
+        editor->setMin(COORD_MIN);
+        editor->setMax(COORD_MAX);
         editor->setValue(param.value.value<QVector3D>());
 
         QObject::connect(editor, &Vec3DEdit::valueChanged,
