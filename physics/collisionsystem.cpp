@@ -23,7 +23,7 @@ CollisionSystem::CollisionSystem() :
     m_rigidBodies(),
     m_motionStates()
 {
-    m_dynamicsWorld->setGravity(btVector3(0, -10, 0));
+    m_dynamicsWorld->setGravity(btVector3(0, -1, 0));
 }
 
 CollisionSystem::~CollisionSystem()
