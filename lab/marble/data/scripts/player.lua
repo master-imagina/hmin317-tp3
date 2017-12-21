@@ -3,7 +3,8 @@
 properties =
 {
     speed = 4.,
-    cameraEntity = nil
+    cameraEntity = nil,
+    startPosition = vec3()
 }
 
 privateProperties =
@@ -58,5 +59,11 @@ function update(entity, dt)
 
     assert (camera)
     CameraActions.move(camera, moveDirection, properties.speed, dt)
+
+    local transform = getComponentTransform(entity)
+
+    if transform.translate.y <= -5 then
+        rigidBody:setWorldOrigin(properties.startPosition)
+    end
 end
 

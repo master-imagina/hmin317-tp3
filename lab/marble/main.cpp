@@ -99,6 +99,7 @@ void initScene(Scene &scene, LuaServer &luaServer)
     playerEntity.assign<Keyboard>();
     auto playerScript = playerEntity.assign<Script>(scriptFromFile("scripts/player.lua", luaServer));
     playerScript->setParam("cameraEntity", QVariant::fromValue(mainCameraEntity.id()));
+    playerScript->setParam("startPosition", QVector3D(-10, 15, -11));
 
     // Create light
     entityx::Entity lightEntity = scene.createEntity();
