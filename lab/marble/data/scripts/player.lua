@@ -54,11 +54,11 @@ function update(entity, dt)
     assert (rigidBody)
     rigidBody:applyCentralImpulse(moveAmount)
 
-    assert (properties.cameraEntity)
-    local camera = getComponentCamera(properties.cameraEntity)
+--    assert (properties.cameraEntity)
+--    local camera = getComponentCamera(properties.cameraEntity)
 
-    assert (camera)
-    CameraActions.move(camera, moveDirection, properties.speed, dt)
+--    assert (camera)
+--    CameraActions.move(camera, moveDirection, properties.speed, dt)
 
     local transform = getComponentTransform(entity)
 
