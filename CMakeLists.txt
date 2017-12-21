@@ -51,6 +51,7 @@ ExternalProject_add(3rdparty_assimp
     CMAKE_CACHE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${ENGINESPW_INSTALL_PATH}
                      -DASSIMP_INCLUDE_INSTALL_DIR:STRING=${ENGINESPW_INCLUDE_INSTALL_PATH}
                      -DASSIMP_NO_EXPORT:BOOL=true
+                     -DBUILD_SHARED_LIBS:BOOL=true
                      -DASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT:BOOL=false
                      ${ASSIMP_CMAKE_FORMATS_ARGS}
 )
@@ -61,6 +62,7 @@ ExternalProject_add(3rdparty_bullet
     # Forward CMAKE_INSTALL_PREFIX to external project.
     CMAKE_CACHE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${ENGINESPW_INSTALL_PATH}
                      -DINCLUDE_INSTALL_DIR:STRING=${ENGINESPW_INCLUDE_INSTALL_PATH}
+                     -DBUILD_SHARED_LIBS:BOOL=true
 )
 
 ExternalProject_add(3rdparty_lua
