@@ -88,7 +88,6 @@ void CollisionSystem::update(entityx::EntityManager &entities,
             m_motionStates.emplace_back(std::move(motionState));
 
             btTransform startTransform = transformToBtTransform(*transform.get());
-
             startTransform.setOrigin(vec3ToBtVec3(transform->translate() + collider.origin));
 
             rigidBody.motionState->setWorldTransform(startTransform);
