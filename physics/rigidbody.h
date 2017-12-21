@@ -12,6 +12,7 @@ struct RigidBody
     RigidBody();
     ~RigidBody();
 
+    void setWorldOrigin(const QVector3D &origin);
     void applyCentralImpulse(const QVector3D &impulse);
     void applyForce(const QVector3D &force, const QVector3D &relPos);
 

@@ -25,6 +25,18 @@ RigidBody::RigidBody() :
 RigidBody::~RigidBody()
 {}
 
+void RigidBody::setWorldOrigin(const QVector3D &origin)
+{
+    Q_ASSERT (bulletRigidBody);
+
+    bulletRigidBody->activate();
+
+    const btTransform &tr = bulletRigidBody->getWorldTransform();
+
+    bulletRigidBody->setWorldTransform(btTransform(tr.getRotation(),
+                                               vec3ToBtVec3(origin)));
+}
+
 void RigidBody::applyCentralImpulse(const QVector3D &impulse)
 {
     Q_ASSERT (bulletRigidBody);

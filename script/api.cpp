@@ -206,6 +206,7 @@ void exposeEngineAPI(lua_State *lState)
         .beginClass<RigidBody>("RigidBody")
             .addFunction("applyCentralImpulse", &RigidBody::applyCentralImpulse)
             .addFunction("applyForce", &RigidBody::applyForce)
+            .addFunction("setWorldOrigin", &RigidBody::setWorldOrigin)
         .endClass();
 
     luabridge::getGlobalNamespace(lState)
