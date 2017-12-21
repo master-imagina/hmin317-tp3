@@ -42,7 +42,7 @@ function update(entity, dt)
 
     if keyboard:keyIsPressed(Key.Space) then
         if not privateProperties.isJumping then
-            moveAmount.y = 15
+            moveAmount.y = 8
             privateProperties.isJumping = true
         end
     else
