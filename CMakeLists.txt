@@ -441,6 +441,8 @@ add_executable(seasons ${SEASONS_SOURCES} ${SEASONS_HEADERS} ${SEASONS_SHADERS} 
 target_include_directories(seasons PRIVATE ${PROJECT_SOURCE_DIR} ${ENGINESPW_INCLUDE_INSTALL_PATH})
 target_link_libraries(seasons enginescript engineinput editorgui engineextras enginerender enginecore editorgui Qt5::Widgets entityx)
 
+add_dependencies(seasons engineextras)
+
 install(TARGETS seasons RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
 
 #  marble
@@ -462,5 +464,7 @@ copyGameData(lab/marble data_marble)
 add_executable(marble ${MARBLE_SOURCES} ${MARBLE_HEADERS} ${MARBLE_SHADERS} ${MARBLE_SCRIPTS})
 target_include_directories(marble PRIVATE ${PROJECT_SOURCE_DIR} ${ENGINESPW_INCLUDE_INSTALL_PATH})
 target_link_libraries(marble enginescript engineinput editorgui engineextras enginerender enginecore editorgui Qt5::Widgets entityx)
+
+add_dependencies(marble engineextras)
 
 install(TARGETS marble RUNTIME DESTINATION ${ENGINESPW_BIN_INSTALL_PATH})
