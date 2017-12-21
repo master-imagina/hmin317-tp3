@@ -1,7 +1,7 @@
 #ifndef PARTICLESYSTEM_H
 #define PARTICLESYSTEM_H
 
-#include "3rdparty/entityx/System.h"
+#include <entityx/System.h>
 
 class Geometry;
 class ParticleEffect;

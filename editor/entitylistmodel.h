@@ -4,7 +4,7 @@
 #include <QComboBox>
 #include <QStandardItemModel>
 
-#include "3rdparty/entityx/Entity.h"
+#include <entityx/Entity.h>
 
 #include "core/scene.h"
 

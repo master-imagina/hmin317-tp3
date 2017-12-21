@@ -3,9 +3,9 @@
 
 #include <unordered_map>
 
-#include "editor/gui/pane.h"
+#include <entityx/Entity.h>
 
-#include "3rdparty/entityx/Entity.h"
+#include "editor/gui/pane.h"
 
 class QTreeWidget;
 class QTreeWidgetItem;

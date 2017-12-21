@@ -1,14 +1,14 @@
 #ifndef COMPONENTVIEW_H
 #define COMPONENTVIEW_H
 
+#include <entityx/Entity.h>
+#include <entityx/System.h>
+
 #include "core/aliases_memory.h"
 
 #include "editor/gui/pane.h"
 
 #include "editor/icomponentuihandler.h"
-
-#include "3rdparty/entityx/Entity.h"
-#include "3rdparty/entityx/System.h"
 
 class QMenu;
 class QVBoxLayout;

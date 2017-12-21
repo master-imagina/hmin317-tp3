@@ -1,6 +1,6 @@
 #include "renderwidget.h"
 
-#include "3rdparty/entityx/System.h"
+#include <entityx/System.h>
 
 #include "camera.h"
 #include "rendersystem.h"

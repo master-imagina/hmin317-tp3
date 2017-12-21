@@ -3,8 +3,8 @@
 
 #include <QObject>
 
-#include "3rdparty/entityx/Event.h"
-#include "3rdparty/entityx/Entity.h"
+#include <entityx/Event.h>
+#include <entityx/Entity.h>
 
 
 class Scene : public QObject

@@ -1,8 +1,8 @@
 #ifndef SYSTEMENGINE_H
 #define SYSTEMENGINE_H
 
-#include "3rdparty/entityx/System.h"
-#include "3rdparty/entityx/deps/Dependencies.h"
+#include <entityx/System.h>
+#include <entityx/deps/Dependencies.h>
 
 class Scene;
 

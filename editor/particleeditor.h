@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "3rdparty/entityx/Entity.h"
+#include <entityx/Entity.h>
 
 #include "core/scene.h"
 

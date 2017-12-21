@@ -1,7 +1,7 @@
 #ifndef COLLISIONSYSTEM_H
 #define COLLISIONSYSTEM_H
 
-#include "3rdparty/entityx/System.h"
+#include <entityx/System.h>
 
 #include "core/aliases_memory.h"
 

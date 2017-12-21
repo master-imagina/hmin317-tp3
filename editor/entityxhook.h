@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "3rdparty/entityx/System.h"
+#include <entityx/System.h>
 
 class SystemEngine;
 

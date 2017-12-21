@@ -1,35 +1,43 @@
-project(3rdparty_entityx)
+cmake_minimum_required(VERSION 3.5)
+
+project(entityx)
 
 # C++
 set(CMAKE_CXX_STANDARD 14)
 
 # Files
 set(HEADERS
-    3rdparty/catch.hpp
-    3rdparty/simplesignal.h
-    deps/Dependencies.h
-    help/NonCopyable.h
-    help/Pool.h
-    help/Timer.h
-    tags/TagsComponent.h
-    config.h
-    Entity.h
-    entityx.h
-    Event.h
-    quick.h
-    System.h
+    entityx/3rdparty/catch.hpp
+    entityx/3rdparty/simplesignal.h
+    entityx/deps/Dependencies.h
+    entityx/help/NonCopyable.h
+    entityx/help/Pool.h
+    entityx/help/Timer.h
+    entityx/tags/TagsComponent.h
+    entityx/config.h
+    entityx/Entity.h
+    entityx/entityx.h
+    entityx/Event.h
+    entityx/quick.h
+    entityx/System.h
     )
 
 set(SOURCES
-    help/Pool.cc
-    help/Timer.cc
-    Entity.cc
-    Event.cc
-    System.cc
+    entityx/help/Pool.cc
+    entityx/help/Timer.cc
+    entityx/Entity.cc
+    entityx/Event.cc
+    entityx/System.cc
     )
+
+install(
+    DIRECTORY "entityx"
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    FILES_MATCHING PATTERN "*.h"
+)
 
 # Targets
 add_library(entityx SHARED ${SOURCES} ${HEADERS})
-target_include_directories(entityx PUBLIC ${PROJECT_SOURCE_DIR}/..)
+target_include_directories(entityx PUBLIC ${PROJECT_SOURCE_DIR})
 target_compile_definitions(entityx PRIVATE)
-install(TARGETS entityx LIBRARY DESTINATION ${ENGINESPW_LIB_INSTALL_PATH})
+install(TARGETS entityx LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)

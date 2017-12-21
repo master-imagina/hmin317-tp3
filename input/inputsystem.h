@@ -1,7 +1,7 @@
 #ifndef INPUTSYSTEM_h
 #define INPUTSYSTEM_h
 
-#include "3rdparty/entityx/System.h"
+#include <entityx/System.h>
 
 class QObject;
 

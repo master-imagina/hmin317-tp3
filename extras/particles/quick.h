@@ -3,7 +3,7 @@
 
 #include <QVector3D>
 
-#include "3rdparty/entityx/Entity.h"
+#include <entityx/Entity.h>
 
 class Scene;
 

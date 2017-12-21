@@ -3,8 +3,8 @@
 
 #include <QVector3D>
 
-#include "LinearMath/btTransform.h"
-#include "LinearMath/btVector3.h"
+#include <LinearMath/btTransform.h>
+#include <LinearMath/btVector3.h>
 
 class Transform;
 

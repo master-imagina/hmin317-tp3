@@ -1,9 +1,8 @@
 #include "collisionsystem.h"
 
-#include "BulletCollision/CollisionShapes/btBoxShape.h"
-#include "BulletCollision/CollisionShapes/btSphereShape.h"
-
-#include "btBulletDynamicsCommon.h"
+#include <BulletCollision/CollisionShapes/btBoxShape.h>
+#include <BulletCollision/CollisionShapes/btSphereShape.h>
+#include <btBulletDynamicsCommon.h>
 
 #include "physics/bullet_engine_bridge.h"
 #include "physics/collider.h"

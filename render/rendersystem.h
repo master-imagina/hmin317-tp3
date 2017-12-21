@@ -1,7 +1,7 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
-#include "3rdparty/entityx/System.h"
+#include <entityx/System.h>
 
 class Renderer;
 class RenderWidget;

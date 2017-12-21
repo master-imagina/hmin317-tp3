@@ -5,7 +5,7 @@
 
 #include <QDebug>
 
-#include "3rdparty/entityx/Entity.h"
+#include <entityx/Entity.h>
 
 #include "render/geometry/geometry.h"
 #include "render/geometry/vertexattrib.h"
