@@ -104,9 +104,6 @@ set(CORE_SOURCES
 
 link_directories(${ENGINESPW_LIB_INSTALL_PATH})
 
-#set(CMAKE_INSTALL_RPATH ${ENGINESPW_LIB_INSTALL_PATH})
-#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
 add_library(enginecore SHARED ${CORE_SOURCES} ${CORE_HEADERS})
 target_include_directories(enginecore PRIVATE ${PROJECT_SOURCE_DIR} ${ENGINESPW_INCLUDE_INSTALL_PATH})
 target_compile_definitions(enginecore PRIVATE CORE_LIBRARY=1)
