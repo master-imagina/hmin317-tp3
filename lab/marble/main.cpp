@@ -85,7 +85,7 @@ void initScene(Scene &scene, LuaServer &luaServer)
     auto playerMesh = playerEntity.assign<Mesh>("meshes/sphere.obj");
 
     auto playerTransform = playerEntity.component<Transform>();
-    playerTransform->setTranslate({-9, 5, 0});
+    playerTransform->setTranslate({-10, 15, -11});
 
     AABoundingBox playerBB = meshAABB(*playerMesh.get());
 
@@ -99,7 +99,7 @@ void initScene(Scene &scene, LuaServer &luaServer)
     playerEntity.assign<Keyboard>();
     auto playerScript = playerEntity.assign<Script>(scriptFromFile("scripts/player.lua", luaServer));
     playerScript->setParam("cameraEntity", QVariant::fromValue(mainCameraEntity.id()));
-    playerScript->setParam("startPosition", QVector3D(-10, 15, -11));
+    playerScript->setParam("startPosition", playerTransform->translate());
 
     // Create light
     entityx::Entity lightEntity = scene.createEntity();
