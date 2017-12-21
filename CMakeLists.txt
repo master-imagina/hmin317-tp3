@@ -411,7 +411,6 @@ macro (copyGameData sourcePath destinationDir)
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${destinationDir})
 
     foreach(gameDataFolder ${GAME_DATA_TREE})
-        message(GNEUUUUU ${CMAKE_SOURCE_DIR}/${sourcePath}/data/${gameDataFolder})
         if (EXISTS ${CMAKE_SOURCE_DIR}/${sourcePath}/data/${gameDataFolder})
             file(COPY ${sourcePath}/data/${gameDataFolder} DESTINATION ${CMAKE_BINARY_DIR}/${destinationDir})
             file(INSTALL ${sourcePath}/data/${gameDataFolder} DESTINATION ${ENGINESPW_INSTALL_PATH}/${destinationDir})
